@@ -1,12 +1,11 @@
 "use client";
 
-import { Community, ExchangeShowcase } from "./component/community";
-import { CTA } from "./component/cta";
-import { Footer } from "./component/footer";
-import { Hero, SkillsMarquee } from "./component/hero";
-import { HowItWorks } from "./component/howItWorks";
-import { Safety } from "./component/safety";
-import { Testimonials } from "./component/testimonials";
+import { Community, ExchangeShowcase } from "../component/community";
+import { CTA } from "../component/cta";
+import { Hero, SkillsMarquee } from "../component/hero";
+import { HowItWorks } from "../component/howItWorks";
+import { Safety } from "../component/safety";
+import { Testimonials } from "../component/testimonials";
 
 export default function HomePage() {
   return (
@@ -18,7 +17,7 @@ export default function HomePage() {
       <Community />
       <Safety />
       <Testimonials />
-      <CTA /> <Footer />
+      <CTA />
     </main>
   );
 }

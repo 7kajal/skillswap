@@ -19,13 +19,10 @@ import {
   X,
 } from "lucide-react";
 import React, { useMemo, useState } from "react";
-import { Header } from "./header";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white pb-20 pt-32 sm:pt-36 lg:min-h-[760px]">
-      <Header />
-
+    <section className="relative overflow-hidden bg-white pb-20 pt-20 sm:pt-24 lg:min-h-[760px]">
       <div className="absolute -left-48 top-8 h-[540px] w-[540px] rounded-full bg-blue-200/35 blur-[140px]" />
       <div className="absolute -right-48 top-0 h-[560px] w-[560px] rounded-full bg-indigo-200/35 blur-[150px]" />
 

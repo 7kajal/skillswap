@@ -1,4 +1,3 @@
-"use client";
 import {
   ArrowRight,
   BadgeCheck,
@@ -22,8 +21,6 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useState } from "react";
 
 export const navigation = [
   { label: "Explore skills", href: "#skills" },

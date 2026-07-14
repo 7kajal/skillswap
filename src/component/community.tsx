@@ -151,7 +151,7 @@ export function ExchangeShowcase() {
           </h2>
 
           <p className="mt-5 max-w-lg text-base font-medium leading-8 text-slate-600">
-            Skillora looks beyond a basic search. Discover people based on what
+            SkillSwap looks beyond a basic search. Discover people based on what
             they teach, what they want to learn and how well your needs align.
           </p>
 
