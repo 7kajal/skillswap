@@ -1,32 +1,17 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { apiSuccess, apiError, apiNotFound } from "@/lib/apiResponse";
+import { getProfileById } from "@/modules/profile/profile.service";
 
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const user = await prisma.user.findUnique({
-    where: { id },
-    include: {
-      userSkills: { include: { skill: true } },
-      reviewsReceived: {
-        include: { reviewer: true },
-        orderBy: { createdAt: "desc" },
-        take: 10,
-      },
-      badges: { include: { badge: true } },
-    },
-  });
 
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  try {
+    const profile = await getProfileById(id);
+    if (!profile) return apiNotFound("User not found");
+    return apiSuccess(profile);
+  } catch {
+    return apiError("Internal server error");
   }
-
-  return NextResponse.json({
-    ...user,
-    password: undefined,
-    languages: JSON.parse(user.languages),
-    availability: JSON.parse(user.availability),
-  });
 }

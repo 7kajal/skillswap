@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { Logo } from "./logo";
 import { navigation } from "./constant/static";
-import { ArrowRight, Menu, X, LayoutDashboard, Compass, LogOut } from "lucide-react";
+import { ArrowRight, Menu, X, LayoutDashboard, Compass, LogOut, Calendar, Shield } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 
@@ -37,6 +37,12 @@ export function Header() {
                 className="rounded-full px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
               >
                 Discover
+              </Link>
+              <Link
+                href="/sessions"
+                className="rounded-full px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+              >
+                Sessions
               </Link>
               <Link
                 href="/dashboard"
@@ -114,11 +120,25 @@ export function Header() {
                     Discover
                   </Link>
                   <Link
+                    href="/sessions"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    Sessions
+                  </Link>
+                  <Link
                     href="/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
                     className="rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
                   >
                     Dashboard
+                  </Link>
+                  <Link
+                    href="/reputation"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    Reputation
                   </Link>
                 </>
               )}

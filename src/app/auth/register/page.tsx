@@ -27,9 +27,9 @@ export default function RegisterPage() {
         body: JSON.stringify({ name, email, password }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "Something went wrong");
+      const json = await res.json();
+      if (!json.success) {
+        setError(json.message || "Something went wrong");
         setLoading(false);
         return;
       }

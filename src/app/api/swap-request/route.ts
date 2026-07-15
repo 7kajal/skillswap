@@ -1,93 +1,38 @@
-import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { apiSuccess, apiError, apiUnauthorized, apiBadRequest, apiConflict } from "@/lib/apiResponse";
+import { getSentRequests, getReceivedRequests, createSwapRequest } from "@/modules/swapRequest/swapRequest.service";
 
 export async function GET() {
   const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.user?.id) return apiUnauthorized();
+
+  try {
+    const [sent, received] = await Promise.all([
+      getSentRequests(session.user.id),
+      getReceivedRequests(session.user.id),
+    ]);
+    return apiSuccess({ sent, received });
+  } catch {
+    return apiError("Internal server error");
   }
-
-  const [sent, received] = await Promise.all([
-    prisma.swapRequest.findMany({
-      where: { senderId: session.user.id },
-      include: {
-        receiver: { select: { id: true, name: true, avatar: true } },
-        teachSkill: true,
-        learnSkill: true,
-      },
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.swapRequest.findMany({
-      where: { receiverId: session.user.id },
-      include: {
-        sender: { select: { id: true, name: true, avatar: true } },
-        teachSkill: true,
-        learnSkill: true,
-      },
-      orderBy: { createdAt: "desc" },
-    }),
-  ]);
-
-  return NextResponse.json({ sent, received });
 }
 
 export async function POST(req: Request) {
   const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session?.user?.id) return apiUnauthorized();
 
   try {
     const { receiverId, teachSkillName, learnSkillName, message } = await req.json();
-
-    if (session.user.id === receiverId) {
-      return NextResponse.json({ error: "Cannot send request to yourself" }, { status: 400 });
-    }
-
-    const existing = await prisma.swapRequest.findFirst({
-      where: {
-        OR: [
-          { senderId: session.user.id, receiverId, status: { in: ["pending", "accepted"] } },
-          { senderId: receiverId, receiverId: session.user.id, status: { in: ["pending", "accepted"] } },
-        ],
-      },
+    const result = await createSwapRequest(session.user.id, {
+      receiverId,
+      teachSkillName,
+      learnSkillName,
+      message,
     });
-
-    if (existing) {
-      return NextResponse.json({ error: "A request already exists with this person" }, { status: 409 });
-    }
-
-    const teachSkill = await prisma.skill.upsert({
-      where: { name: teachSkillName },
-      update: {},
-      create: { name: teachSkillName, category: "General" },
-    });
-
-    const learnSkill = await prisma.skill.upsert({
-      where: { name: learnSkillName },
-      update: {},
-      create: { name: learnSkillName, category: "General" },
-    });
-
-    const swapRequest = await prisma.swapRequest.create({
-      data: {
-        senderId: session.user.id,
-        receiverId,
-        teachSkillId: teachSkill.id,
-        learnSkillId: learnSkill.id,
-        message: message || null,
-      },
-      include: {
-        receiver: { select: { id: true, name: true, avatar: true } },
-        teachSkill: true,
-        learnSkill: true,
-      },
-    });
-
-    return NextResponse.json(swapRequest);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return apiSuccess(result, "Swap request sent");
+  } catch (err: any) {
+    if (err.message === "Cannot send request to yourself") return apiBadRequest(err.message);
+    if (err.message === "A request already exists with this person") return apiConflict(err.message);
+    return apiError("Internal server error");
   }
 }

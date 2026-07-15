@@ -1,0 +1,95 @@
+@baseUrl = http://localhost:3000
+
+### Register a new user
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### Get current user profile
+GET {{baseUrl}}/api/profile
+Content-Type: application/json
+
+### Get user profile by ID
+GET {{baseUrl}}/api/profile/USER_ID_HERE
+Content-Type: application/json
+
+### Complete profile
+POST {{baseUrl}}/api/profile/complete
+Content-Type: application/json
+
+{
+  "avatar": "https://example.com/avatar.jpg",
+  "bio": "I am a software developer",
+  "location": "New York",
+  "languages": ["English", "Spanish"],
+  "availability": ["weekends"],
+  "teachSkills": ["JavaScript", "React"],
+  "learnSkills": ["Python", "Machine Learning"]
+}
+
+### Discover matches
+GET {{baseUrl}}/api/discover
+Content-Type: application/json
+
+### Create swap request
+POST {{baseUrl}}/api/swap-request
+Content-Type: application/json
+
+{
+  "receiverId": "RECEIVER_ID_HERE",
+  "teachSkillName": "JavaScript",
+  "learnSkillName": "Python",
+  "message": "Hi! I'd like to exchange skills."
+}
+
+### Get swap requests
+GET {{baseUrl}}/api/swap-request
+Content-Type: application/json
+
+### Update swap request status
+PATCH {{baseUrl}}/api/swap-request/SWAP_REQUEST_ID_HERE
+Content-Type: application/json
+
+{
+  "status": "accepted"
+}
+
+### Get chat rooms
+GET {{baseUrl}}/api/chat/rooms
+Content-Type: application/json
+
+### Get messages in room
+GET {{baseUrl}}/api/chat/ROOM_ID_HERE/messages
+Content-Type: application/json
+
+### Send message
+POST {{baseUrl}}/api/chat/ROOM_ID_HERE/messages
+Content-Type: application/json
+
+{
+  "content": "Hello! How are you?"
+}
+
+### Check if review exists
+GET {{baseUrl}}/api/review?swapRequestId=SWAP_REQUEST_ID&reviewerId=REVIEWER_ID
+Content-Type: application/json
+
+### Create review
+POST {{baseUrl}}/api/review
+Content-Type: application/json
+
+{
+  "swapRequestId": "SWAP_REQUEST_ID_HERE",
+  "reviewedId": "REVIEWED_ID_HERE",
+  "rating": 5,
+  "comment": "Great experience!"
+}
+
+### Get and award badges
+GET {{baseUrl}}/api/badges
+Content-Type: application/json

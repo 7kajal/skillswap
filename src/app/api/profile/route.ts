@@ -1,29 +1,16 @@
-import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { apiSuccess, apiError, apiUnauthorized, apiNotFound } from "@/lib/apiResponse";
+import { getProfile } from "@/modules/profile/profile.service";
 
 export async function GET() {
   const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.user?.id) return apiUnauthorized();
+
+  try {
+    const profile = await getProfile(session.user.id);
+    if (!profile) return apiNotFound("User not found");
+    return apiSuccess(profile);
+  } catch {
+    return apiError("Internal server error");
   }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      userSkills: { include: { skill: true } },
-      badges: { include: { badge: true } },
-    },
-  });
-
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
-
-  return NextResponse.json({
-    ...user,
-    password: undefined,
-    languages: JSON.parse(user.languages),
-    availability: JSON.parse(user.availability),
-  });
 }

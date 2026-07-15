@@ -33,9 +33,9 @@ export default function ReviewPage() {
     Promise.all([
       fetch("/api/swap-request").then((r) => r.json()),
       fetch("/api/profile").then((r) => r.json()),
-    ]).then(([requestsData, profileData]) => {
-      setCurrentUserId(profileData.id);
-      const all = [...(requestsData.sent || []), ...(requestsData.received || [])];
+    ]).then(([requestsRes, profileRes]) => {
+      setCurrentUserId(profileRes.data.id);
+      const all = [...(requestsRes.data?.sent || []), ...(requestsRes.data?.received || [])];
       const found = all.find((r: SwapInfo) => r.id === swapId);
       setSwap(found || null);
       setLoading(false);
@@ -48,8 +48,8 @@ export default function ReviewPage() {
     const reviewedId = swap.sender.id === currentUserId ? swap.receiver.id : swap.sender.id;
     fetch(`/api/review?swapRequestId=${swapId}&reviewerId=${reviewerId}`)
       .then((r) => r.json())
-      .then((data) => {
-        if (data && data.id) setAlreadyReviewed(true);
+      .then((json) => {
+        if (json.data && json.data.id) setAlreadyReviewed(true);
       })
       .catch(() => {});
   }, [swap, swapId, currentUserId]);
@@ -68,7 +68,8 @@ export default function ReviewPage() {
           comment: comment.trim() || null,
         }),
       });
-      if (res.ok) {
+      const json = await res.json();
+      if (json.success) {
         setSubmitted(true);
         setTimeout(() => router.push("/dashboard"), 2000);
       }

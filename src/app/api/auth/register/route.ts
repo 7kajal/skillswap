@@ -1,23 +1,22 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+import { apiSuccess, apiError, apiBadRequest } from "@/lib/apiResponse";
+import { findUserByEmail, createUser } from "@/modules/auth/auth.service";
 
 export async function POST(req: Request) {
   try {
     const { name, email, password } = await req.json();
+
     if (!name || !email || !password) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+      return apiBadRequest("Missing fields");
     }
-    const existing = await prisma.user.findUnique({ where: { email } });
+
+    const existing = await findUserByEmail(email);
     if (existing) {
-      return NextResponse.json({ error: "Email already in use" }, { status: 400 });
+      return apiBadRequest("Email already in use");
     }
-    const hashed = await bcrypt.hash(password, 12);
-    const user = await prisma.user.create({
-      data: { name, email, password: hashed },
-    });
-    return NextResponse.json({ user: { id: user.id, name: user.name, email: user.email } });
+
+    const user = await createUser({ name, email, password });
+    return apiSuccess(user, "User created");
   } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return apiError("Internal server error");
   }
 }

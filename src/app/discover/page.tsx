@@ -10,10 +10,18 @@ import {
   X,
   Send,
   BadgeCheck,
-  Filter,
   HeartHandshake,
+  TrendingUp,
+  Shield,
+  Clock,
 } from "lucide-react";
 import Link from "next/link";
+
+type MatchReason = {
+  type: "exact" | "related";
+  from: string;
+  to: string;
+};
 
 type MatchedUser = {
   id: string;
@@ -23,9 +31,12 @@ type MatchedUser = {
   location: string | null;
   rating: number;
   reviewCount: number;
+  completedSwaps: number;
+  trustScore: number;
   matchScore: number;
   iCanTeachTheyWant: number;
   theyCanTeachIWant: number;
+  reasons: MatchReason[];
   userSkills: { skill: { name: string }; type: string }[];
 };
 
@@ -46,10 +57,10 @@ export default function DiscoverPage() {
     Promise.all([
       fetch("/api/discover").then((r) => r.json()),
       fetch("/api/profile").then((r) => r.json()),
-    ]).then(([discoverData, profileData]) => {
-      setUsers(Array.isArray(discoverData) ? discoverData : []);
+    ]).then(([discoverRes, profileRes]) => {
+      setUsers(Array.isArray(discoverRes.data) ? discoverRes.data : []);
       setProfileComplete(
-        profileData.bio && profileData.location && profileData.userSkills?.length > 0
+        profileRes.data?.bio && profileRes.data?.location && profileRes.data?.userSkills?.length > 0
       );
       setLoading(false);
     }).catch(() => setLoading(false));
@@ -89,13 +100,14 @@ export default function DiscoverPage() {
           message,
         }),
       });
-      if (res.ok) {
+      const json = await res.json();
+      if (json.success) {
         setSent((prev) => [...prev, swapModal.id]);
         setSwapModal(null);
       } else if (res.status === 409) {
-        setError("You already have a pending or accepted request with this user.");
+        setError(json.message || "You already have a pending or accepted request with this user.");
       } else {
-        setError("Failed to send request. Please try again.");
+        setError(json.message || "Failed to send request. Please try again.");
       }
     } catch {
       setError("Failed to send request. Please try again.");
@@ -118,9 +130,15 @@ export default function DiscoverPage() {
         <div className="mx-auto max-w-7xl px-5 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-black text-slate-950">Discover</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-black text-slate-950">Discover</h1>
+                <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-extrabold text-blue-600">
+                  <Sparkles className="h-3 w-3" />
+                  AI Matching
+                </span>
+              </div>
               <p className="mt-1 text-sm font-medium text-slate-500">
-                Find people who can teach you what you want to learn
+                Smart semantic matching finds the best skill exchange partners for you
               </p>
             </div>
             <Link
@@ -182,7 +200,7 @@ export default function DiscoverPage() {
         ) : (
           <>
             <p className="mb-6 text-sm font-bold text-slate-500">
-              {filtered.length} match{filtered.length !== 1 ? "es" : ""} found
+              {filtered.length} match{filtered.length !== 1 ? "es" : ""} found with AI-powered scoring
             </p>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((user) => {
@@ -239,11 +257,57 @@ export default function DiscoverPage() {
                     </div>
 
                     <div className="p-5">
-                      <div className="flex items-center gap-2">
-                        <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                        <span className="text-sm font-black text-slate-900">{user.rating.toFixed(1)}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1 text-sm font-black text-slate-900">
+                          <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                          {user.rating.toFixed(1)}
+                        </span>
                         <span className="text-xs text-slate-400">({user.reviewCount})</span>
+                        {user.trustScore > 0 && (
+                          <span className="flex items-center gap-1 text-xs font-bold text-emerald-600">
+                            <Shield className="h-3.5 w-3.5" />
+                            {user.trustScore}% trust
+                          </span>
+                        )}
                       </div>
+
+                      {/* AI Match Reasons */}
+                      {user.reasons.length > 0 && (
+                        <div className="mt-4 rounded-xl bg-blue-50/50 p-3">
+                          <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-blue-500 mb-2">
+                            Why you match
+                          </p>
+                          <div className="space-y-1.5">
+                            {user.reasons.slice(0, 4).map((reason, idx) => (
+                              <div key={idx} className="flex items-center gap-2 text-xs">
+                                {reason.type === "exact" ? (
+                                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                                    <span className="text-[8px] font-black">✓</span>
+                                  </span>
+                                ) : (
+                                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                    <TrendingUp className="h-2.5 w-2.5" />
+                                  </span>
+                                )}
+                                <span className="font-bold text-slate-700">{reason.from}</span>
+                                <ArrowRight className="h-3 w-3 text-slate-300" />
+                                <span className="font-bold text-blue-600">{reason.to}</span>
+                                {reason.type === "exact" && (
+                                  <span className="text-[9px] font-extrabold text-emerald-500">exact</span>
+                                )}
+                                {reason.type === "related" && (
+                                  <span className="text-[9px] font-extrabold text-blue-400">related</span>
+                                )}
+                              </div>
+                            ))}
+                            {user.reasons.length > 4 && (
+                              <p className="text-[10px] font-bold text-slate-400">
+                                +{user.reasons.length - 4} more match{user.reasons.length - 4 !== 1 ? "es" : ""}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      )}
 
                       <div className="mt-4 space-y-3">
                         <div>
@@ -318,6 +382,30 @@ export default function DiscoverPage() {
             <p className="mt-2 text-sm font-medium text-slate-500">
               Send a swap request to <span className="font-bold text-slate-900">{swapModal.name}</span>
             </p>
+
+            {swapModal.reasons.length > 0 && (
+              <div className="mt-4 rounded-xl bg-blue-50 p-4">
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-blue-500 mb-2">
+                  AI Match Analysis
+                </p>
+                <div className="space-y-1">
+                  {swapModal.reasons.slice(0, 3).map((reason, idx) => (
+                    <div key={idx} className="flex items-center gap-2 text-xs">
+                      <span className={`flex h-4 w-4 items-center justify-center rounded-full ${
+                        reason.type === "exact" ? "bg-emerald-100 text-emerald-600" : "bg-blue-100 text-blue-600"
+                      }`}>
+                        <span className="text-[8px] font-black">
+                          {reason.type === "exact" ? "✓" : "~"}
+                        </span>
+                      </span>
+                      <span className="font-bold text-slate-700">{reason.from}</span>
+                      <ArrowRight className="h-3 w-3 text-slate-300" />
+                      <span className="font-bold text-blue-600">{reason.to}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="mt-6 space-y-4">
               {error && (

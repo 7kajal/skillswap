@@ -53,11 +53,11 @@ export default function ChatPage() {
       fetch(`/api/chat/${roomId}/messages`).then((r) => r.json()),
       fetch("/api/profile").then((r) => r.json()),
       fetch("/api/chat/rooms").then((r) => r.json()),
-    ]).then(([messagesData, profileData, roomsData]) => {
-      setMessages(Array.isArray(messagesData) ? messagesData : []);
-      setCurrentUserId(profileData.id);
+    ]).then(([messagesRes, profileRes, roomsRes]) => {
+      setMessages(Array.isArray(messagesRes.data) ? messagesRes.data : []);
+      setCurrentUserId(profileRes.data.id);
 
-      const rooms = Array.isArray(roomsData) ? roomsData : [];
+      const rooms = Array.isArray(roomsRes.data) ? roomsRes.data : [];
       const currentRoom = rooms.find((r: RoomInfo) => r.id === roomId);
       if (currentRoom) {
         setRoomInfo(currentRoom);
@@ -77,7 +77,8 @@ export default function ChatPage() {
       try {
         const res = await fetch(`/api/chat/${roomId}/messages`);
         if (res.ok) {
-          const data = await res.json();
+          const json = await res.json();
+          const data = json.data;
           if (Array.isArray(data)) {
             setMessages((prev) => {
               if (prev.length === 0) return data;
@@ -105,9 +106,9 @@ export default function ChatPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: newMessage.trim() }),
       });
-      if (res.ok) {
-        const msg = await res.json();
-        setMessages((prev) => [...prev, msg]);
+      const json = await res.json();
+      if (json.success && json.data) {
+        setMessages((prev) => [...prev, json.data]);
         setNewMessage("");
       }
     } catch {

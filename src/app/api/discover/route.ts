@@ -1,13 +1,15 @@
-import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { findMatches } from "@/lib/matching";
+import { apiSuccess, apiError, apiUnauthorized } from "@/lib/apiResponse";
+import { findMatches } from "@/modules/discover/discover.service";
 
 export async function GET() {
   const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session?.user?.id) return apiUnauthorized();
 
-  const matches = await findMatches(session.user.id);
-  return NextResponse.json(matches);
+  try {
+    const matches = await findMatches(session.user.id);
+    return apiSuccess(matches);
+  } catch {
+    return apiError("Internal server error");
+  }
 }

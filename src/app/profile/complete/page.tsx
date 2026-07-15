@@ -81,7 +81,8 @@ export default function CompleteProfilePage() {
           learnSkills,
         }),
       });
-      if (!res.ok) throw new Error("Failed to save profile");
+      const json = await res.json();
+      if (!json.success) throw new Error(json.message || "Failed to save profile");
       router.push("/discover");
     } catch {
       setError("Something went wrong. Please try again.");

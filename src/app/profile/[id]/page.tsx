@@ -94,7 +94,8 @@ export default function ProfilePage() {
           message,
         }),
       });
-      if (res.ok) {
+      const json = await res.json();
+      if (json.success) {
         setSent(true);
         setShowSwapModal(false);
       }
