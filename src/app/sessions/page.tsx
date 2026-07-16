@@ -10,11 +10,9 @@ import {
   Check,
   MapPin,
   Trash2,
-  ArrowLeft,
   CalendarCheck,
   CalendarX,
 } from "lucide-react";
-import Link from "next/link";
 
 type Session = {
   id: string;
@@ -166,19 +164,11 @@ export default function SessionsPage() {
 
   return (
     <div className="bg-slate-50">
-      <div className="bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-5xl px-5 py-6 sm:px-6 lg:px-8">
+      <div className="bg-slate-50">
+        <div className="mx-auto max-w-5xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/dashboard"
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 transition hover:border-blue-200 hover:text-blue-600"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </Link>
-                <h1 className="text-2xl font-black text-slate-950">Sessions</h1>
-              </div>
+              <h1 className="text-2xl font-black text-slate-950">Sessions</h1>
               <p className="mt-1 text-sm font-medium text-slate-500">
                 Schedule and manage your learning sessions
               </p>

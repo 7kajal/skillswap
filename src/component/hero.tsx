@@ -13,16 +13,15 @@ import {
   MessageCircle,
   Music2,
   Palette,
-  Search,
   Utensils,
   WandSparkles,
-  X,
 } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import Link from "next/link";
+import React from "react";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white pb-20 pt-20 sm:pt-24 lg:min-h-[760px]">
+    <section className="relative overflow-hidden bg-white pb-20 pt-16 sm:pt-20 lg:min-h-[710px] lg:pt-24">
       <div className="absolute -left-48 top-8 h-[540px] w-[540px] rounded-full bg-blue-200/35 blur-[140px]" />
       <div className="absolute -right-48 top-0 h-[560px] w-[560px] rounded-full bg-indigo-200/35 blur-[150px]" />
 
@@ -54,8 +53,8 @@ export function Hero() {
           transition={{ delay: 0.16 }}
           className="mx-auto mt-7 max-w-2xl text-base font-medium leading-8 text-slate-600 sm:text-lg"
         >
-          Search for a skill, discover the right person and exchange knowledge
-          without exchanging money.
+          Meet people who want to learn what you know—and can teach you what
+          you want to learn.
         </motion.p>
 
         <motion.div
@@ -63,7 +62,24 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.22 }}
         >
-          <HeroSearch />
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/auth/register"
+              className="group inline-flex h-14 items-center justify-center gap-2 rounded-full bg-blue-600 px-8 text-sm font-extrabold text-white shadow-[0_16px_35px_rgba(37,99,235,0.24)] transition hover:-translate-y-0.5 hover:bg-blue-700"
+            >
+              Join now
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <a
+              href="#how-it-works"
+              className="inline-flex h-14 items-center justify-center rounded-full border border-slate-200 bg-white px-8 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-blue-200 hover:text-blue-600"
+            >
+              See how it works
+            </a>
+          </div>
+          <p className="mt-5 text-xs font-bold text-slate-400">
+            Free to join · No subscriptions · Real people
+          </p>
         </motion.div>
       </div>
     </section>
@@ -162,87 +178,6 @@ const secondarySkills: Skill[] = [
     iconClassName: "bg-red-50 text-red-600",
   },
 ];
-function HeroSearch() {
-  const [query, setQuery] = useState("");
-
-  const suggestions = useMemo(() => {
-    const value = query.trim().toLowerCase();
-
-    if (!value) return [];
-
-    return [...skills, ...secondarySkills]
-      .filter((skill) => skill.name.toLowerCase().includes(value))
-      .slice(0, 5);
-  }, [query]);
-
-  return (
-    <div className="relative mx-auto mt-10 max-w-2xl">
-      <div className="absolute -inset-3 rounded-[30px] bg-blue-600/10 blur-2xl" />
-
-      <div className="relative rounded-[26px] border border-slate-200 bg-white p-2 shadow-[0_24px_70px_rgba(15,23,42,0.12)]">
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <div className="relative min-w-0 flex-1">
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
-
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="What skill do you want to learn?"
-              className="h-15 w-full rounded-2xl bg-white pl-12 pr-11 text-sm font-semibold text-slate-950 outline-none placeholder:font-medium placeholder:text-slate-400"
-            />
-
-            {query ? (
-              <button
-                type="button"
-                onClick={() => setQuery("")}
-                className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            ) : null}
-          </div>
-
-          <button className="inline-flex h-15 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-7 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700">
-            Find a match
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-
-        {suggestions.length > 0 ? (
-          <div className="mt-2 border-t border-slate-100 p-2">
-            {suggestions.map((suggestion) => {
-              const Icon = suggestion.icon;
-
-              return (
-                <button
-                  type="button"
-                  key={suggestion.name}
-                  onClick={() => setQuery(suggestion.name)}
-                  className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left transition hover:bg-blue-50"
-                >
-                  <span className="flex items-center gap-3">
-                    <span
-                      className={`flex h-9 w-9 items-center justify-center rounded-xl ${suggestion.iconClassName}`}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </span>
-
-                    <span className="text-sm font-bold text-slate-800">
-                      {suggestion.name}
-                    </span>
-                  </span>
-
-                  <ChevronRight className="h-4 w-4 text-slate-400" />
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
 function SkillMarqueeRow({
   items,
   reverse = false,
@@ -301,10 +236,30 @@ function SkillMarqueeRow({
 export function SkillsMarquee() {
   return (
     <section
-      id="explore"
-      className="overflow-hidden border-y border-slate-200 bg-slate-50 py-16 sm:py-20"
+      id="skills"
+      className="overflow-hidden border-y border-slate-200 bg-slate-50 py-20 sm:py-24"
     >
-      <div className="mt-10 space-y-4">
+      <div className="mx-auto mb-10 flex max-w-7xl flex-col justify-between gap-5 px-5 sm:px-6 md:flex-row md:items-end lg:px-8">
+        <div>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600">
+            Explore skills
+          </p>
+          <h2 className="mt-3 max-w-xl text-3xl font-black tracking-[-0.05em] text-slate-950 sm:text-4xl">
+            What will you learn next?
+          </h2>
+          <p className="mt-3 max-w-xl text-sm font-medium leading-7 text-slate-500 sm:text-base">
+            Find practical skills taught by people who are ready to learn from you too.
+          </p>
+        </div>
+        <Link
+          href="/discover"
+          className="group inline-flex w-fit items-center gap-2 text-sm font-black text-blue-600"
+        >
+          Explore all skills
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </Link>
+      </div>
+      <div className="relative space-y-4 before:absolute before:inset-y-0 before:left-0 before:z-10 before:w-16 before:bg-linear-to-r before:from-slate-50 before:to-transparent after:absolute after:inset-y-0 after:right-0 after:z-10 after:w-16 after:bg-linear-to-l after:from-slate-50 after:to-transparent sm:before:w-32 sm:after:w-32">
         <SkillMarqueeRow items={skills} />
         <SkillMarqueeRow items={secondarySkills} reverse />
       </div>

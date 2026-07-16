@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import { AuthProvider } from "../component/AuthProvider";
 import { Header } from "../component/header";
 import { Footer } from "../component/footer";
+import { ToastProvider } from "../component/toast";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -25,11 +26,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={manrope.className}>
         <AuthProvider>
-          <Header />
-          <div className="flex min-h-screen flex-col">
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
+          <ToastProvider>
+            <Header />
+            <div className="flex min-h-screen flex-col">
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Star, ArrowLeft, Send, BadgeCheck } from "lucide-react";
+import { Star, Send, BadgeCheck } from "lucide-react";
 import Link from "next/link";
 
 type SwapInfo = {
@@ -94,7 +94,7 @@ export default function ReviewPage() {
         <div className="text-center">
           <h1 className="text-2xl font-black text-slate-950">Swap not found</h1>
           <Link href="/dashboard" className="mt-4 inline-block text-sm font-bold text-blue-600 hover:underline">
-            Back to Dashboard
+            Open Swap center
           </Link>
         </div>
       </div>
@@ -114,7 +114,7 @@ export default function ReviewPage() {
             <Star className="h-8 w-8 fill-emerald-500" />
           </div>
           <h1 className="mt-6 text-2xl font-black text-slate-950">Review Submitted!</h1>
-          <p className="mt-2 text-sm font-medium text-slate-500">Thank you for your feedback. Redirecting to dashboard...</p>
+          <p className="mt-2 text-sm font-medium text-slate-500">Thank you for your feedback. Redirecting to Swap center...</p>
         </div>
       </div>
     );
@@ -130,7 +130,7 @@ export default function ReviewPage() {
           <h1 className="mt-6 text-2xl font-black text-slate-950">Already Reviewed</h1>
           <p className="mt-2 text-sm font-medium text-slate-500">You have already reviewed this swap exchange.</p>
           <Link href="/dashboard" className="mt-6 inline-block rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white transition hover:bg-blue-700">
-            Back to Dashboard
+            Open Swap center
           </Link>
         </div>
       </div>
@@ -139,15 +139,10 @@ export default function ReviewPage() {
 
   return (
     <div className="bg-slate-50">
-      <div className="bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-2xl px-5 py-5 sm:px-6 lg:px-8">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-blue-600"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
-          </Link>
+      <div className="bg-slate-50">
+        <div className="mx-auto max-w-2xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
+          <h1 className="text-2xl font-black text-slate-950">Session review</h1>
+          <p className="mt-1 text-sm font-medium text-slate-500">Share useful feedback with your swap partner.</p>
         </div>
       </div>
 

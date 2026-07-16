@@ -5,9 +5,11 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, ArrowRight, Eye, EyeOff, User } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/component/toast";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,25 +26,57 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          password,
+        }),
       });
 
       const json = await res.json();
       if (!json.success) {
         setError(json.message || "Something went wrong");
+        showToast({
+          type: "error",
+          title: "Account not created",
+          message: json.message || "Please check your information and try again.",
+        });
         setLoading(false);
         return;
       }
 
-      await signIn("credentials", {
-        email,
+      const signInResult = await signIn("credentials", {
+        email: email.trim().toLowerCase(),
         password,
         redirect: false,
       });
 
+      if (!signInResult?.ok) {
+        setError("Your account was created, but automatic sign-in failed. Please sign in.");
+        showToast({
+          type: "info",
+          title: "Account created",
+          message: "Please sign in with your new email and password.",
+        });
+        setLoading(false);
+        router.push("/auth/login");
+        return;
+      }
+
+      showToast({
+        type: "success",
+        title: "Account created",
+        message: "You are signed in. Complete your profile to start matching.",
+      });
       router.push("/profile/complete");
+      router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
+      showToast({
+        type: "error",
+        title: "Registration failed",
+        message: "We could not create your account. Please try again shortly.",
+      });
       setLoading(false);
     }
   };

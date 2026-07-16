@@ -64,61 +64,74 @@ export interface MatchReason {
   to: string;
 }
 
+function normalizeSkill(skillName: string): string {
+  return skillName.trim().toLocaleLowerCase();
+}
+
+function findExactMatches(
+  teachingSkills: string[],
+  wantedSkills: string[]
+): { teachingSkill: string; wantedSkill: string }[] {
+  const wantedByName = new Map(
+    wantedSkills.map((skill) => [normalizeSkill(skill), skill.trim()])
+  );
+  const seen = new Set<string>();
+
+  return teachingSkills.flatMap((skill) => {
+    const normalizedSkill = normalizeSkill(skill);
+    const wantedSkill = wantedByName.get(normalizedSkill);
+    if (!wantedSkill || seen.has(normalizedSkill)) return [];
+
+    seen.add(normalizedSkill);
+    return [{ teachingSkill: skill.trim(), wantedSkill }];
+  });
+}
+
 export function computeMatchScore(
   myTeachSkills: string[],
   myLearnSkills: string[],
   otherTeachSkills: string[],
   otherLearnSkills: string[]
-): { score: number; reasons: MatchReason[]; iCanTeachTheyWant: number; theyCanTeachIWant: number } {
-  const reasons: MatchReason[] = [];
-  let totalWeight = 0;
-  let matchedWeight = 0;
-  let iCanTeachTheyWant = 0;
-  let theyCanTeachIWant = 0;
+): {
+  score: number;
+  reasons: MatchReason[];
+  iCanTeachTheyWant: number;
+  theyCanTeachIWant: number;
+  skillsICanTeachThem: string[];
+  skillsTheyCanTeachMe: string[];
+} {
+  // A match is directional and exact:
+  // my teach -> their learn, and their teach -> my learn.
+  // Either direction is enough for the member to be considered a match.
+  const iTeachMatches = findExactMatches(myTeachSkills, otherLearnSkills);
+  const theyTeachMatches = findExactMatches(otherTeachSkills, myLearnSkills);
 
-  for (const want of otherLearnSkills) {
-    for (const canTeach of myTeachSkills) {
-      const sim = computeSkillSimilarity(want, canTeach);
-      if (sim > 0) {
-        totalWeight += 1;
-        matchedWeight += sim;
-        if (want.toLowerCase() === canTeach.toLowerCase()) {
-          reasons.push({ type: "exact", from: canTeach, to: want });
-        } else {
-          reasons.push({ type: "related", from: canTeach, to: want });
-        }
-        if (sim >= 0.75) iCanTeachTheyWant++;
-        break;
-      }
-    }
-  }
+  const reasons: MatchReason[] = [
+    ...iTeachMatches.map(({ teachingSkill, wantedSkill }) => ({
+      type: "exact" as const,
+      from: teachingSkill,
+      to: wantedSkill,
+    })),
+    ...theyTeachMatches.map(({ teachingSkill, wantedSkill }) => ({
+      type: "exact" as const,
+      from: teachingSkill,
+      to: wantedSkill,
+    })),
+  ];
+  const totalWantedSkills =
+    new Set(otherLearnSkills.map(normalizeSkill)).size +
+    new Set(myLearnSkills.map(normalizeSkill)).size;
+  const totalMatches = iTeachMatches.length + theyTeachMatches.length;
+  const score = totalWantedSkills
+    ? Math.round((totalMatches / totalWantedSkills) * 100)
+    : 0;
 
-  for (const want of myLearnSkills) {
-    for (const canTeach of otherTeachSkills) {
-      const sim = computeSkillSimilarity(want, canTeach);
-      if (sim > 0) {
-        totalWeight += 1;
-        matchedWeight += sim;
-        if (want.toLowerCase() === canTeach.toLowerCase()) {
-          reasons.push({ type: "exact", from: canTeach, to: want });
-        } else {
-          reasons.push({ type: "related", from: canTeach, to: want });
-        }
-        if (sim >= 0.75) theyCanTeachIWant++;
-        break;
-      }
-    }
-  }
-
-  const score = totalWeight > 0 ? Math.round((matchedWeight / totalWeight) * 100) : 0;
-
-  const seen = new Set<string>();
-  const uniqueReasons = reasons.filter((r) => {
-    const key = `${r.from}-${r.to}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-
-  return { score, reasons: uniqueReasons, iCanTeachTheyWant, theyCanTeachIWant };
+  return {
+    score,
+    reasons,
+    iCanTeachTheyWant: iTeachMatches.length,
+    theyCanTeachIWant: theyTeachMatches.length,
+    skillsICanTeachThem: iTeachMatches.map(({ teachingSkill }) => teachingSkill),
+    skillsTheyCanTeachMe: theyTeachMatches.map(({ teachingSkill }) => teachingSkill),
+  };
 }

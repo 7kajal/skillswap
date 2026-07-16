@@ -2,22 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
-  ArrowLeft,
+  Award,
   BadgeCheck,
-  MapPin,
-  Star,
-  Globe2,
-  Clock,
-  GraduationCap,
   BookOpen,
+  Clock,
+  Globe2,
+  GraduationCap,
   HeartHandshake,
-  Sparkles,
+  MapPin,
+  Pencil,
   Send,
-  X,
   ShieldCheck,
+  Star,
+  X,
 } from "lucide-react";
 import Link from "next/link";
+
+type ProfileSkill = { skill: { name: string }; type: string };
 
 type Profile = {
   id: string;
@@ -31,7 +34,8 @@ type Profile = {
   reviewCount: number;
   completedSwaps: number;
   trustScore: number;
-  userSkills: { skill: { name: string }; type: string }[];
+  isProfileComplete: boolean;
+  userSkills: ProfileSkill[];
   reviewsReceived: {
     id: string;
     rating: number;
@@ -42,49 +46,97 @@ type Profile = {
   badges: { badge: { name: string; description: string; icon: string } }[];
 };
 
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
 export default function ProfilePage() {
   const params = useParams();
   const profileId = params.id as string;
-
+  const { data: session, status } = useSession();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [ownProfile, setOwnProfile] = useState<
+    Pick<Profile, "isProfileComplete" | "userSkills"> | null
+  >(null);
   const [loading, setLoading] = useState(true);
   const [showSwapModal, setShowSwapModal] = useState(false);
   const [teachSkill, setTeachSkill] = useState("");
   const [learnSkill, setLearnSkill] = useState("");
   const [message, setMessage] = useState("");
+  const [requestError, setRequestError] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
   useEffect(() => {
     if (!profileId) return;
     fetch(`/api/profile/${profileId}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setProfile(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      .then((response) => response.json())
+      .then((result) => setProfile(result.data || null))
+      .finally(() => setLoading(false));
   }, [profileId]);
 
-  const myTeachSkills = profile
-    ? profile.userSkills.filter((s) => s.type === "teach").map((s) => s.skill.name)
-    : [];
-  const myLearnSkills = profile
-    ? profile.userSkills.filter((s) => s.type === "learn").map((s) => s.skill.name)
-    : [];
+  useEffect(() => {
+    if (status !== "authenticated" || session.user.id === profileId) return;
+    fetch("/api/profile")
+      .then((response) => response.json())
+      .then((result) => setOwnProfile(result.data || null))
+      .catch(() => setOwnProfile(null));
+  }, [profileId, session?.user?.id, status]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center bg-slate-50 px-5 text-center">
+        <div>
+          <h1 className="text-2xl font-black text-slate-950">Profile not found</h1>
+          <p className="mt-2 text-sm font-medium text-slate-500">
+            This member profile is unavailable.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const isOwnProfile = session?.user?.id === profileId;
+  const teachingSkills = profile.userSkills
+    .filter((item) => item.type === "teach")
+    .map((item) => item.skill.name);
+  const learningSkills = profile.userSkills
+    .filter((item) => item.type === "learn")
+    .map((item) => item.skill.name);
+  const ownTeachingSkills = isOwnProfile
+    ? teachingSkills
+    : ownProfile?.userSkills
+        .filter((item) => item.type === "teach")
+        .map((item) => item.skill.name) || [];
+  const hasSkills = teachingSkills.length > 0 || learningSkills.length > 0;
 
   const openSwapModal = () => {
-    setShowSwapModal(true);
-    setTeachSkill(myTeachSkills[0] || "");
-    setLearnSkill(myLearnSkills[0] || "");
+    setTeachSkill(ownTeachingSkills[0] || "");
+    setLearnSkill(teachingSkills[0] || "");
     setMessage("");
+    setRequestError("");
+    setShowSwapModal(true);
   };
 
   const sendRequest = async () => {
-    if (!profile || !teachSkill || !learnSkill) return;
+    if (!teachSkill || !learnSkill) return;
     setSending(true);
+    setRequestError("");
     try {
-      const res = await fetch("/api/swap-request", {
+      const response = await fetch("/api/swap-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -94,340 +146,253 @@ export default function ProfilePage() {
           message,
         }),
       });
-      const json = await res.json();
-      if (json.success) {
-        setSent(true);
-        setShowSwapModal(false);
+      const result = await response.json();
+      if (!result.success) {
+        setRequestError(result.message || "Unable to send the request.");
+        return;
       }
+      setSent(true);
+      setShowSwapModal(false);
     } catch {
-      // ignore
+      setRequestError("Unable to send the request. Please try again.");
     } finally {
       setSending(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <h1 className="text-2xl font-black text-slate-950">Profile not found</h1>
-          <Link href="/discover" className="mt-4 inline-block text-sm font-bold text-blue-600 hover:underline">
-            Back to Discover
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const initials = profile.name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   return (
-    <div className="bg-slate-50">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-4xl px-5 py-5 sm:px-6 lg:px-8">
-          <Link
-            href="/discover"
-            className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-blue-600"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Discover
-          </Link>
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-4xl px-5 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-[1fr_350px]">
-          {/* Main */}
-          <div>
-            {/* Profile Card */}
-            <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
-              <div className="flex items-start gap-6">
+    <div className="min-h-screen bg-slate-50">
+      <main className="mx-auto max-w-6xl px-5 py-8 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+          <div className="relative overflow-hidden bg-blue-50/45 px-6 py-8 sm:px-10 sm:py-10">
+            <div className="flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
                 {profile.avatar ? (
-                  <img src={profile.avatar} alt={profile.name} className="h-24 w-24 rounded-2xl object-cover" />
+                  <img
+                    src={profile.avatar}
+                    alt={profile.name}
+                    className="h-28 w-28 rounded-[26px] border-4 border-white object-cover shadow-lg"
+                  />
                 ) : (
-                  <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-blue-600 text-3xl font-black text-white">
-                    {initials}
+                  <div className="flex h-28 w-28 items-center justify-center rounded-[26px] border-4 border-white bg-blue-600 text-3xl font-black text-white shadow-lg">
+                    {getInitials(profile.name)}
                   </div>
                 )}
-                <div className="flex-1">
+
+                <div className="pb-1">
                   <div className="flex items-center gap-2">
-                    <h1 className="text-3xl font-black text-slate-950">{profile.name}</h1>
-                    <BadgeCheck className="h-6 w-6 fill-blue-600 text-white" />
+                    <h2 className="text-3xl font-black tracking-[-0.04em] text-slate-950">
+                      {profile.name}
+                    </h2>
+                    {profile.isProfileComplete && (
+                      <BadgeCheck className="h-5 w-5 fill-blue-600 text-white" />
+                    )}
                   </div>
                   {profile.location && (
                     <p className="mt-2 flex items-center gap-1.5 text-sm font-medium text-slate-500">
                       <MapPin className="h-4 w-4" /> {profile.location}
                     </p>
                   )}
-                  <div className="mt-3 flex items-center gap-4">
-                    <span className="flex items-center gap-1 text-sm font-bold text-slate-700">
+                  <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+                    <span className="flex items-center gap-1 font-black text-slate-800">
                       <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                       {profile.rating.toFixed(1)}
                     </span>
-                    <span className="text-sm text-slate-500">{profile.reviewCount} reviews</span>
-                    <span className="text-sm text-slate-500">{profile.completedSwaps} exchanges</span>
+                    <span className="text-slate-500">{profile.reviewCount} reviews</span>
+                    <span className="text-slate-500">{profile.completedSwaps} swaps</span>
+                    {profile.trustScore > 0 && (
+                      <span className="flex items-center gap-1 font-bold text-emerald-600">
+                        <ShieldCheck className="h-4 w-4" /> {profile.trustScore}% trust
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
 
+              <div className="sm:pb-1">
+                {isOwnProfile ? (
+                  <Link
+                    href="/profile/complete"
+                    className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-600 px-5 text-sm font-extrabold text-white shadow-lg shadow-blue-600/15"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    {profile.isProfileComplete ? "Edit profile" : "Complete profile"}
+                  </Link>
+                ) : (
+                  <>
+                  {sent ? (
+                    <span className="inline-flex h-12 items-center gap-2 rounded-xl bg-emerald-50 px-5 text-sm font-extrabold text-emerald-600">
+                      <Send className="h-4 w-4" /> Request sent
+                    </span>
+                  ) : status !== "authenticated" ? (
+                    <Link href="/auth/login" className="inline-flex h-12 items-center rounded-xl bg-blue-600 px-6 text-sm font-extrabold text-white">
+                      Log in to request a swap
+                    </Link>
+                  ) : !ownProfile?.isProfileComplete || ownTeachingSkills.length === 0 ? (
+                    <Link href={`/profile/${session.user.id}`} className="inline-flex h-12 items-center rounded-xl bg-blue-600 px-6 text-sm font-extrabold text-white">
+                      Complete your profile
+                    </Link>
+                  ) : (
+                    <button type="button" onClick={openSwapModal} className="inline-flex h-12 items-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20">
+                      <HeartHandshake className="h-4 w-4" /> Request skill swap
+                    </button>
+                  )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {!profile.isProfileComplete && isOwnProfile && (
+            <div className="flex flex-col justify-between gap-4 border-t border-blue-100 bg-blue-50 px-6 py-5 sm:flex-row sm:items-center sm:px-10">
+              <div>
+                <p className="font-black text-blue-950">Your profile is not complete</p>
+                <p className="mt-1 text-sm font-medium text-blue-700">
+                  Add your skills and availability to appear in Discover.
+                </p>
+              </div>
+              <Link href="/profile/complete" className="text-sm font-black text-blue-600">
+                Continue setup →
+              </Link>
+            </div>
+          )}
+
+          <div>
+            <div className="px-6 py-8 sm:px-10">
               {profile.bio && (
-                <div className="mt-6 border-t border-slate-100 pt-6">
-                  <p className="text-sm font-medium leading-7 text-slate-600">{profile.bio}</p>
-                </div>
+                <section className="pb-8">
+                  <h3 className="text-sm font-black uppercase tracking-[0.13em] text-slate-400">About</h3>
+                  <p className="mt-4 max-w-2xl text-base font-medium leading-8 text-slate-600">{profile.bio}</p>
+                </section>
               )}
-            </div>
 
-            {/* Skills */}
-            <div className="mt-6 rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
-              <div className="grid gap-8 sm:grid-cols-2">
-                <div>
-                  <div className="flex items-center gap-2 text-blue-600">
-                    <GraduationCap className="h-5 w-5" />
-                    <h3 className="text-sm font-extrabold uppercase tracking-[0.12em]">Can Teach</h3>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {myTeachSkills.map((skill) => (
-                      <span key={skill} className="rounded-xl bg-blue-50 px-3.5 py-2 text-sm font-bold text-blue-600">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <BookOpen className="h-5 w-5" />
-                    <h3 className="text-sm font-extrabold uppercase tracking-[0.12em]">Wants to Learn</h3>
-                  </div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {myLearnSkills.map((skill) => (
-                      <span key={skill} className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-bold text-slate-600">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Languages & Availability */}
-            <div className="mt-6 grid gap-6 sm:grid-cols-2">
-              <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Globe2 className="h-5 w-5" />
-                  <h3 className="text-sm font-extrabold uppercase tracking-[0.12em]">Languages</h3>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {profile.languages.map((lang) => (
-                    <span key={lang} className="rounded-xl bg-slate-100 px-3 py-2 text-sm font-bold text-slate-700">
-                      {lang}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Clock className="h-5 w-5" />
-                  <h3 className="text-sm font-extrabold uppercase tracking-[0.12em]">Availability</h3>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {profile.availability.map((time) => (
-                    <span key={time} className="rounded-xl bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-600">
-                      {time}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Reviews */}
-            <div className="mt-6 rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
-              <h3 className="text-lg font-black text-slate-950">Reviews</h3>
-              {profile.reviewsReceived.length === 0 ? (
-                <p className="mt-4 text-sm font-medium text-slate-500">No reviews yet.</p>
-              ) : (
-                <div className="mt-5 space-y-4">
-                  {profile.reviewsReceived.map((review) => (
-                    <div key={review.id} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
-                      <div className="flex items-center gap-3">
-                        {review.reviewer.avatar ? (
-                          <img src={review.reviewer.avatar} alt="" className="h-9 w-9 rounded-xl object-cover" />
-                        ) : (
-                          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 text-xs font-black text-blue-600">
-                            {review.reviewer.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-                          </div>
-                        )}
-                        <div>
-                          <p className="text-sm font-black text-slate-900">{review.reviewer.name}</p>
-                          <div className="flex items-center gap-1">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-3 w-3 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"}`}
-                              />
-                            ))}
-                          </div>
+              {hasSkills && (
+                <section className="border-t border-slate-100 py-8">
+                  <div className="grid gap-8 sm:grid-cols-2">
+                    {teachingSkills.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-2 text-blue-600">
+                          <GraduationCap className="h-5 w-5" />
+                          <h3 className="text-sm font-black uppercase tracking-[0.12em]">Can teach</h3>
+                        </div>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {teachingSkills.map((skill) => (
+                            <span key={skill} className="rounded-full bg-blue-50 px-3.5 py-2 text-sm font-bold text-blue-600">{skill}</span>
+                          ))}
                         </div>
                       </div>
-                      {review.comment && (
-                        <p className="mt-3 text-sm font-medium text-slate-600">{review.comment}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Action Card */}
-            <div className="sticky top-6 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-              {sent ? (
-                <div className="rounded-2xl bg-emerald-50 p-4 text-center">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
-                    <Send className="h-5 w-5" />
-                  </div>
-                  <p className="mt-3 text-sm font-extrabold text-emerald-600">Request Sent!</p>
-                  <p className="mt-1 text-xs font-medium text-emerald-500">
-                    Check your dashboard for updates.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <button
-                    onClick={openSwapModal}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-4 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
-                  >
-                    <HeartHandshake className="h-4 w-4" />
-                    Request Skill Swap
-                  </button>
-                  <Link
-                    href="/dashboard"
-                    className="mt-3 flex w-full items-center justify-center rounded-xl border border-slate-200 py-3.5 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50"
-                  >
-                    View Dashboard
-                  </Link>
-                </>
-              )}
-            </div>
-
-            {/* Badges */}
-            {profile.badges.length > 0 && (
-              <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex items-center gap-2 text-blue-600">
-                  <ShieldCheck className="h-5 w-5" />
-                  <h3 className="text-sm font-extrabold uppercase tracking-[0.12em]">Badges</h3>
-                </div>
-                <div className="mt-4 space-y-3">
-                  {profile.badges.map((b) => (
-                    <div key={b.badge.name} className="flex items-center gap-3 rounded-xl bg-blue-50 p-3">
-                      <span className="text-xl">{b.badge.icon}</span>
+                    )}
+                    {learningSkills.length > 0 && (
                       <div>
-                        <p className="text-xs font-extrabold text-blue-600">{b.badge.name}</p>
-                        <p className="text-[11px] font-medium text-slate-500">{b.badge.description}</p>
+                        <div className="flex items-center gap-2 text-slate-600">
+                          <BookOpen className="h-5 w-5" />
+                          <h3 className="text-sm font-black uppercase tracking-[0.12em]">Wants to learn</h3>
+                        </div>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {learningSkills.map((skill) => (
+                            <span key={skill} className="rounded-full border border-slate-200 px-3.5 py-2 text-sm font-bold text-slate-600">{skill}</span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {(profile.languages.length > 0 || profile.availability.length > 0) && (
+                <section className="border-t border-slate-100 py-8">
+                  <div className="grid gap-8 sm:grid-cols-2">
+                    {profile.languages.length > 0 && (
+                      <div>
+                        <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                          <Globe2 className="h-4 w-4" /> Languages
+                        </p>
+                        <p className="mt-3 text-sm font-bold leading-6 text-slate-700">
+                          {profile.languages.join(" · ")}
+                        </p>
+                      </div>
+                    )}
+
+                    {profile.availability.length > 0 && (
+                      <div>
+                        <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                          <Clock className="h-4 w-4" /> Availability
+                        </p>
+                        <p className="mt-3 text-sm font-bold leading-6 text-slate-700">
+                          {profile.availability.join(" · ")}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </section>
+              )}
+
+              {profile.badges.length > 0 && (
+                <section className="border-t border-slate-100 py-8">
+                  <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                    <Award className="h-4 w-4" /> Badges
+                  </p>
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                    {profile.badges.map(({ badge }) => (
+                      <div key={badge.name} className="flex items-start gap-3">
+                        <span>{badge.icon}</span>
+                        <div>
+                          <p className="text-sm font-black text-slate-800">{badge.name}</p>
+                          <p className="mt-0.5 text-xs leading-5 text-slate-500">{badge.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {profile.reviewsReceived.length > 0 && (
+                <section className="border-t border-slate-100 pt-8">
+                  <h3 className="text-lg font-black text-slate-950">Member reviews</h3>
+                  <div className="mt-5 divide-y divide-slate-100">
+                    {profile.reviewsReceived.map((review) => (
+                      <article key={review.id} className="py-5 first:pt-0">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-700">
+                              {getInitials(review.reviewer.name)}
+                            </span>
+                            <div>
+                              <p className="text-sm font-black text-slate-900">{review.reviewer.name}</p>
+                              <div className="mt-1 flex gap-0.5">
+                                {Array.from({ length: 5 }).map((_, index) => (
+                                  <Star key={index} className={`h-3 w-3 ${index < review.rating ? "fill-amber-400 text-amber-400" : "text-slate-200"}`} />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {review.comment && <p className="mt-3 text-sm font-medium leading-6 text-slate-600">{review.comment}</p>}
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Swap Request Modal */}
       {showSwapModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-8 shadow-2xl">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black text-slate-950">Request Skill Swap</h2>
-              <button
-                onClick={() => setShowSwapModal(false)}
-                className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100"
-              >
-                <X className="h-5 w-5" />
-              </button>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/50 p-5 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-[28px] bg-white p-7 shadow-2xl">
+            <div className="flex items-start justify-between">
+              <div><h2 className="text-xl font-black text-slate-950">Request a skill swap</h2><p className="mt-1 text-sm text-slate-500">Propose an exchange with {profile.name}.</p></div>
+              <button type="button" onClick={() => setShowSwapModal(false)} className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100"><X className="h-5 w-5" /></button>
             </div>
-
-            <p className="mt-2 text-sm font-medium text-slate-500">
-              Send a swap request to <span className="font-bold text-slate-900">{profile.name}</span>
-            </p>
-
+            {requestError && <div className="mt-5 rounded-xl bg-rose-50 p-3 text-sm font-bold text-rose-600">{requestError}</div>}
             <div className="mt-6 space-y-4">
-              <div>
-                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">I will teach</label>
-                <select
-                  value={teachSkill}
-                  onChange={(e) => setTeachSkill(e.target.value)}
-                  className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none"
-                >
-                  {myTeachSkills.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex justify-center">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white">
-                  <HeartHandshake className="h-4 w-4" />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">I want to learn</label>
-                <select
-                  value={learnSkill}
-                  onChange={(e) => setLearnSkill(e.target.value)}
-                  className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none"
-                >
-                  {myLearnSkills.map((s) => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Message (optional)</label>
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Introduce yourself..."
-                  rows={3}
-                  className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-900 outline-none"
-                />
-              </div>
+              <label className="block text-xs font-black uppercase tracking-[0.12em] text-slate-400">You will teach<select value={teachSkill} onChange={(event) => setTeachSkill(event.target.value)} className="mt-2 h-13 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold normal-case tracking-normal text-slate-800">{ownTeachingSkills.map((skill) => <option key={skill}>{skill}</option>)}</select></label>
+              <label className="block text-xs font-black uppercase tracking-[0.12em] text-slate-400">You want to learn<select value={learnSkill} onChange={(event) => setLearnSkill(event.target.value)} className="mt-2 h-13 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold normal-case tracking-normal text-slate-800">{teachingSkills.map((skill) => <option key={skill}>{skill}</option>)}</select></label>
+              <label className="block text-xs font-black uppercase tracking-[0.12em] text-slate-400">Message <span className="normal-case tracking-normal">(optional)</span><textarea value={message} onChange={(event) => setMessage(event.target.value)} rows={3} className="mt-2 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-medium normal-case tracking-normal text-slate-800" /></label>
             </div>
-
-            <div className="mt-6 flex gap-3">
-              <button
-                onClick={() => setShowSwapModal(false)}
-                className="flex-1 rounded-xl border border-slate-200 py-3.5 text-sm font-extrabold text-slate-700"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={sendRequest}
-                disabled={sending || !teachSkill || !learnSkill}
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-50"
-              >
-                {sending ? "Sending..." : "Send Request"}
-                <Send className="h-4 w-4" />
-              </button>
-            </div>
+            <div className="mt-6 flex gap-3"><button type="button" onClick={() => setShowSwapModal(false)} className="h-12 flex-1 rounded-xl border border-slate-200 text-sm font-extrabold text-slate-600">Cancel</button><button type="button" onClick={sendRequest} disabled={sending || !teachSkill || !learnSkill} className="h-12 flex-1 rounded-xl bg-blue-600 text-sm font-extrabold text-white disabled:opacity-50">{sending ? "Sending..." : "Send request"}</button></div>
           </div>
         </div>
       )}

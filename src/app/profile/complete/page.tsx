@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import {
   User,
   MapPin,
@@ -27,8 +28,10 @@ const availabilityOptions = ["Weekdays", "Evenings", "Weekends"];
 
 export default function CompleteProfilePage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
 
   const [avatar, setAvatar] = useState("");
@@ -38,6 +41,35 @@ export default function CompleteProfilePage() {
   const [availability, setAvailability] = useState<string[]>([]);
   const [teachSkills, setTeachSkills] = useState<string[]>([]);
   const [learnSkills, setLearnSkills] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+
+    fetch("/api/profile")
+      .then((response) => response.json())
+      .then((result) => {
+        const profile = result.data;
+        if (!profile?.isProfileComplete) return;
+
+        setEditing(true);
+        setAvatar(profile.avatar || "");
+        setBio(profile.bio || "");
+        setLocation(profile.location || "");
+        setLanguages((profile.languages || []).join(", "));
+        setAvailability(profile.availability || []);
+        setTeachSkills(
+          profile.userSkills
+            .filter((skill: { type: string }) => skill.type === "teach")
+            .map((skill: { skill: { name: string } }) => skill.skill.name)
+        );
+        setLearnSkills(
+          profile.userSkills
+            .filter((skill: { type: string }) => skill.type === "learn")
+            .map((skill: { skill: { name: string } }) => skill.skill.name)
+        );
+      })
+      .catch(() => undefined);
+  }, [status]);
 
   const steps = [
     { label: "Personal", icon: User },
@@ -83,7 +115,9 @@ export default function CompleteProfilePage() {
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.message || "Failed to save profile");
-      router.push("/discover");
+      router.push(
+        session?.user?.id ? `/profile/${session.user.id}` : "/discover"
+      );
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -98,9 +132,13 @@ export default function CompleteProfilePage() {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
             <Sparkles className="h-6 w-6" />
           </div>
-          <h1 className="mt-5 text-3xl font-black text-slate-950">Complete your profile</h1>
+          <h1 className="mt-5 text-3xl font-black text-slate-950">
+            {editing ? "Edit your profile" : "Complete your profile"}
+          </h1>
           <p className="mt-2 text-sm font-medium text-slate-500">
-            Tell us about yourself so we can find the best skill matches for you.
+            {editing
+              ? "Keep your skills and availability current so every match stays relevant."
+              : "Tell us about yourself so we can find the best skill matches for you."}
           </p>
         </div>
 
@@ -275,8 +313,8 @@ export default function CompleteProfilePage() {
               Back
             </button>
           ) : (
-            <Link href="/" className="rounded-xl px-6 py-3 text-sm font-extrabold text-slate-600 transition hover:bg-slate-100">
-              Skip for now
+            <Link href={session?.user?.id ? `/profile/${session.user.id}` : "/"} className="rounded-xl px-6 py-3 text-sm font-extrabold text-slate-600 transition hover:bg-slate-100">
+              {editing ? "Cancel" : "Skip for now"}
             </Link>
           )}
 
@@ -294,7 +332,7 @@ export default function CompleteProfilePage() {
               disabled={loading}
               className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-50"
             >
-              {loading ? "Saving..." : "Complete Profile"}
+              {loading ? "Saving..." : editing ? "Save changes" : "Complete Profile"}
               <ArrowRight className="h-4 w-4" />
             </button>
           )}

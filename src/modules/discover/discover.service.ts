@@ -1,8 +1,7 @@
 import { connectDB } from "@/lib/mongodb";
+import { computeMatchScore, type MatchReason } from "@/lib/skillSimilarity";
 import { User } from "@/models/user";
 import { UserSkill } from "@/models/userSkill";
-import { Skill } from "@/models/skill";
-import { computeSkillSimilarity, type MatchReason } from "@/lib/skillSimilarity";
 import mongoose from "mongoose";
 
 export interface MatchedUser {
@@ -18,129 +17,115 @@ export interface MatchedUser {
   matchScore: number;
   iCanTeachTheyWant: number;
   theyCanTeachIWant: number;
+  totalSkillMatches: number;
+  skillsICanTeachThem: string[];
+  skillsTheyCanTeachMe: string[];
   reasons: MatchReason[];
   userSkills: { skill: { name: string }; type: string }[];
 }
 
-export async function findMatches(userId: string): Promise<MatchedUser[]> {
+type SkillSet = { teach: string[]; learn: string[] };
+
+export async function findMatches(userId?: string): Promise<MatchedUser[]> {
   await connectDB();
 
-  const user = await User.findById(userId).lean();
-  if (!user) return [];
-
-  const myUserSkills = await UserSkill.find({ userId }).populate("skillId", "name").lean();
-  const myTeachSkills = myUserSkills
-    .filter((s) => s.type === "teach")
-    .map((s) => (s.skillId as any).name as string);
-  const myLearnSkills = myUserSkills
-    .filter((s) => s.type === "learn")
-    .map((s) => (s.skillId as any).name as string);
+  const hasCurrentUser = Boolean(
+    userId && mongoose.Types.ObjectId.isValid(userId)
+  );
+  const currentUserId = hasCurrentUser
+    ? new mongoose.Types.ObjectId(userId)
+    : null;
 
   const allUsers = await User.find({
-    _id: { $ne: new mongoose.Types.ObjectId(userId) },
     isProfileComplete: true,
+    ...(currentUserId ? { _id: { $ne: currentUserId } } : {}),
   }).lean();
 
-  const allUserIds = allUsers.map((u) => u._id);
+  const allUserIds = allUsers.map((user) => user._id);
   const allUserSkills = await UserSkill.find({ userId: { $in: allUserIds } })
     .populate("skillId", "name")
     .lean();
 
-  const userSkillsMap = new Map<string, { teach: string[]; learn: string[] }>();
-  allUserSkills.forEach((us) => {
-    const uid = us.userId.toString();
-    const skillName = (us.skillId as any).name as string;
-    if (!userSkillsMap.has(uid)) {
-      userSkillsMap.set(uid, { teach: [], learn: [] });
-    }
-    const entry = userSkillsMap.get(uid)!;
-    if (us.type === "teach") entry.teach.push(skillName);
-    else entry.learn.push(skillName);
-  });
+  const skillsByUser = new Map<string, SkillSet>();
+  for (const userSkill of allUserSkills) {
+    const ownerId = userSkill.userId.toString();
+    const populatedSkill = userSkill.skillId as unknown as { name?: string };
+    if (!populatedSkill?.name) continue;
 
-  const scored: MatchedUser[] = [];
-
-  for (const other of allUsers) {
-    const otherId = other._id.toString();
-    const otherSkills = userSkillsMap.get(otherId) || { teach: [], learn: [] };
-
-    let totalSim = 0;
-    let matchCount = 0;
-    const reasons: MatchReason[] = [];
-    let iCanTeachTheyWant = 0;
-    let theyCanTeachIWant = 0;
-
-    for (const want of otherSkills.learn) {
-      for (const canTeach of myTeachSkills) {
-        const sim = computeSkillSimilarity(want, canTeach);
-        if (sim > 0) {
-          totalSim += sim;
-          matchCount++;
-          if (want.toLowerCase() === canTeach.toLowerCase()) {
-            reasons.push({ type: "exact", from: canTeach, to: want });
-          } else {
-            reasons.push({ type: "related", from: canTeach, to: want });
-          }
-          if (sim >= 0.75) iCanTeachTheyWant++;
-          break;
-        }
-      }
-    }
-
-    for (const want of myLearnSkills) {
-      for (const canTeach of otherSkills.teach) {
-        const sim = computeSkillSimilarity(want, canTeach);
-        if (sim > 0) {
-          totalSim += sim;
-          matchCount++;
-          if (want.toLowerCase() === canTeach.toLowerCase()) {
-            reasons.push({ type: "exact", from: canTeach, to: want });
-          } else {
-            reasons.push({ type: "related", from: canTeach, to: want });
-          }
-          if (sim >= 0.75) theyCanTeachIWant++;
-          break;
-        }
-      }
-    }
-
-    const potentialMatches = Math.max(otherSkills.learn.length, 1) + Math.max(myLearnSkills.length, 1);
-    const matchScore = matchCount > 0 ? Math.min(Math.round((totalSim / Math.max(potentialMatches * 0.5, 1)) * 100), 100) : 0;
-
-    const seen = new Set<string>();
-    const uniqueReasons = reasons.filter((r) => {
-      const key = `${r.from}-${r.to}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-
-    const userSkills = allUserSkills
-      .filter((us) => us.userId.toString() === otherId)
-      .map((us) => ({
-        skill: { name: (us.skillId as any).name as string },
-        type: us.type,
-      }));
-
-    if (matchScore > 0) {
-      scored.push({
-        id: otherId,
-        name: other.name,
-        avatar: other.avatar,
-        bio: other.bio,
-        location: other.location,
-        rating: other.rating,
-        reviewCount: other.reviewCount,
-        completedSwaps: other.completedSwaps,
-        trustScore: other.trustScore,
-        matchScore,
-        iCanTeachTheyWant,
-        theyCanTeachIWant,
-        reasons: uniqueReasons,
-        userSkills,
-      });
-    }
+    const skills = skillsByUser.get(ownerId) || { teach: [], learn: [] };
+    skills[userSkill.type === "teach" ? "teach" : "learn"].push(
+      populatedSkill.name
+    );
+    skillsByUser.set(ownerId, skills);
   }
 
-  return scored.sort((a, b) => b.matchScore - a.matchScore);
+  let mySkills: SkillSet = { teach: [], learn: [] };
+  if (currentUserId) {
+    const currentSkills = await UserSkill.find({ userId: currentUserId })
+      .populate("skillId", "name")
+      .lean();
+
+    mySkills = currentSkills.reduce<SkillSet>(
+      (result, userSkill) => {
+        const populatedSkill = userSkill.skillId as unknown as { name?: string };
+        if (populatedSkill?.name) {
+          result[userSkill.type === "teach" ? "teach" : "learn"].push(
+            populatedSkill.name
+          );
+        }
+        return result;
+      },
+      { teach: [], learn: [] }
+    );
+  }
+
+  const profiles = allUsers.map<MatchedUser>((otherUser) => {
+    const otherId = otherUser._id.toString();
+    const otherSkills = skillsByUser.get(otherId) || { teach: [], learn: [] };
+    const match = computeMatchScore(
+      mySkills.teach,
+      mySkills.learn,
+      otherSkills.teach,
+      otherSkills.learn
+    );
+    const totalSkillMatches =
+      match.iCanTeachTheyWant + match.theyCanTeachIWant;
+
+    return {
+      id: otherId,
+      name: otherUser.name,
+      avatar: otherUser.avatar || null,
+      bio: otherUser.bio || null,
+      location: otherUser.location || null,
+      rating: otherUser.rating,
+      reviewCount: otherUser.reviewCount,
+      completedSwaps: otherUser.completedSwaps,
+      trustScore: otherUser.trustScore,
+      matchScore: match.score,
+      iCanTeachTheyWant: match.iCanTeachTheyWant,
+      theyCanTeachIWant: match.theyCanTeachIWant,
+      totalSkillMatches,
+      skillsICanTeachThem: match.skillsICanTeachThem,
+      skillsTheyCanTeachMe: match.skillsTheyCanTeachMe,
+      reasons: match.reasons,
+      userSkills: [
+        ...otherSkills.teach.map((name) => ({
+          skill: { name },
+          type: "teach",
+        })),
+        ...otherSkills.learn.map((name) => ({
+          skill: { name },
+          type: "learn",
+        })),
+      ],
+    };
+  });
+
+  return profiles.sort(
+    (a, b) =>
+      b.totalSkillMatches - a.totalSkillMatches ||
+      b.matchScore - a.matchScore ||
+      b.rating - a.rating ||
+      b.completedSwaps - a.completedSwaps
+  );
 }

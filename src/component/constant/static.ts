@@ -23,10 +23,11 @@ import {
 } from "lucide-react";
 
 export const navigation = [
-  { label: "Explore skills", href: "#skills" },
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Community", href: "#community" },
-  { label: "Safety", href: "#safety" },
+  { label: "Explore skills", href: "/#skills" },
+  { label: "Discover", href: "/discover" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Community", href: "/#community" },
+  { label: "Safety", href: "/#safety" },
 ];
 
 export const categories = [

@@ -4,18 +4,15 @@ import { useEffect, useState } from "react";
 import {
   Star,
   Shield,
-  ArrowLeft,
   BadgeCheck,
   GitBranch,
   Globe2,
   Link2,
-  Award,
   TrendingUp,
   Check,
   Edit3,
   Save,
 } from "lucide-react";
-import Link from "next/link";
 
 type ReputationData = {
   rating: number;
@@ -111,21 +108,13 @@ export default function ReputationPage() {
 
   return (
     <div className="bg-slate-50">
-      <div className="bg-white border-b border-slate-200">
-        <div className="mx-auto max-w-5xl px-5 py-6 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/dashboard"
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 transition hover:border-blue-200 hover:text-blue-600"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-            <div>
+      <div className="bg-slate-50">
+        <div className="mx-auto max-w-5xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
+          <div>
               <h1 className="text-2xl font-black text-slate-950">Reputation & Verification</h1>
               <p className="mt-1 text-sm font-medium text-slate-500">
                 Your trust profile and verified credentials
               </p>
-            </div>
           </div>
         </div>
       </div>
@@ -187,21 +176,13 @@ export default function ReputationPage() {
               </div>
             </div>
 
-            {/* Verified Skills */}
+            {data.verifiedSkills.length > 0 && (
             <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
               <h2 className="text-lg font-black text-slate-950">Verified Skills</h2>
               <p className="mt-1 text-sm font-medium text-slate-500">
                 Skills that have been verified through completed exchanges
               </p>
 
-              {data.verifiedSkills.length === 0 ? (
-                <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-                  <Award className="mx-auto h-8 w-8 text-slate-300" />
-                  <p className="mt-2 text-sm font-bold text-slate-400">
-                    No verified skills yet. Complete swaps to earn verified badges.
-                  </p>
-                </div>
-              ) : (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {data.verifiedSkills.map((skill) => (
                     <span
@@ -213,22 +194,16 @@ export default function ReputationPage() {
                     </span>
                   ))}
                 </div>
-              )}
             </div>
+            )}
 
-            {/* Reviews */}
+            {data.reviews.length > 0 && (
             <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
               <h2 className="text-lg font-black text-slate-950">Reviews</h2>
               <p className="mt-1 text-sm font-medium text-slate-500">
                 What others say about exchanging skills with you
               </p>
 
-              {data.reviews.length === 0 ? (
-                <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-                  <Star className="mx-auto h-8 w-8 text-slate-300" />
-                  <p className="mt-2 text-sm font-bold text-slate-400">No reviews yet</p>
-                </div>
-              ) : (
                 <div className="mt-4 space-y-4">
                   {data.reviews.map((review) => (
                     <div key={review.id} className="rounded-xl border border-slate-100 bg-slate-50 p-4">
@@ -263,18 +238,15 @@ export default function ReputationPage() {
                     </div>
                   ))}
                 </div>
-              )}
             </div>
+            )}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Badges */}
+            {data.badges.length > 0 && (
             <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
               <h2 className="text-lg font-black text-slate-950">Badges</h2>
-              {data.badges.length === 0 ? (
-                <p className="mt-3 text-sm font-medium text-slate-400">No badges earned yet</p>
-              ) : (
                 <div className="mt-4 space-y-3">
                   {data.badges.map((badge) => (
                     <div key={badge.name} className="flex items-center gap-3 rounded-xl bg-blue-50 p-3">
@@ -286,8 +258,8 @@ export default function ReputationPage() {
                     </div>
                   ))}
                 </div>
-              )}
             </div>
+            )}
 
             {/* Social Links */}
             <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
@@ -351,26 +323,23 @@ export default function ReputationPage() {
                   </>
                 ) : (
                   <>
-                    {data.socialLinks.github ? (
+                    {data.socialLinks.github && (
                       <a href={data.socialLinks.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline">
                         <GitBranch className="h-4 w-4" /> GitHub Profile
                       </a>
-                    ) : (
-                      <p className="text-sm text-slate-400">No GitHub linked</p>
                     )}
-                    {data.socialLinks.portfolio ? (
+                    {data.socialLinks.portfolio && (
                       <a href={data.socialLinks.portfolio} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline">
                         <Globe2 className="h-4 w-4" /> Portfolio
                       </a>
-                    ) : (
-                      <p className="text-sm text-slate-400">No portfolio linked</p>
                     )}
-                    {data.socialLinks.linkedin ? (
+                    {data.socialLinks.linkedin && (
                       <a href={data.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline">
                         <Link2 className="h-4 w-4" /> LinkedIn Profile
                       </a>
-                    ) : (
-                      <p className="text-sm text-slate-400">No LinkedIn linked</p>
+                    )}
+                    {!data.socialLinks.github && !data.socialLinks.portfolio && !data.socialLinks.linkedin && (
+                      <button onClick={() => setEditingLinks(true)} className="text-sm font-bold text-blue-600">Add professional links</button>
                     )}
                   </>
                 )}

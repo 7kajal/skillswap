@@ -5,9 +5,11 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/component/toast";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,17 +20,37 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-    setLoading(false);
-    if (result?.ok) {
-      router.push("/discover");
-      router.refresh();
-    } else {
-      setError("Invalid email or password");
+    try {
+      const result = await signIn("credentials", {
+        email: email.trim().toLowerCase(),
+        password,
+        redirect: false,
+      });
+      if (result?.ok) {
+        showToast({
+          type: "success",
+          title: "Welcome back",
+          message: "You signed in successfully.",
+        });
+        router.push("/discover");
+        router.refresh();
+      } else {
+        setError("Invalid email or password");
+        showToast({
+          type: "error",
+          title: "Sign in failed",
+          message: "The email or password you entered is incorrect.",
+        });
+      }
+    } catch {
+      setError("Unable to sign in right now. Please try again.");
+      showToast({
+        type: "error",
+        title: "Unable to sign in",
+        message: "We could not reach the authentication service. Please try again.",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
