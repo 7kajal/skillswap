@@ -28,7 +28,7 @@ export interface DashboardStats {
   stats: {
     skillsTaught: number;
     skillsLearned: number;
-    sessionsCompleted: number;
+    completedSwaps: number;
     hoursShared: number;
     averageRating: number;
     currentStreak: number;
@@ -69,10 +69,6 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
   const skillsLearned = mySkills.filter((s) => s.type === "learn").length;
 
   const now = new Date();
-  const sessionsCompleted = await Session.countDocuments({
-    $or: [{ organizerId: userId }, { participantId: userId }],
-    status: "completed",
-  });
 
   const upcomingSessionsRaw = await Session.find({
     $or: [{ organizerId: userId }, { participantId: userId }],
@@ -115,7 +111,7 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
     earned: earnedBadgeNames.has(b.name),
   }));
 
-  const totalHours = user.totalHoursShared || Math.max(sessionsCompleted * 2, 0);
+  const totalHours = user.totalHoursShared || 0;
 
   const achievements = [
     { id: "first_swap", name: "First Swap", icon: "🤝", description: "Complete your first skill exchange", unlocked: user.completedSwaps >= 1, progress: Math.min(user.completedSwaps, 1), target: 1 },
@@ -184,7 +180,7 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
     stats: {
       skillsTaught,
       skillsLearned,
-      sessionsCompleted,
+      completedSwaps: user.completedSwaps,
       hoursShared: totalHours,
       averageRating: user.rating,
       currentStreak: streak.current,

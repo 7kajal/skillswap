@@ -3,6 +3,7 @@ import { SwapRequest } from "@/models/swapRequest";
 import { Skill } from "@/models/skill";
 import { ChatRoom } from "@/models/chatRoom";
 import { User } from "@/models/user";
+import { computeTrustScore } from "@/modules/reputation/reputation.service";
 import mongoose from "mongoose";
 
 export async function getSentRequests(userId: string) {
@@ -128,6 +129,11 @@ export async function updateSwapRequestStatus(
       { _id: { $in: [swapRequest.senderId, swapRequest.receiverId] } },
       { $inc: { completedSwaps: 1 } }
     );
+
+    const senderTrust = await computeTrustScore(swapRequest.senderId.toString());
+    const receiverTrust = await computeTrustScore(swapRequest.receiverId.toString());
+    await User.findByIdAndUpdate(swapRequest.senderId, { trustScore: senderTrust });
+    await User.findByIdAndUpdate(swapRequest.receiverId, { trustScore: receiverTrust });
   }
 
   return formatSwapRequest(updated!);

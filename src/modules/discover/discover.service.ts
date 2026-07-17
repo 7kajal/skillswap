@@ -121,7 +121,9 @@ export async function findMatches(userId?: string): Promise<MatchedUser[]> {
     };
   });
 
-  return profiles.sort(
+  return profiles
+    .filter((p) => p.iCanTeachTheyWant > 0 && p.theyCanTeachIWant > 0)
+    .sort(
     (a, b) =>
       b.totalSkillMatches - a.totalSkillMatches ||
       b.matchScore - a.matchScore ||

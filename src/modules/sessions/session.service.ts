@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Session } from "@/models/session";
 import { Availability } from "@/models/availability";
 import { SwapRequest } from "@/models/swapRequest";
+import { User } from "@/models/user";
 import mongoose from "mongoose";
 
 export interface SessionData {
@@ -174,6 +175,25 @@ export async function updateSessionStatus(
       populate: { path: "teachSkillId", select: "name" },
     })
     .lean();
+
+  if (status === "completed") {
+    const startParts = (updated!.startTime || "").split(":").map(Number);
+    const endParts = (updated!.endTime || "").split(":").map(Number);
+    const startMinutes = (startParts[0] || 0) * 60 + (startParts[1] || 0);
+    const endMinutes = (endParts[0] || 0) * 60 + (endParts[1] || 0);
+    const hours = Math.max((endMinutes - startMinutes) / 60, 0);
+
+    if (hours > 0) {
+      const participantIds = [
+        updated!.organizerId._id?.toString() || updated!.organizerId.toString(),
+        updated!.participantId._id?.toString() || updated!.participantId.toString(),
+      ];
+      await User.updateMany(
+        { _id: { $in: participantIds } },
+        { $inc: { totalHoursShared: hours } }
+      );
+    }
+  }
 
   return formatSession(updated!);
 }

@@ -14,6 +14,13 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Link from "next/link";
 
 type MatchReason = {
@@ -308,23 +315,6 @@ export default function DiscoverPage() {
                         </p>
                       )}
 
-                      {user.totalSkillMatches > 0 && (
-                        <div className="mt-4 space-y-2 rounded-2xl border border-blue-100 bg-blue-50/70 p-3">
-                          {user.skillsTheyCanTeachMe.length > 0 && (
-                            <p className="text-xs font-bold text-slate-700">
-                              <span className="text-blue-600">You can learn:</span>{" "}
-                              {user.skillsTheyCanTeachMe.join(", ")}
-                            </p>
-                          )}
-                          {user.skillsICanTeachThem.length > 0 && (
-                            <p className="text-xs font-bold text-slate-700">
-                              <span className="text-blue-600">They can learn:</span>{" "}
-                              {user.skillsICanTeachThem.join(", ")}
-                            </p>
-                          )}
-                        </div>
-                      )}
-
                       <div className="mt-5">
                         <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-500">
                           Can teach you
@@ -433,32 +423,38 @@ export default function DiscoverPage() {
                 <label className="text-xs font-black uppercase tracking-[0.13em] text-slate-400">
                   You will teach
                 </label>
-                <select
-                  value={teachSkill}
-                  onChange={(event) => setTeachSkill(event.target.value)}
-                  className="mt-2 h-13 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none focus:border-blue-500"
-                >
-                  {ownTeachingSkills.map((skill) => (
-                    <option key={skill}>{skill}</option>
-                  ))}
-                </select>
+                <div className="mt-2">
+                  <Select value={teachSkill} onValueChange={(v) => v && setTeachSkill(v)}>
+                    <SelectTrigger className="h-13 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none focus:border-blue-500">
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ownTeachingSkills.map((skill) => (
+                        <SelectItem key={skill} value={skill}>{skill}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div>
                 <label className="text-xs font-black uppercase tracking-[0.13em] text-slate-400">
                   You want to learn
                 </label>
-                <select
-                  value={learnSkill}
-                  onChange={(event) => setLearnSkill(event.target.value)}
-                  className="mt-2 h-13 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none focus:border-blue-500"
-                >
-                  {swapModal.userSkills
-                    .filter((item) => item.type === "teach")
-                    .map((item) => (
-                      <option key={item.skill.name}>{item.skill.name}</option>
-                    ))}
-                </select>
+                <div className="mt-2">
+                  <Select value={learnSkill} onValueChange={(v) => v && setLearnSkill(v)}>
+                    <SelectTrigger className="h-13 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none focus:border-blue-500">
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {swapModal.userSkills
+                        .filter((item) => item.type === "teach")
+                        .map((item) => (
+                          <SelectItem key={item.skill.name} value={item.skill.name}>{item.skill.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div>

@@ -12,6 +12,7 @@ import {
   Trash2,
   CalendarCheck,
   CalendarX,
+  Star,
 } from "lucide-react";
 
 type Session = {
@@ -60,6 +61,13 @@ export default function SessionsPage() {
   const [acceptedSwaps, setAcceptedSwaps] = useState<SwapRequest[]>([]);
   const [availability, setAvailability] = useState<Availability[]>([]);
   const [currentUserId, setCurrentUserId] = useState("");
+  const [completingId, setCompletingId] = useState<string | null>(null);
+  const [reviewSession, setReviewSession] = useState<Session | null>(null);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewHoverRating, setReviewHoverRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   const [newSession, setNewSession] = useState({
     swapRequestId: "",
@@ -106,19 +114,64 @@ export default function SessionsPage() {
   };
 
   const updateSession = async (sessionId: string, status: string) => {
-    const res = await fetch(`/api/sessions/${sessionId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    const json = await res.json();
-    if (json.success) {
-      if (status === "completed") {
-        setUpcoming((prev) => prev.filter((s) => s.id !== sessionId));
-        setPast((prev) => [json.data, ...prev]);
+    if (status === "completed" && completingId) return;
+    if (status === "completed") setCompletingId(sessionId);
+    try {
+      const res = await fetch(`/api/sessions/${sessionId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        if (status === "completed") {
+          const completedSession = upcoming.find((s) => s.id === sessionId);
+          setUpcoming((prev) => prev.filter((s) => s.id !== sessionId));
+          setPast((prev) => [json.data, ...prev]);
+          if (completedSession) {
+            setReviewSession(completedSession);
+            setReviewRating(0);
+            setReviewComment("");
+            setReviewSubmitted(false);
+          }
+        } else {
+          setUpcoming((prev) => prev.map((s) => s.id === sessionId ? json.data : s));
+        }
       } else {
-        setUpcoming((prev) => prev.map((s) => s.id === sessionId ? json.data : s));
+        alert(json.message || "Failed to update session");
       }
+    } catch (err) {
+      alert("Network error: " + (err as Error).message);
+    } finally {
+      if (status === "completed") setCompletingId(null);
+    }
+  };
+
+  const submitReview = async () => {
+    if (!reviewSession || !reviewRating) return;
+    const reviewedId = reviewSession.organizer.id === currentUserId
+      ? reviewSession.participant.id
+      : reviewSession.organizer.id;
+    setReviewSubmitting(true);
+    try {
+      const res = await fetch("/api/review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          swapRequestId: reviewSession.swapRequestId,
+          reviewedId,
+          rating: reviewRating,
+          comment: reviewComment.trim() || null,
+        }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setReviewSubmitted(true);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setReviewSubmitting(false);
     }
   };
 
@@ -294,10 +347,11 @@ export default function SessionsPage() {
                       {session.status === "scheduled" && (
                         <button
                           onClick={() => updateSession(session.id, "completed")}
-                          className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-sm font-extrabold text-emerald-600 transition hover:bg-emerald-100"
+                          disabled={completingId === session.id}
+                          className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-sm font-extrabold text-emerald-600 transition hover:bg-emerald-100 disabled:opacity-50"
                         >
                           <Check className="h-4 w-4" />
-                          Mark Complete
+                          {completingId === session.id ? "Completing..." : "Mark Complete"}
                         </button>
                       )}
                     </div>
@@ -442,7 +496,7 @@ export default function SessionsPage() {
       {/* Schedule Session Modal */}
       {showScheduleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-8 shadow-2xl">
+          <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-black text-slate-950">Schedule Session</h2>
               <button
@@ -566,6 +620,118 @@ export default function SessionsPage() {
                 Schedule
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review Modal */}
+      {reviewSession && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5 backdrop-blur-sm">
+          <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            {reviewSubmitted ? (
+              <div className="py-8 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
+                  <Star className="h-8 w-8 fill-emerald-500" />
+                </div>
+                <h2 className="mt-6 text-xl font-black text-slate-950">Review Submitted!</h2>
+                <p className="mt-2 text-sm font-medium text-slate-500">Thank you for your feedback.</p>
+                <button
+                  onClick={() => setReviewSession(null)}
+                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white transition hover:bg-blue-700"
+                >
+                  Done
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-black text-slate-950">Rate Your Session</h2>
+                    <p className="mt-1 text-sm font-medium text-slate-500">
+                      with {reviewSession.organizer.id === currentUserId ? reviewSession.participant.name : reviewSession.organizer.name}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setReviewSession(null)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                {/* Swap Info */}
+                <div className="mt-6 grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
+                  <div className="rounded-2xl bg-slate-50 p-4">
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-slate-400">Skill exchanged</p>
+                    <p className="mt-2 font-black text-slate-900">{reviewSession.teachSkill}</p>
+                  </div>
+                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white">
+                    <Star className="h-4 w-4" />
+                  </div>
+                  <div className="rounded-2xl bg-blue-50 p-4">
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-blue-500">Skill learned</p>
+                    <p className="mt-2 font-black text-slate-900">{reviewSession.learnSkill}</p>
+                  </div>
+                </div>
+
+                {/* Star Rating */}
+                <div className="mt-8">
+                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Rating</label>
+                  <div className="mt-3 flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onMouseEnter={() => setReviewHoverRating(star)}
+                        onMouseLeave={() => setReviewHoverRating(0)}
+                        onClick={() => setReviewRating(star)}
+                        className="transition hover:scale-110"
+                      >
+                        <Star
+                          className={`h-10 w-10 ${
+                            star <= (reviewHoverRating || reviewRating)
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-slate-200"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                    {reviewRating > 0 && (
+                      <span className="ml-3 text-sm font-bold text-slate-600">{reviewRating}/5</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Comment */}
+                <div className="mt-6">
+                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Review</label>
+                  <textarea
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    placeholder="How was your experience? What did you learn?"
+                    rows={4}
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </div>
+
+                {/* Actions */}
+                <div className="mt-6 flex gap-3">
+                  <button
+                    onClick={() => setReviewSession(null)}
+                    className="flex-1 rounded-xl border border-slate-200 py-3.5 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50"
+                  >
+                    Skip for now
+                  </button>
+                  <button
+                    onClick={submitReview}
+                    disabled={!reviewRating || reviewSubmitting}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {reviewSubmitting ? "Submitting..." : "Submit Review"}
+                    <Star className="h-4 w-4" />
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

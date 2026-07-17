@@ -20,7 +20,7 @@ type DashboardData = {
   stats: {
     skillsTaught: number;
     skillsLearned: number;
-    sessionsCompleted: number;
+    completedSwaps: number;
     hoursShared: number;
     averageRating: number;
   };
@@ -186,7 +186,7 @@ export default function DashboardPage() {
                 {[
                   ["Skills taught", dashboard.stats.skillsTaught],
                   ["Skills learning", dashboard.stats.skillsLearned],
-                  ["Completed sessions", dashboard.stats.sessionsCompleted],
+                  ["Completed swaps", dashboard.stats.completedSwaps],
                   ["Hours shared", `${dashboard.stats.hoursShared}h`],
                   ["Average rating", dashboard.stats.averageRating.toFixed(1)],
                 ].map(([label, value]) => (

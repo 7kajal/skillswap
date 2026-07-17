@@ -100,9 +100,9 @@ export function computeMatchScore(
   skillsICanTeachThem: string[];
   skillsTheyCanTeachMe: string[];
 } {
-  // A match is directional and exact:
-  // my teach -> their learn, and their teach -> my learn.
-  // Either direction is enough for the member to be considered a match.
+  // A swap match requires both directions:
+  // my teach -> their learn, AND their teach -> my learn.
+  // Both directions must have at least one match.
   const iTeachMatches = findExactMatches(myTeachSkills, otherLearnSkills);
   const theyTeachMatches = findExactMatches(otherTeachSkills, myLearnSkills);
 

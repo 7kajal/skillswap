@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/mongodb";
 import { Review } from "@/models/review";
 import { User } from "@/models/user";
+import { computeTrustScore } from "@/modules/reputation/reputation.service";
 
 export async function findReview(swapRequestId: string, reviewerId: string) {
   await connectDB();
@@ -40,6 +41,9 @@ export async function createReview(
       reviewCount: stats[0].count,
     });
   }
+
+  const trustScore = await computeTrustScore(reviewedId.toString());
+  await User.findByIdAndUpdate(reviewedId, { trustScore });
 
   return { ...review, id: review._id.toString() };
 }

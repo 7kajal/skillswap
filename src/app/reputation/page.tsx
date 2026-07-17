@@ -12,6 +12,7 @@ import {
   Check,
   Edit3,
   Save,
+  RefreshCw,
 } from "lucide-react";
 
 type ReputationData = {
@@ -42,22 +43,35 @@ export default function ReputationPage() {
   const [editingLinks, setEditingLinks] = useState(false);
   const [links, setLinks] = useState({ githubUrl: "", portfolioUrl: "", linkedinUrl: "" });
   const [saving, setSaving] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchReputation = async () => {
+    try {
+      const res = await fetch("/api/reputation");
+      const json = await res.json();
+      if (json.data) {
+        setData(json.data);
+        setLinks({
+          githubUrl: json.data.socialLinks.github || "",
+          portfolioUrl: json.data.socialLinks.portfolio || "",
+          linkedinUrl: json.data.socialLinks.linkedin || "",
+        });
+      }
+    } catch {
+      // ignore
+    }
+  };
 
   useEffect(() => {
-    fetch("/api/reputation")
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.data) {
-          setData(json.data);
-          setLinks({
-            githubUrl: json.data.socialLinks.github || "",
-            portfolioUrl: json.data.socialLinks.portfolio || "",
-            linkedinUrl: json.data.socialLinks.linkedin || "",
-          });
-        }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    fetchReputation().finally(() => setLoading(false));
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        fetchReputation();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, []);
 
   const saveLinks = async () => {
@@ -110,11 +124,25 @@ export default function ReputationPage() {
     <div className="bg-slate-50">
       <div className="bg-slate-50">
         <div className="mx-auto max-w-5xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
-          <div>
-              <h1 className="text-2xl font-black text-slate-950">Reputation & Verification</h1>
-              <p className="mt-1 text-sm font-medium text-slate-500">
-                Your trust profile and verified credentials
-              </p>
+          <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-black text-slate-950">Reputation & Verification</h1>
+                <p className="mt-1 text-sm font-medium text-slate-500">
+                  Your trust profile and verified credentials
+                </p>
+              </div>
+              <button
+                onClick={async () => {
+                  setRefreshing(true);
+                  await fetchReputation();
+                  setRefreshing(false);
+                }}
+                disabled={refreshing}
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+              >
+                <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+                Refresh
+              </button>
           </div>
         </div>
       </div>
