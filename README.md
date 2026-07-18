@@ -10,7 +10,7 @@
 8. If interested, the user clicks the **Request Skill Swap** button and sends a request along with the skill they want to teach and the skill they want to learn.
 9. The recipient receives the request in their dashboard and can either accept or reject it.
 10. If the request is accepted, the platform automatically creates a private chat room for both users.
-11. Inside the chat, users can communicate, share study materials, exchange files, and send Google Meet, Zoom, or Microsoft Teams links to schedule their learning sessions.
+11. Inside the chat, users can communicate, share study materials, exchange files, and send Google Meet, Zoom, Microsoft Teams, etc links to schedule their learning sessions.
 12. The users conduct their learning sessions using their preferred communication platform.
 13. After completing the skill exchange, both users mark the session as completed.
 14. Each user can then rate and review the other based on their learning experience.
