@@ -4,14 +4,13 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   Send,
-  Paperclip,
   CheckCircle,
   BadgeCheck,
   ArrowLeft,
   Star,
   X,
 } from "lucide-react";
-import Link from "next/link";
+import axiosPrivate from "@/lib/axiosPrivate";
 
 type Message = {
   id: string;
@@ -79,14 +78,14 @@ export default function ChatPage() {
     if (!roomId) return;
 
     Promise.all([
-      fetch(`/api/chat/${roomId}/messages`).then((r) => r.json()),
-      fetch("/api/profile").then((r) => r.json()),
-      fetch("/api/chat/rooms").then((r) => r.json()),
+      axiosPrivate.get(`/api/chat/${roomId}/messages`),
+      axiosPrivate.get("/api/profile"),
+      axiosPrivate.get("/api/chat/rooms"),
     ]).then(([messagesRes, profileRes, roomsRes]) => {
-      setMessages(Array.isArray(messagesRes.data) ? messagesRes.data : []);
-      setCurrentUserId(profileRes.data.id);
+      setMessages(Array.isArray(messagesRes.data.data) ? messagesRes.data.data : []);
+      setCurrentUserId(profileRes.data.data.id);
 
-      const rooms = Array.isArray(roomsRes.data) ? roomsRes.data : [];
+      const rooms = Array.isArray(roomsRes.data.data) ? roomsRes.data.data : [];
       const currentRoom = rooms.find((r: RoomInfo) => r.id === roomId);
       if (currentRoom) {
         setRoomInfo(currentRoom);
@@ -104,19 +103,16 @@ export default function ChatPage() {
 
     const pollInterval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/chat/${roomId}/messages`);
-        if (res.ok) {
-          const json = await res.json();
-          const data = json.data;
-          if (Array.isArray(data)) {
-            setMessages((prev) => {
-              if (prev.length === 0) return data;
-              const lastPrev = prev[prev.length - 1];
-              const lastNew = data[data.length - 1];
-              if (lastPrev.id !== lastNew.id) return data;
-              return prev;
-            });
-          }
+        const res = await axiosPrivate.get(`/api/chat/${roomId}/messages`);
+        const data = res.data.data;
+        if (Array.isArray(data)) {
+          setMessages((prev) => {
+            if (prev.length === 0) return data;
+            const lastPrev = prev[prev.length - 1];
+            const lastNew = data[data.length - 1];
+            if (lastPrev.id !== lastNew.id) return data;
+            return prev;
+          });
         }
       } catch {
         // ignore polling errors
@@ -130,14 +126,11 @@ export default function ChatPage() {
     if (!newMessage.trim() || sending) return;
     setSending(true);
     try {
-      const res = await fetch(`/api/chat/${roomId}/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: newMessage.trim() }),
+      const res = await axiosPrivate.post(`/api/chat/${roomId}/messages`, {
+        content: newMessage.trim(),
       });
-      const json = await res.json();
-      if (json.success && json.data) {
-        setMessages((prev) => [...prev, json.data]);
+      if (res.data.success && res.data.data) {
+        setMessages((prev) => [...prev, res.data.data]);
         setNewMessage("");
       }
     } catch {
@@ -151,13 +144,10 @@ export default function ChatPage() {
     if (!roomInfo?.swapRequest?.id) return;
     setCompleting(true);
     try {
-      const res = await fetch(`/api/swap-request/${roomInfo.swapRequest.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "completed" }),
+      const res = await axiosPrivate.patch(`/api/swap-request/${roomInfo.swapRequest.id}`, {
+        status: "completed",
       });
-      const json = await res.json();
-      if (json.success) {
+      if (res.data.success) {
         setRoomInfo((prev) =>
           prev
             ? {
@@ -185,18 +175,13 @@ export default function ChatPage() {
       : roomInfo.swapRequest.sender.id;
     setReviewSubmitting(true);
     try {
-      const res = await fetch("/api/review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          swapRequestId: roomInfo.swapRequest.id,
-          reviewedId,
-          rating: reviewRating,
-          comment: reviewComment.trim() || null,
-        }),
+      const res = await axiosPrivate.post("/api/review", {
+        swapRequestId: roomInfo.swapRequest.id,
+        reviewedId,
+        rating: reviewRating,
+        comment: reviewComment.trim() || null,
       });
-      const json = await res.json();
-      if (json.success) {
+      if (res.data.success) {
         setReviewSubmitted(true);
       }
     } catch {

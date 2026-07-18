@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
+import axiosPrivate from "@/lib/axiosPrivate";
 
 const allSkills = [
   "React", "Next.js", "TypeScript", "Python", "UI Design", "Figma",
@@ -45,10 +46,9 @@ export default function CompleteProfilePage() {
   useEffect(() => {
     if (status !== "authenticated") return;
 
-    fetch("/api/profile")
-      .then((response) => response.json())
-      .then((result) => {
-        const profile = result.data;
+    axiosPrivate.get("/api/profile")
+      .then((response) => {
+        const profile = response.data.data;
         if (!profile?.isProfileComplete) return;
 
         setEditing(true);
@@ -100,21 +100,16 @@ export default function CompleteProfilePage() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/profile/complete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          avatar,
-          bio,
-          location,
-          languages: languages.split(",").map((l) => l.trim()).filter(Boolean),
-          availability,
-          teachSkills,
-          learnSkills,
-        }),
+      const res = await axiosPrivate.post("/api/profile/complete", {
+        avatar,
+        bio,
+        location,
+        languages: languages.split(",").map((l) => l.trim()).filter(Boolean),
+        availability,
+        teachSkills,
+        learnSkills,
       });
-      const json = await res.json();
-      if (!json.success) throw new Error(json.message || "Failed to save profile");
+      if (!res.data.success) throw new Error(res.data.message || "Failed to save profile");
       router.push(
         session?.user?.id ? `/profile/${session.user.id}` : "/discover"
       );

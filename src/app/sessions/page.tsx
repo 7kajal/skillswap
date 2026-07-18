@@ -14,6 +14,7 @@ import {
   CalendarX,
   Star,
 } from "lucide-react";
+import axiosPrivate from "@/lib/axiosPrivate";
 
 type Session = {
   id: string;
@@ -81,33 +82,28 @@ export default function SessionsPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/sessions").then((r) => r.json()),
-      fetch("/api/swap-request").then((r) => r.json()),
-      fetch("/api/availability").then((r) => r.json()),
-      fetch("/api/profile").then((r) => r.json()),
+      axiosPrivate.get("/api/sessions"),
+      axiosPrivate.get("/api/swap-request"),
+      axiosPrivate.get("/api/availability"),
+      axiosPrivate.get("/api/profile"),
     ]).then(([sessionsRes, swapsRes, availRes, profileRes]) => {
-      if (sessionsRes.data) {
-        setUpcoming(sessionsRes.data.upcoming || []);
-        setPast(sessionsRes.data.past || []);
+      if (sessionsRes.data.data) {
+        setUpcoming(sessionsRes.data.data.upcoming || []);
+        setPast(sessionsRes.data.data.past || []);
       }
-      const all = [...(swapsRes.data?.sent || []), ...(swapsRes.data?.received || [])];
+      const all = [...(swapsRes.data.data?.sent || []), ...(swapsRes.data.data?.received || [])];
       setAcceptedSwaps(all.filter((s: SwapRequest) => s.status === "accepted"));
-      setAvailability(availRes.data || []);
-      setCurrentUserId(profileRes.data?.id || "");
+      setAvailability(availRes.data.data || []);
+      setCurrentUserId(profileRes.data.data?.id || "");
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
 
   const scheduleSession = async () => {
     if (!newSession.swapRequestId || !newSession.title || !newSession.date) return;
-    const res = await fetch("/api/sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newSession),
-    });
-    const json = await res.json();
-    if (json.success) {
-      setUpcoming((prev) => [json.data, ...prev]);
+    const res = await axiosPrivate.post("/api/sessions", newSession);
+    if (res.data.success) {
+      setUpcoming((prev) => [res.data.data, ...prev]);
       setShowScheduleModal(false);
       setNewSession({ swapRequestId: "", title: "", description: "", date: "", startTime: "09:00", endTime: "10:00", meetLink: "" });
     }
@@ -117,17 +113,12 @@ export default function SessionsPage() {
     if (status === "completed" && completingId) return;
     if (status === "completed") setCompletingId(sessionId);
     try {
-      const res = await fetch(`/api/sessions/${sessionId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-      const json = await res.json();
-      if (json.success) {
+      const res = await axiosPrivate.patch(`/api/sessions/${sessionId}`, { status });
+      if (res.data.success) {
         if (status === "completed") {
           const completedSession = upcoming.find((s) => s.id === sessionId);
           setUpcoming((prev) => prev.filter((s) => s.id !== sessionId));
-          setPast((prev) => [json.data, ...prev]);
+          setPast((prev) => [res.data.data, ...prev]);
           if (completedSession) {
             setReviewSession(completedSession);
             setReviewRating(0);
@@ -135,10 +126,10 @@ export default function SessionsPage() {
             setReviewSubmitted(false);
           }
         } else {
-          setUpcoming((prev) => prev.map((s) => s.id === sessionId ? json.data : s));
+          setUpcoming((prev) => prev.map((s) => s.id === sessionId ? res.data.data : s));
         }
       } else {
-        alert(json.message || "Failed to update session");
+        alert(res.data.message || "Failed to update session");
       }
     } catch (err) {
       alert("Network error: " + (err as Error).message);
@@ -154,18 +145,13 @@ export default function SessionsPage() {
       : reviewSession.organizer.id;
     setReviewSubmitting(true);
     try {
-      const res = await fetch("/api/review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          swapRequestId: reviewSession.swapRequestId,
-          reviewedId,
-          rating: reviewRating,
-          comment: reviewComment.trim() || null,
-        }),
+      const res = await axiosPrivate.post("/api/review", {
+        swapRequestId: reviewSession.swapRequestId,
+        reviewedId,
+        rating: reviewRating,
+        comment: reviewComment.trim() || null,
       });
-      const json = await res.json();
-      if (json.success) {
+      if (res.data.success) {
         setReviewSubmitted(true);
       }
     } catch {
@@ -176,12 +162,8 @@ export default function SessionsPage() {
   };
 
   const saveAvailability = async () => {
-    await fetch("/api/availability", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        slots: availability.map(({ dayOfWeek, startTime, endTime }) => ({ dayOfWeek, startTime, endTime })),
-      }),
+    await axiosPrivate.put("/api/availability", {
+      slots: availability.map(({ dayOfWeek, startTime, endTime }) => ({ dayOfWeek, startTime, endTime })),
     });
   };
 

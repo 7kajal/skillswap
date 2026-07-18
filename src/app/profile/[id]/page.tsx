@@ -19,6 +19,7 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import axiosPrivate from "@/lib/axiosPrivate";
 
 type ProfileSkill = { skill: { name: string }; type: string };
 
@@ -74,17 +75,15 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!profileId) return;
-    fetch(`/api/profile/${profileId}`)
-      .then((response) => response.json())
-      .then((result) => setProfile(result.data || null))
+    axiosPrivate.get(`/api/profile/${profileId}`)
+      .then((response) => setProfile(response.data.data || null))
       .finally(() => setLoading(false));
   }, [profileId]);
 
   useEffect(() => {
-    if (status !== "authenticated" || session.user.id === profileId) return;
-    fetch("/api/profile")
-      .then((response) => response.json())
-      .then((result) => setOwnProfile(result.data || null))
+    if (status !== "authenticated" || !session?.user?.id || session.user.id === profileId) return;
+    axiosPrivate.get("/api/profile")
+      .then((response) => setOwnProfile(response.data.data || null))
       .catch(() => setOwnProfile(null));
   }, [profileId, session?.user?.id, status]);
 
@@ -136,17 +135,13 @@ export default function ProfilePage() {
     setSending(true);
     setRequestError("");
     try {
-      const response = await fetch("/api/swap-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          receiverId: profile.id,
-          teachSkillName: teachSkill,
-          learnSkillName: learnSkill,
-          message,
-        }),
+      const response = await axiosPrivate.post("/api/swap-request", {
+        receiverId: profile.id,
+        teachSkillName: teachSkill,
+        learnSkillName: learnSkill,
+        message,
       });
-      const result = await response.json();
+      const result = response.data;
       if (!result.success) {
         setRequestError(result.message || "Unable to send the request.");
         return;
@@ -229,7 +224,7 @@ export default function ProfilePage() {
                       Log in to request a swap
                     </Link>
                   ) : !ownProfile?.isProfileComplete || ownTeachingSkills.length === 0 ? (
-                    <Link href={`/profile/${session.user.id}`} className="inline-flex h-12 items-center rounded-xl bg-blue-600 px-6 text-sm font-extrabold text-white">
+                    <Link href={`/profile/${session?.user?.id}`} className="inline-flex h-12 items-center rounded-xl bg-blue-600 px-6 text-sm font-extrabold text-white">
                       Complete your profile
                     </Link>
                   ) : (

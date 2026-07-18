@@ -10,10 +10,10 @@ import {
   MessageCircleMore,
   Send,
   Sparkles,
-  Star,
   X,
 } from "lucide-react";
 import Link from "next/link";
+import axiosPrivate from "@/lib/axiosPrivate";
 
 type DashboardData = {
   user: { id: string; name: string };
@@ -86,26 +86,22 @@ export default function DashboardPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/dashboard").then((response) => response.json()),
-      fetch("/api/swap-request").then((response) => response.json()),
-      fetch("/api/chat/rooms").then((response) => response.json()),
+      axiosPrivate.get("/api/dashboard"),
+      axiosPrivate.get("/api/swap-request"),
+      axiosPrivate.get("/api/chat/rooms"),
     ])
       .then(([dashboardResponse, requestsResponse, roomsResponse]) => {
-        setDashboard(dashboardResponse.data || null);
-        setSentRequests(requestsResponse.data?.sent || []);
-        setReceivedRequests(requestsResponse.data?.received || []);
-        setChatRooms(Array.isArray(roomsResponse.data) ? roomsResponse.data : []);
+        setDashboard(dashboardResponse.data.data || null);
+        setSentRequests(requestsResponse.data.data?.sent || []);
+        setReceivedRequests(requestsResponse.data.data?.received || []);
+        setChatRooms(Array.isArray(roomsResponse.data.data) ? roomsResponse.data.data : []);
       })
       .finally(() => setLoading(false));
   }, []);
 
   const updateRequest = async (id: string, status: "accepted" | "rejected") => {
-    const response = await fetch(`/api/swap-request/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    const result = await response.json();
+    const response = await axiosPrivate.patch(`/api/swap-request/${id}`, { status });
+    const result = response.data;
     if (!result.success) return;
 
     setReceivedRequests((requests) =>
@@ -115,9 +111,8 @@ export default function DashboardPage() {
     );
 
     if (status === "accepted") {
-      const roomsResponse = await fetch("/api/chat/rooms");
-      const roomsResult = await roomsResponse.json();
-      setChatRooms(Array.isArray(roomsResult.data) ? roomsResult.data : []);
+      const roomsResponse = await axiosPrivate.get("/api/chat/rooms");
+      setChatRooms(Array.isArray(roomsResponse.data.data) ? roomsResponse.data.data : []);
     }
   };
 

@@ -14,6 +14,7 @@ import {
   Save,
   RefreshCw,
 } from "lucide-react";
+import axiosPrivate from "@/lib/axiosPrivate";
 
 type ReputationData = {
   rating: number;
@@ -47,14 +48,13 @@ export default function ReputationPage() {
 
   const fetchReputation = async () => {
     try {
-      const res = await fetch("/api/reputation");
-      const json = await res.json();
-      if (json.data) {
-        setData(json.data);
+      const res = await axiosPrivate.get("/api/reputation");
+      if (res.data.data) {
+        setData(res.data.data);
         setLinks({
-          githubUrl: json.data.socialLinks.github || "",
-          portfolioUrl: json.data.socialLinks.portfolio || "",
-          linkedinUrl: json.data.socialLinks.linkedin || "",
+          githubUrl: res.data.data.socialLinks.github || "",
+          portfolioUrl: res.data.data.socialLinks.portfolio || "",
+          linkedinUrl: res.data.data.socialLinks.linkedin || "",
         });
       }
     } catch {
@@ -76,11 +76,7 @@ export default function ReputationPage() {
 
   const saveLinks = async () => {
     setSaving(true);
-    await fetch("/api/reputation", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "updateLinks", links }),
-    });
+    await axiosPrivate.put("/api/reputation", { action: "updateLinks", links });
     setData((prev) =>
       prev
         ? {

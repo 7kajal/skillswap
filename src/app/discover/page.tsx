@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
+import axiosPrivate from "@/lib/axiosPrivate";
 
 type MatchReason = {
   type: "exact" | "related";
@@ -80,16 +81,18 @@ export default function DiscoverPage() {
   useEffect(() => {
     if (status === "loading") return;
 
-    const requests: Promise<Response>[] = [fetch("/api/discover")];
-    if (status === "authenticated") requests.push(fetch("/api/profile"));
+    const requests: Promise<unknown>[] = [axiosPrivate.get("/api/discover")];
+    if (status === "authenticated") requests.push(axiosPrivate.get("/api/profile"));
 
     Promise.all(requests)
-      .then(async (responses) => Promise.all(responses.map((response) => response.json())))
-      .then(([discoverResponse, profileResponse]) => {
+      .then(async (responses) => {
+        const typedResponses = responses as { data: { data: unknown } }[];
+        const discoverResponse = typedResponses[0];
+        const profileResponse = typedResponses[1];
         setUsers(
-          Array.isArray(discoverResponse.data) ? discoverResponse.data : []
+          Array.isArray(discoverResponse.data.data) ? (discoverResponse.data.data as MatchedUser[]) : []
         );
-        if (profileResponse?.data) setOwnProfile(profileResponse.data);
+        if (profileResponse?.data?.data) setOwnProfile(profileResponse.data.data as OwnProfile);
       })
       .finally(() => setLoading(false));
   }, [status]);
@@ -132,17 +135,13 @@ export default function DiscoverPage() {
     setError(null);
 
     try {
-      const response = await fetch("/api/swap-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          receiverId: swapModal.id,
-          teachSkillName: teachSkill,
-          learnSkillName: learnSkill,
-          message,
-        }),
+      const response = await axiosPrivate.post("/api/swap-request", {
+        receiverId: swapModal.id,
+        teachSkillName: teachSkill,
+        learnSkillName: learnSkill,
+        message,
       });
-      const result = await response.json();
+      const result = response.data;
 
       if (result.success) {
         setSent((current) => [...current, swapModal.id]);

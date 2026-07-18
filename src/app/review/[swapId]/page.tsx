@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Star, Send, BadgeCheck } from "lucide-react";
 import Link from "next/link";
+import axiosPrivate from "@/lib/axiosPrivate";
 
 type SwapInfo = {
   id: string;
@@ -31,11 +32,11 @@ export default function ReviewPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/swap-request").then((r) => r.json()),
-      fetch("/api/profile").then((r) => r.json()),
+      axiosPrivate.get("/api/swap-request"),
+      axiosPrivate.get("/api/profile"),
     ]).then(([requestsRes, profileRes]) => {
-      setCurrentUserId(profileRes.data.id);
-      const all = [...(requestsRes.data?.sent || []), ...(requestsRes.data?.received || [])];
+      setCurrentUserId(profileRes.data.data.id);
+      const all = [...(requestsRes.data.data?.sent || []), ...(requestsRes.data.data?.received || [])];
       const found = all.find((r: SwapInfo) => r.id === swapId);
       setSwap(found || null);
       setLoading(false);
@@ -44,12 +45,9 @@ export default function ReviewPage() {
 
   useEffect(() => {
     if (!swap) return;
-    const reviewerId = swap.sender.id === currentUserId ? currentUserId : currentUserId;
-    const reviewedId = swap.sender.id === currentUserId ? swap.receiver.id : swap.sender.id;
-    fetch(`/api/review?swapRequestId=${swapId}&reviewerId=${reviewerId}`)
-      .then((r) => r.json())
+    axiosPrivate.get(`/api/review?swapRequestId=${swapId}&reviewerId=${currentUserId}`)
       .then((json) => {
-        if (json.data && json.data.id) setAlreadyReviewed(true);
+        if (json.data.data && json.data.data.id) setAlreadyReviewed(true);
       })
       .catch(() => {});
   }, [swap, swapId, currentUserId]);
@@ -58,18 +56,13 @@ export default function ReviewPage() {
     if (!rating || !reviewedId) return;
     setSubmitting(true);
     try {
-      const res = await fetch("/api/review", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          swapRequestId: swapId,
-          reviewedId,
-          rating,
-          comment: comment.trim() || null,
-        }),
+      const res = await axiosPrivate.post("/api/review", {
+        swapRequestId: swapId,
+        reviewedId,
+        rating,
+        comment: comment.trim() || null,
       });
-      const json = await res.json();
-      if (json.success) {
+      if (res.data.success) {
         setSubmitted(true);
         setTimeout(() => router.push("/dashboard"), 2000);
       }
