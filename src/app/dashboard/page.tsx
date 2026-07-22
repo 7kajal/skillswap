@@ -177,7 +177,7 @@ export default function DashboardPage() {
         {activeTab === "overview" && (
           <div className="space-y-8">
             <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-              <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-5 sm:divide-y-0">
+              <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-3 lg:grid-cols-5 sm:divide-y-0">
                 {[
                   ["Skills taught", dashboard.stats.skillsTaught],
                   ["Skills learning", dashboard.stats.skillsLearned],

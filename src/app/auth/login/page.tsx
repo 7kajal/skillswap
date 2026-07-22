@@ -21,6 +21,27 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
+      const validation = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
+      });
+
+      if (!validation.ok) {
+        const data = await validation.json();
+        setError(data.message || "Invalid email or password");
+        showToast({
+          type: "error",
+          title: "Sign in failed",
+          message: data.message || "The email or password you entered is incorrect.",
+        });
+        setLoading(false);
+        return;
+      }
+
       const result = await signIn("credentials", {
         email: email.trim().toLowerCase(),
         password,

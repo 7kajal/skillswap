@@ -1,5 +1,6 @@
-import React, { useMemo, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   ArrowRight,
   BadgeCheck,
@@ -16,7 +17,6 @@ import {
   HeartHandshake,
   Languages,
   MapPin,
-  Menu,
   MessageCircle,
   Music2,
   Palette,
@@ -27,7 +27,6 @@ import {
   Users,
   Utensils,
   WandSparkles,
-  X,
   Zap,
 } from "lucide-react";
 
@@ -267,10 +266,10 @@ export function Community() {
             </p>
           </div>
 
-          <button className="inline-flex w-fit items-center gap-2 text-sm font-extrabold text-blue-600">
+          <Link href="/discover" className="inline-flex w-fit items-center gap-2 text-sm font-extrabold text-blue-600">
             Browse all members
             <ArrowRight className="h-4 w-4" />
-          </button>
+          </Link>
         </div>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">

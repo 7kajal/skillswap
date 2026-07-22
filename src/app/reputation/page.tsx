@@ -117,10 +117,9 @@ export default function ReputationPage() {
       : "bg-slate-50";
 
   return (
-    <div className="bg-slate-50">
-      <div className="bg-slate-50">
+    <div className="min-h-screen bg-slate-50">
         <div className="mx-auto max-w-5xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h1 className="text-2xl font-black text-slate-950">Reputation & Verification</h1>
                 <p className="mt-1 text-sm font-medium text-slate-500">
@@ -134,14 +133,13 @@ export default function ReputationPage() {
                   setRefreshing(false);
                 }}
                 disabled={refreshing}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
+                className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
               >
                 <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
                 Refresh
               </button>
           </div>
         </div>
-      </div>
 
       <div className="mx-auto max-w-5xl px-5 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[1fr_350px]">
@@ -161,7 +159,7 @@ export default function ReputationPage() {
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-4 gap-4">
+              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <div className="rounded-xl bg-slate-50 p-4 text-center">
                   <Star className="mx-auto h-5 w-5 fill-amber-400 text-amber-400" />
                   <p className="mt-2 text-xl font-black text-slate-950">{data.rating.toFixed(1)}</p>

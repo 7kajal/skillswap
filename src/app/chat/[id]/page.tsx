@@ -72,6 +72,7 @@ export default function ChatPage() {
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -83,12 +84,22 @@ export default function ChatPage() {
       axiosPrivate.get("/api/chat/rooms"),
     ]).then(([messagesRes, profileRes, roomsRes]) => {
       setMessages(Array.isArray(messagesRes.data.data) ? messagesRes.data.data : []);
-      setCurrentUserId(profileRes.data.data.id);
+      const userId = profileRes.data.data.id;
+      setCurrentUserId(userId);
 
       const rooms = Array.isArray(roomsRes.data.data) ? roomsRes.data.data : [];
       const currentRoom = rooms.find((r: RoomInfo) => r.id === roomId);
       if (currentRoom) {
         setRoomInfo(currentRoom);
+
+        if (currentRoom.swapRequest?.status === "completed" && currentRoom.swapRequest?.id) {
+          axiosPrivate
+            .get(`/api/review?swapRequestId=${currentRoom.swapRequest.id}&reviewerId=${userId}`)
+            .then((res) => {
+              if (res.data?.data?.id) setHasReviewed(true);
+            })
+            .catch(() => {});
+        }
       }
       setLoading(false);
     });
@@ -183,6 +194,7 @@ export default function ChatPage() {
       });
       if (res.data.success) {
         setReviewSubmitted(true);
+        setHasReviewed(true);
       }
     } catch {
       // ignore
@@ -205,7 +217,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-65px)] flex-col bg-slate-50">
+    <div className="flex h-[calc(100vh-4.5rem)] flex-col bg-slate-50 lg:h-[calc(100vh-5rem)]">
       {/* Header */}
       <div className="border-b border-slate-200 bg-white px-5 py-3">
         <div className="mx-auto flex max-w-4xl items-center justify-between">
@@ -263,7 +275,14 @@ export default function ChatPage() {
               </button>
             )}
 
-            {roomInfo?.swapRequest?.status === "completed" && (
+            {roomInfo?.swapRequest?.status === "completed" && hasReviewed && (
+              <span className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-xs font-extrabold text-emerald-600">
+                <Star className="h-4 w-4 fill-emerald-500" />
+                Review Given
+              </span>
+            )}
+
+            {roomInfo?.swapRequest?.status === "completed" && !hasReviewed && (
               <button
                 onClick={() => {
                   setShowReviewModal(true);

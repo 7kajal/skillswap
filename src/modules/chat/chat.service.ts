@@ -28,6 +28,7 @@ export async function getUserRooms(userId: string) {
       return {
         id: room._id.toString(),
         swapRequest: {
+          id: sr._id?.toString(),
           sender: { id: sr.senderId?._id?.toString(), name: sr.senderId?.name, avatar: sr.senderId?.avatar },
           receiver: { id: sr.receiverId?._id?.toString(), name: sr.receiverId?.name, avatar: sr.receiverId?.avatar },
           teachSkill: { name: sr.teachSkillId?.name },

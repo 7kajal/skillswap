@@ -52,6 +52,11 @@ export default function ReviewPage() {
       .catch(() => {});
   }, [swap, swapId, currentUserId]);
 
+  if (!swap) return null;
+
+  const reviewedId = swap.sender.id === currentUserId ? swap.receiver.id : swap.sender.id;
+  const otherUser = swap.sender.id === currentUserId ? swap.receiver : swap.sender;
+
   const handleSubmit = async () => {
     if (!rating || !reviewedId) return;
     setSubmitting(true);
@@ -93,11 +98,6 @@ export default function ReviewPage() {
       </div>
     );
   }
-
-  if (!swap) return null;
-
-  const reviewedId = swap.sender.id === currentUserId ? swap.receiver.id : swap.sender.id;
-  const otherUser = swap.sender.id === currentUserId ? swap.receiver : swap.sender;
 
   if (submitted) {
     return (

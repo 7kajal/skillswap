@@ -149,8 +149,12 @@ export default function DiscoverPage() {
       } else {
         setError(result.message || "Unable to send the request.");
       }
-    } catch {
-      setError("Unable to send the request. Please try again.");
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : undefined;
+      setError(msg || "Unable to send the request. Please try again.");
     } finally {
       setSending(false);
     }
@@ -386,7 +390,7 @@ export default function DiscoverPage() {
       </section>
 
       {swapModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/50 p-5 backdrop-blur-sm">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/50 p-5 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-7 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>

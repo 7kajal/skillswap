@@ -129,10 +129,10 @@ export default function SessionsPage() {
           setUpcoming((prev) => prev.map((s) => s.id === sessionId ? res.data.data : s));
         }
       } else {
-        alert(res.data.message || "Failed to update session");
+        console.error(res.data.message || "Failed to update session");
       }
     } catch (err) {
-      alert("Network error: " + (err as Error).message);
+      console.error("Network error:", (err as Error).message);
     } finally {
       if (status === "completed") setCompletingId(null);
     }
@@ -198,8 +198,7 @@ export default function SessionsPage() {
   }
 
   return (
-    <div className="bg-slate-50">
-      <div className="bg-slate-50">
+    <div className="min-h-screen bg-slate-50">
         <div className="mx-auto max-w-5xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
@@ -249,7 +248,6 @@ export default function SessionsPage() {
             })}
           </div>
         </div>
-      </div>
 
       <div className="mx-auto max-w-5xl px-5 py-8 sm:px-6 lg:px-8">
         {/* Upcoming Sessions */}
@@ -294,7 +292,7 @@ export default function SessionsPage() {
                       </span>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-3 gap-3">
+                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
                       <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
                         <Calendar className="h-4 w-4 text-slate-400" />
                         <span className="text-sm font-bold text-slate-700">{formatDate(session.date)}</span>
@@ -379,7 +377,7 @@ export default function SessionsPage() {
                       </span>
                     </div>
 
-                    <div className="mt-4 grid grid-cols-3 gap-3">
+                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
                       <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
                         <Calendar className="h-4 w-4 text-slate-400" />
                         <span className="text-sm font-bold text-slate-700">{formatDate(session.date)}</span>
@@ -428,29 +426,31 @@ export default function SessionsPage() {
                   </div>
                 )}
                 {availability.map((slot) => (
-                  <div key={slot.id} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <div key={slot.id} className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center">
                     <select
                       value={slot.dayOfWeek}
                       onChange={(e) => updateAvailabilitySlot(slot.id, "dayOfWeek", parseInt(e.target.value))}
-                      className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none sm:w-auto"
                     >
                       {DAYS.map((day, idx) => (
                         <option key={idx} value={idx}>{day}</option>
                       ))}
                     </select>
-                    <input
-                      type="time"
-                      value={slot.startTime}
-                      onChange={(e) => updateAvailabilitySlot(slot.id, "startTime", e.target.value)}
-                      className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none"
-                    />
-                    <span className="text-sm font-bold text-slate-400">to</span>
-                    <input
-                      type="time"
-                      value={slot.endTime}
-                      onChange={(e) => updateAvailabilitySlot(slot.id, "endTime", e.target.value)}
-                      className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none"
-                    />
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="time"
+                        value={slot.startTime}
+                        onChange={(e) => updateAvailabilitySlot(slot.id, "startTime", e.target.value)}
+                        className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none"
+                      />
+                      <span className="text-sm font-bold text-slate-400">to</span>
+                      <input
+                        type="time"
+                        value={slot.endTime}
+                        onChange={(e) => updateAvailabilitySlot(slot.id, "endTime", e.target.value)}
+                        className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none"
+                      />
+                    </div>
                     <button
                       onClick={() => removeAvailabilitySlot(slot.id)}
                       className="ml-auto rounded-xl p-2.5 text-slate-400 transition hover:bg-red-50 hover:text-red-500"

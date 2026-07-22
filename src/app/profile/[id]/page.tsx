@@ -20,6 +20,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import axiosPrivate from "@/lib/axiosPrivate";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type ProfileSkill = { skill: { name: string }; type: string };
 
@@ -383,9 +390,40 @@ export default function ProfilePage() {
             </div>
             {requestError && <div className="mt-5 rounded-xl bg-rose-50 p-3 text-sm font-bold text-rose-600">{requestError}</div>}
             <div className="mt-6 space-y-4">
-              <label className="block text-xs font-black uppercase tracking-[0.12em] text-slate-400">You will teach<select value={teachSkill} onChange={(event) => setTeachSkill(event.target.value)} className="mt-2 h-13 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold normal-case tracking-normal text-slate-800">{ownTeachingSkills.map((skill) => <option key={skill}>{skill}</option>)}</select></label>
-              <label className="block text-xs font-black uppercase tracking-[0.12em] text-slate-400">You want to learn<select value={learnSkill} onChange={(event) => setLearnSkill(event.target.value)} className="mt-2 h-13 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold normal-case tracking-normal text-slate-800">{teachingSkills.map((skill) => <option key={skill}>{skill}</option>)}</select></label>
-              <label className="block text-xs font-black uppercase tracking-[0.12em] text-slate-400">Message <span className="normal-case tracking-normal">(optional)</span><textarea value={message} onChange={(event) => setMessage(event.target.value)} rows={3} className="mt-2 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-medium normal-case tracking-normal text-slate-800" /></label>
+              <div>
+                <label className="block text-xs font-black uppercase tracking-[0.12em] text-slate-400">You will teach</label>
+                <div className="mt-2">
+                  <Select value={teachSkill} onValueChange={(v) => v && setTeachSkill(v)}>
+                    <SelectTrigger className="h-13 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none focus:border-blue-500">
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ownTeachingSkills.map((skill) => (
+                        <SelectItem key={skill} value={skill}>{skill}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-black uppercase tracking-[0.12em] text-slate-400">You want to learn</label>
+                <div className="mt-2">
+                  <Select value={learnSkill} onValueChange={(v) => v && setLearnSkill(v)}>
+                    <SelectTrigger className="h-13 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-800 outline-none focus:border-blue-500">
+                      <SelectValue placeholder="Select a skill" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {teachingSkills.map((skill) => (
+                        <SelectItem key={skill} value={skill}>{skill}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-black uppercase tracking-[0.12em] text-slate-400">Message <span className="normal-case tracking-normal">(optional)</span></label>
+                <textarea value={message} onChange={(event) => setMessage(event.target.value)} rows={3} className="mt-2 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-medium normal-case tracking-normal text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+              </div>
             </div>
             <div className="mt-6 flex gap-3"><button type="button" onClick={() => setShowSwapModal(false)} className="h-12 flex-1 rounded-xl border border-slate-200 text-sm font-extrabold text-slate-600">Cancel</button><button type="button" onClick={sendRequest} disabled={sending || !teachSkill || !learnSkill} className="h-12 flex-1 rounded-xl bg-blue-600 text-sm font-extrabold text-white disabled:opacity-50">{sending ? "Sending..." : "Send request"}</button></div>
           </div>
