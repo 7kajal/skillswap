@@ -200,7 +200,7 @@ export default function SessionsPage() {
   return (
     <div className="min-h-screen bg-slate-50">
         <div className="mx-auto max-w-5xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl font-black text-slate-950">Sessions</h1>
               <p className="mt-1 text-sm font-medium text-slate-500">
@@ -210,7 +210,7 @@ export default function SessionsPage() {
             {acceptedSwaps.length > 0 && (
               <button
                 onClick={() => setShowScheduleModal(true)}
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
+                className="inline-flex w-fit items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
               >
                 <Plus className="h-4 w-4" />
                 Schedule Session
@@ -219,7 +219,7 @@ export default function SessionsPage() {
           </div>
 
           {/* Tabs */}
-          <div className="mt-6 flex gap-2 border-b border-slate-200">
+          <div className="mt-6 flex gap-2 overflow-x-auto border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {[
               { id: "upcoming" as const, label: "Upcoming", icon: CalendarCheck, count: upcoming.length },
               { id: "past" as const, label: "Past", icon: CalendarX, count: past.length },
@@ -543,7 +543,7 @@ export default function SessionsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div>
                   <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Date</label>
                   <input

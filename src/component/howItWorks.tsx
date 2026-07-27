@@ -187,7 +187,7 @@ export function HowItWorks() {
           <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-blue-600">
             <Sparkles className="h-3.5 w-3.5" /> How it works
           </div>
-          <h2 className="mt-5 text-4xl font-black tracking-[-0.055em] text-slate-950 sm:text-5xl">
+          <h2 className="mt-5 text-3xl font-black tracking-[-0.055em] text-slate-950 sm:text-4xl lg:text-5xl">
             Skill swapping made simple.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base font-medium leading-8 text-slate-500">

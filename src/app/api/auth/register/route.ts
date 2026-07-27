@@ -1,5 +1,5 @@
 import { apiSuccess, apiError, apiBadRequest } from "@/lib/apiResponse";
-import { findUserByEmail, createUser } from "@/modules/auth/auth.service";
+import { findUserByEmail, createUser } from "@/app/api/auth/service";
 import mongoose from "mongoose";
 
 export async function POST(req: Request) {

@@ -25,6 +25,7 @@ import {
   BrainCircuit,
   BriefcaseBusiness,
   X,
+  Megaphone,
 } from "lucide-react";
 
 type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -291,7 +292,7 @@ function SectionHeader({
           </p>
         ) : null}
 
-        <h2 className="mt-2 text-3xl font-black tracking-[-0.045em] text-slate-950 sm:text-4xl">
+        <h2 className="mt-2 text-3xl font-black tracking-[-0.045em] text-slate-950 sm:text-4xl lg:text-5xl">
           {title}
         </h2>
 
@@ -611,7 +612,7 @@ export default function ExploreSkillsSection() {
               Discover your next skill
             </div>
 
-            <h2 className="mt-6 text-4xl font-black leading-[1.02] tracking-[-0.06em] text-slate-950 sm:text-5xl lg:text-6xl">
+            <h2 className="mt-6 text-3xl font-black leading-[1.02] tracking-[-0.06em] text-slate-950 sm:text-4xl md:text-5xl lg:text-6xl">
               Find people who can teach
               <span className="block text-blue-600">
                 what you want to learn.

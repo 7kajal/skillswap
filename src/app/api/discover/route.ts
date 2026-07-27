@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError } from "@/lib/apiResponse";
-import { findMatches } from "@/modules/discover/discover.service";
+import { findMatches } from "@/app/api/discover/service";
 
 export async function GET() {
   const session = await auth();

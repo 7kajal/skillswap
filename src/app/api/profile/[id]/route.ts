@@ -1,5 +1,5 @@
 import { apiSuccess, apiError, apiNotFound } from "@/lib/apiResponse";
-import { getProfileById } from "@/modules/profile/profile.service";
+import { getProfileById } from "@/app/api/profile/service";
 
 export async function GET(
   _req: Request,

@@ -121,7 +121,7 @@ export default function ReputationPage() {
         <div className="mx-auto max-w-5xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h1 className="text-2xl font-black text-slate-950">Reputation & Verification</h1>
+                <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">Reputation & Verification</h1>
                 <p className="mt-1 text-sm font-medium text-slate-500">
                   Your trust profile and verified credentials
                 </p>
@@ -159,7 +159,7 @@ export default function ReputationPage() {
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
                 <div className="rounded-xl bg-slate-50 p-4 text-center">
                   <Star className="mx-auto h-5 w-5 fill-amber-400 text-amber-400" />
                   <p className="mt-2 text-xl font-black text-slate-950">{data.rating.toFixed(1)}</p>
@@ -229,7 +229,7 @@ export default function ReputationPage() {
                 <div className="mt-4 space-y-4">
                   {data.reviews.map((review) => (
                     <div key={review.id} className="rounded-xl border border-slate-100 bg-slate-50 p-4">
-                      <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-xs font-black text-white">
                             {review.reviewer.name?.split(" ").map((n) => n[0]).join("").slice(0, 2)}

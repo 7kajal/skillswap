@@ -153,10 +153,10 @@ export default function DashboardPage() {
       <main className="mx-auto max-w-6xl px-5 py-9 sm:px-6 lg:px-8">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.16em] text-blue-600">Your exchanges</p>
-          <h1 className="mt-2 text-3xl font-black tracking-[-0.045em] text-slate-950">Swap center</h1>
+          <h1 className="mt-2 text-2xl font-black tracking-[-0.045em] text-slate-950 sm:text-3xl">Swap center</h1>
           <p className="mt-2 text-sm font-medium text-slate-500">Manage requests, conversations, and upcoming learning sessions.</p>
 
-          <div className="mt-7 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 sm:w-fit">
+          <div className="mt-7 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:w-fit">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (

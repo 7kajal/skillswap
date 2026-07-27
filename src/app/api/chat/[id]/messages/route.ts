@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError, apiUnauthorized } from "@/lib/apiResponse";
-import { isRoomMember, getMessages, sendMessage } from "@/modules/chat/chat.service";
+import { isRoomMember, getMessages, sendMessage } from "@/app/api/chat/service";
 
 export async function GET(
   _req: Request,

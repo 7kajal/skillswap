@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError, apiUnauthorized } from "@/lib/apiResponse";
-import { getDashboardStats } from "@/modules/dashboard/dashboard.service";
+import { getDashboardStats } from "@/app/api/dashboard/service";
 
 export async function GET() {
   const session = await auth();

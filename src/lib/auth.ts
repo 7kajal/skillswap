@@ -2,8 +2,8 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
-import { findUserByEmail } from "@/modules/auth/auth.service";
-import { verifyPassword } from "@/modules/auth/auth.service";
+import { findUserByEmail } from "@/app/api/auth/service";
+import { verifyPassword } from "@/app/api/auth/service";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },

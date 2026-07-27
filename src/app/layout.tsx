@@ -27,7 +27,7 @@ export default function RootLayout({
       <body className={manrope.className}>
         <AuthProvider>
           <ToastProvider>
-            <div className="flex min-h-screen flex-col">
+            <div className="flex min-h-screen flex-col overflow-x-hidden">
               <Header />
               <main className="flex-1">{children}</main>
               <Footer />

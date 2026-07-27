@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { findUserByEmail, verifyPassword } from "@/modules/auth/auth.service";
+import { findUserByEmail, verifyPassword } from "@/app/api/auth/service";
 
 export async function POST(req: Request) {
     try {

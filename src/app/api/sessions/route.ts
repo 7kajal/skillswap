@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError, apiUnauthorized, apiBadRequest } from "@/lib/apiResponse";
-import { createSession, getSessionsForUser } from "@/modules/sessions/session.service";
+import { createSession, getSessionsForUser } from "@/app/api/sessions/service";
 
 export async function GET() {
   const session = await auth();

@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError, apiUnauthorized } from "@/lib/apiResponse";
-import { getAndAwardBadges } from "@/modules/badges/badges.service";
+import { getAndAwardBadges } from "@/app/api/badges/service";
 
 export async function GET() {
   const session = await auth();

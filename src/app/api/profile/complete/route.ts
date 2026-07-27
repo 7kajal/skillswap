@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError, apiUnauthorized } from "@/lib/apiResponse";
-import { completeProfile } from "@/modules/profile/profile.service";
+import { completeProfile } from "@/app/api/profile/service";
 
 export async function POST(req: Request) {
   const session = await auth();

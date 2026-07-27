@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError, apiUnauthorized } from "@/lib/apiResponse";
-import { updateSessionStatus } from "@/modules/sessions/session.service";
+import { updateSessionStatus } from "@/app/api/sessions/service";
 
 export async function PATCH(
   req: Request,

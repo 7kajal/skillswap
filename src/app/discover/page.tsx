@@ -167,7 +167,7 @@ export default function DiscoverPage() {
           <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-3xl font-black tracking-[-0.045em] text-slate-950 sm:text-4xl">
+                <h1 className="text-2xl font-black tracking-[-0.045em] text-slate-950 sm:text-3xl md:text-4xl">
                   Discover people
                 </h1>
                 {status === "authenticated" && (
@@ -193,7 +193,7 @@ export default function DiscoverPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search React, photography, Spanish, a name or location..."
-              className="h-16 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-14 pr-14 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10"
+              className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-14 pr-14 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 sm:h-16"
             />
             {search && (
               <button

@@ -183,7 +183,7 @@ export default function ProfilePage() {
 
                 <div className="pb-1">
                   <div className="flex items-center gap-2">
-                    <h2 className="text-3xl font-black tracking-[-0.04em] text-slate-950">
+                    <h2 className="text-2xl font-black tracking-[-0.04em] text-slate-950 sm:text-3xl">
                       {profile.name}
                     </h2>
                     {profile.isProfileComplete && (
@@ -211,7 +211,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="sm:pb-1">
+              <div className="w-full sm:w-auto sm:pb-1">
                 {isOwnProfile ? (
                   <Link
                     href="/profile/complete"

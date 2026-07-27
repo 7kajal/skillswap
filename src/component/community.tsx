@@ -145,7 +145,7 @@ export function ExchangeShowcase() {
             Smart skill matching
           </p>
 
-          <h2 className="mt-4 text-4xl font-black leading-tight tracking-[-0.055em] text-slate-950 sm:text-5xl">
+          <h2 className="mt-4 text-3xl font-black leading-tight tracking-[-0.055em] text-slate-950 sm:text-4xl lg:text-5xl">
             Find an exchange where both sides win.
           </h2>
 
@@ -256,7 +256,7 @@ export function Community() {
               Community members
             </p>
 
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.055em] text-slate-950 sm:text-5xl">
+            <h2 className="mt-4 text-3xl font-black tracking-[-0.055em] text-slate-950 sm:text-4xl lg:text-5xl">
               Learn from people, not content libraries.
             </h2>
 

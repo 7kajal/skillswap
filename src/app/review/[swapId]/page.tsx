@@ -134,7 +134,7 @@ export default function ReviewPage() {
     <div className="bg-slate-50">
       <div className="bg-slate-50">
         <div className="mx-auto max-w-2xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-black text-slate-950">Session review</h1>
+          <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">Session review</h1>
           <p className="mt-1 text-sm font-medium text-slate-500">Share useful feedback with your swap partner.</p>
         </div>
       </div>

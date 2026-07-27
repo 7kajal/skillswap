@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError, apiUnauthorized } from "@/lib/apiResponse";
-import { getUserRooms } from "@/modules/chat/chat.service";
+import { getUserRooms } from "@/app/api/chat/service";
 
 export async function GET() {
   const session = await auth();

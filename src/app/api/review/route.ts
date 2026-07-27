@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError, apiUnauthorized, apiBadRequest } from "@/lib/apiResponse";
-import { findReview, createReview } from "@/modules/review/review.service";
+import { findReview, createReview } from "@/app/api/review/service";
 
 export async function GET(req: Request) {
   const session = await auth();

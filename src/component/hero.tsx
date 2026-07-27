@@ -21,7 +21,7 @@ import React from "react";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white pb-20 pt-16 sm:pt-20 lg:min-h-[710px] lg:pt-24">
+    <section className="relative overflow-hidden bg-white pb-14 pt-12 sm:pb-20 sm:pt-20 lg:min-h-[710px] lg:pt-24">
       <div className="absolute -left-48 top-8 h-[540px] w-[540px] rounded-full bg-blue-200/35 blur-[140px]" />
       <div className="absolute -right-48 top-0 h-[560px] w-[560px] rounded-full bg-indigo-200/35 blur-[150px]" />
 
@@ -41,7 +41,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="mx-auto mt-7 max-w-5xl text-[3.25rem] font-black leading-[0.98] tracking-[-0.07em] text-slate-950 sm:text-6xl lg:text-[5.3rem]"
+          className="mx-auto mt-7 max-w-5xl text-4xl font-black leading-[0.98] tracking-[-0.07em] text-slate-950 sm:text-5xl md:text-6xl lg:text-[5.3rem]"
         >
           Learn anything by sharing
           <span className="block text-blue-600">what you already know.</span>
@@ -244,7 +244,7 @@ export function SkillsMarquee() {
           <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600">
             Explore skills
           </p>
-          <h2 className="mt-3 max-w-xl text-3xl font-black tracking-[-0.05em] text-slate-950 sm:text-4xl">
+          <h2 className="mt-3 max-w-xl text-3xl font-black tracking-[-0.05em] text-slate-950 sm:text-4xl lg:text-5xl">
             What will you learn next?
           </h2>
           <p className="mt-3 max-w-xl text-sm font-medium leading-7 text-slate-500 sm:text-base">

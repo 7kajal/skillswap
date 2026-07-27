@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError, apiUnauthorized } from "@/lib/apiResponse";
-import { getReputation, updateSocialLinks, verifySkill } from "@/modules/reputation/reputation.service";
+import { getReputation, updateSocialLinks, verifySkill } from "@/app/api/reputation/service";
 
 export async function GET(req: Request) {
   const session = await auth();

@@ -79,7 +79,7 @@ export default function LoginPage() {
     <div className="flex items-center justify-center bg-slate-50 px-5 py-12">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-black text-slate-950">Welcome back</h1>
+          <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">Welcome back</h1>
           <p className="mt-2 text-sm font-medium text-slate-500">Sign in to continue your skill exchange journey</p>
         </div>
 

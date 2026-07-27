@@ -23,7 +23,7 @@ export function CTA() {
             <Sparkles className="h-6 w-6" />
           </div> */}
 
-          <h2 className="mt-7 text-4xl font-black leading-tight tracking-[-0.06em] sm:text-5xl lg:text-6xl">
+          <h2 className="mt-7 text-3xl font-black leading-tight tracking-[-0.06em] sm:text-4xl md:text-5xl lg:text-6xl">
             Your next skill is already in the community.
           </h2>
 

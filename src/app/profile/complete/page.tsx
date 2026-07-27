@@ -127,7 +127,7 @@ export default function CompleteProfilePage() {
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
             <Sparkles className="h-6 w-6" />
           </div>
-          <h1 className="mt-5 text-3xl font-black text-slate-950">
+          <h1 className="mt-5 text-2xl font-black text-slate-950 sm:text-3xl">
             {editing ? "Edit your profile" : "Complete your profile"}
           </h1>
           <p className="mt-2 text-sm font-medium text-slate-500">
@@ -138,14 +138,14 @@ export default function CompleteProfilePage() {
         </div>
 
         {/* Step indicator */}
-        <div className="mb-8 flex items-center justify-center gap-2">
+        <div className="mb-8 flex items-center justify-center gap-2 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {steps.map((s, i) => {
             const Icon = s.icon;
             return (
               <button
                 key={s.label}
                 onClick={() => setStep(i)}
-                className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-extrabold transition ${
+                className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-xs font-extrabold transition sm:px-4 ${
                   step === i
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                     : step > i
@@ -154,7 +154,7 @@ export default function CompleteProfilePage() {
                 }`}
               >
                 {step > i ? <Check className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
-                {s.label}
+                <span className="hidden sm:inline">{s.label}</span>
               </button>
             );
           })}
@@ -227,7 +227,7 @@ export default function CompleteProfilePage() {
             <div className="space-y-5">
               <h2 className="text-xl font-black text-slate-950">When are you available?</h2>
               <p className="text-sm font-medium text-slate-500">Select all times that work for you.</p>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {availabilityOptions.map((opt) => (
                   <button
                     key={opt}

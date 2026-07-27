@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { apiSuccess, apiError, apiUnauthorized, apiNotFound } from "@/lib/apiResponse";
-import { getProfile } from "@/modules/profile/profile.service";
+import { getProfile } from "@/app/api/profile/service";
 
 export async function GET() {
   const session = await auth();

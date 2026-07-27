@@ -221,23 +221,23 @@ export default function ChatPage() {
       {/* Header */}
       <div className="border-b border-slate-200 bg-white px-5 py-3">
         <div className="mx-auto flex max-w-4xl items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
             {otherUser && (
-              <div className="flex items-center gap-3">
+              <div className="flex min-w-0 items-center gap-3">
                 {otherUser.avatar ? (
                   <img
                     src={otherUser.avatar}
                     alt={otherUser.name}
-                    className="h-10 w-10 rounded-xl object-cover"
+                    className="h-10 w-10 shrink-0 rounded-xl object-cover"
                   />
                 ) : (
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-xs font-black text-white">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-xs font-black text-white">
                     {otherUser.name
                       .split(" ")
                       .map((n) => n[0])
@@ -245,15 +245,15 @@ export default function ChatPage() {
                       .slice(0, 2)}
                   </div>
                 )}
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-1">
-                    <h2 className="text-sm font-black text-slate-950">
+                    <h2 className="truncate text-sm font-black text-slate-950">
                       {otherUser.name}
                     </h2>
-                    <BadgeCheck className="h-3.5 w-3.5 fill-blue-600 text-white" />
+                    <BadgeCheck className="h-3.5 w-3.5 shrink-0 fill-blue-600 text-white" />
                   </div>
                   {roomInfo?.swapRequest && (
-                    <p className="text-[11px] font-bold text-blue-600">
+                    <p className="truncate text-[11px] font-bold text-blue-600">
                       {roomInfo.swapRequest.teachSkill.name} ↔{" "}
                       {roomInfo.swapRequest.learnSkill.name}
                     </p>
@@ -263,7 +263,7 @@ export default function ChatPage() {
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {roomInfo?.swapRequest?.status === "accepted" && (
               <button
                 onClick={markComplete}

@@ -9,7 +9,7 @@ import { Testimonials } from "../component/testimonials";
 
 export default function HomePage() {
   return (
-    <main className="overflow-hidden bg-white text-slate-950">
+    <main className="overflow-x-hidden bg-white text-slate-950">
       <Hero />
       <SkillsMarquee />
       <HowItWorks />
