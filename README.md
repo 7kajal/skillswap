@@ -1,18 +1,65 @@
-## Skill Exchange – Project Workflow
+# Skill Exchange
 
-1. The user registers or logs in using Google, GitHub, or Email.
-2. After successful login, the user is redirected to complete their Skill Exchange profile.
-3. The user fills in personal details such as profile photo, bio, location, languages, availability, skills they can teach, and skills they want to learn.
-4. Once the profile is completed, it becomes visible to other users on the platform.
-5. The backend analyzes the user's teaching and learning skills and automatically finds the best matching profiles.
-6. The Discover page displays recommended users along with their skills, ratings, location, and match percentage.
-7. The user can open any profile to view detailed information about that person's skills, experience, availability, and reviews.
-8. If interested, the user clicks the **Request Skill Swap** button and sends a request along with the skill they want to teach and the skill they want to learn.
-9. The recipient receives the request in their dashboard and can either accept or reject it.
-10. If the request is accepted, the platform automatically creates a private chat room for both users.
-11. Inside the chat, users can communicate, share study materials, exchange files, and send Google Meet, Zoom, Microsoft Teams, etc links to schedule their learning sessions.
-12. The users conduct their learning sessions using their preferred communication platform.
-13. After completing the skill exchange, both users mark the session as completed.
-14. Each user can then rate and review the other based on their learning experience.
-15. The platform updates their ratings, completed exchanges, trust score, and overall reputation.
-16. As users complete more successful exchanges, they receive better recommendations, higher visibility, and earn badges or achievements within the community.
+## What is Skill Exchange?
+
+**Skill Exchange** is a platform where people can **teach what they know and learn what they want** by connecting with others who have complementary skills.
+
+For example:
+
+> Rahul can teach React and wants to learn UI/UX.
+> Priya can teach UI/UX and wants to learn React.
+> **Skill Exchange connects them.**
+
+## Goal
+
+The goal is to create a community where **everyone can be both a teacher and a learner**.
+
+Skill Exchange makes learning more:
+
+* Collaborative
+* Accessible
+* Skill-focused
+* Community-driven
+* Trustworthy
+
+## How It Works
+
+### 1. Create Your Profile
+
+Users add their skills, interests, experience, location, languages, and availability.
+
+### 2. Find a Match
+
+The platform recommends people based on the skills they can teach and the skills they want to learn.
+
+Users can view their **match percentage, skills, ratings, and profile information**.
+
+### 3. Send a Skill Swap Request
+
+Users can send a request by choosing:
+
+* What they will teach
+* What they want to learn
+* An optional message
+
+### 4. Connect & Chat
+
+Once the request is accepted, both users can chat privately, share resources and files, and plan their learning sessions.
+
+They can also share meeting links such as Google Meet or Zoom.
+
+### 5. Teach & Learn
+
+Both users exchange knowledge by teaching their skills and learning something new from each other.
+
+### 6. Complete & Review
+
+After completing the exchange, both users can mark it as complete and **rate and review each other**.
+
+Successful exchanges help build their **rating, reputation, completed exchanges, and achievements**.
+
+## Vision
+
+> **Everyone knows something worth teaching, and everyone has something new to learn.**
+
+Skill Exchange connects people with complementary skills and turns their knowledge into meaningful learning experiences.

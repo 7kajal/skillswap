@@ -19,7 +19,11 @@ import {
 import Link from "next/link";
 import React from "react";
 
-export function Hero() {
+type AuthStatus = "authenticated" | "loading" | "unauthenticated";
+
+export function Hero({ authStatus }: { authStatus: AuthStatus }) {
+  const isAuthenticated = authStatus === "authenticated";
+
   return (
     <section className="relative overflow-hidden bg-white pb-14 pt-12 sm:pb-20 sm:pt-20 lg:min-h-[710px] lg:pt-24">
       <div className="absolute -left-48 top-8 h-[540px] w-[540px] rounded-full bg-blue-200/35 blur-[140px]" />
@@ -63,13 +67,17 @@ export function Hero() {
           transition={{ delay: 0.22 }}
         >
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/auth/register"
-              className="group inline-flex h-14 items-center justify-center gap-2 rounded-full bg-blue-600 px-8 text-sm font-extrabold text-white shadow-[0_16px_35px_rgba(37,99,235,0.24)] transition hover:-translate-y-0.5 hover:bg-blue-700"
-            >
-              Join now
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+            {authStatus === "loading" ? (
+              <span className="h-14 w-52 animate-pulse rounded-full bg-slate-100" aria-label="Loading account actions" />
+            ) : (
+              <Link
+                href={isAuthenticated ? "/discover" : "/auth/register"}
+                className="group inline-flex h-14 items-center justify-center gap-2 rounded-full bg-blue-600 px-8 text-sm font-extrabold text-white shadow-[0_16px_35px_rgba(37,99,235,0.24)] transition hover:-translate-y-0.5 hover:bg-blue-700"
+              >
+                {isAuthenticated ? "Find a skill match" : "Create your profile"}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            )}
             <a
               href="#how-it-works"
               className="inline-flex h-14 items-center justify-center rounded-full border border-slate-200 bg-white px-8 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-blue-200 hover:text-blue-600"
@@ -209,8 +217,8 @@ function SkillMarqueeRow({
           const Icon = skill.icon;
 
           return (
-            <button
-              type="button"
+            <Link
+              href="/discover"
               key={`${skill.name}-${index}`}
               className="group flex min-w-[190px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm transition hover:border-blue-200 hover:shadow-lg"
             >
@@ -225,7 +233,7 @@ function SkillMarqueeRow({
               </span>
 
               <ChevronRight className="ml-auto h-4 w-4 text-slate-300 group-hover:text-blue-600" />
-            </button>
+            </Link>
           );
         })}
       </motion.div>

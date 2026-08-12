@@ -19,9 +19,9 @@ export function Footer() {
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             {footerLinks.map((column) => (
               <div key={column.title}>
-                <h3 className="text-xs font-black uppercase tracking-[0.15em] text-slate-900">
+                <h2 className="text-xs font-black uppercase tracking-[0.15em] text-slate-900">
                   {column.title}
-                </h3>
+                </h2>
 
                 <ul className="mt-5 space-y-3">
                   {column.links.map((link) => (
@@ -40,7 +40,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-slate-200 pt-6 text-xs font-semibold text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-4 border-t border-slate-200 pt-6 text-xs font-semibold text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 SkillSwap. Built for shared growth.</p>
 
           <p className="flex items-center gap-1.5">

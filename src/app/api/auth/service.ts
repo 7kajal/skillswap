@@ -12,6 +12,28 @@ export async function findUserById(id: string) {
   return User.findById(id).lean();
 }
 
+export async function findOrCreateOAuthUser(data: {
+  name?: string | null;
+  email: string;
+  image?: string | null;
+}) {
+  await connectDB();
+  const email = data.email.trim().toLowerCase();
+  const avatarUpdate = data.image ? { avatar: data.image } : {};
+
+  return User.findOneAndUpdate(
+    { email },
+    {
+      $set: avatarUpdate,
+      $setOnInsert: {
+        name: data.name?.trim() || email.split("@")[0],
+        email,
+      },
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  ).lean();
+}
+
 export async function createUser(data: { name: string; email: string; password: string }) {
   await connectDB();
   const hashed = await bcrypt.hash(data.password, 12);

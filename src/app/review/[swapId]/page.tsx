@@ -32,7 +32,7 @@ export default function ReviewPage() {
 
   useEffect(() => {
     Promise.all([
-      axiosPrivate.get("/api/swap-request"),
+      axiosPrivate.get("/api/swapRequest"),
       axiosPrivate.get("/api/profile"),
     ]).then(([requestsRes, profileRes]) => {
       setCurrentUserId(profileRes.data.data.id);

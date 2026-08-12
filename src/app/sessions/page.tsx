@@ -8,7 +8,6 @@ import {
   Video,
   X,
   Check,
-  MapPin,
   Trash2,
   CalendarCheck,
   CalendarX,
@@ -51,7 +50,6 @@ type Availability = {
 };
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function SessionsPage() {
   const [upcoming, setUpcoming] = useState<Session[]>([]);
@@ -83,8 +81,8 @@ export default function SessionsPage() {
   useEffect(() => {
     Promise.all([
       axiosPrivate.get("/api/sessions"),
-      axiosPrivate.get("/api/swap-request"),
-      axiosPrivate.get("/api/availability"),
+      axiosPrivate.get("/api/swapRequest"),
+      axiosPrivate.get("/api/sessions/availability"),
       axiosPrivate.get("/api/profile"),
     ]).then(([sessionsRes, swapsRes, availRes, profileRes]) => {
       if (sessionsRes.data.data) {
@@ -162,7 +160,7 @@ export default function SessionsPage() {
   };
 
   const saveAvailability = async () => {
-    await axiosPrivate.put("/api/availability", {
+    await axiosPrivate.put("/api/sessions/availability", {
       slots: availability.map(({ dayOfWeek, startTime, endTime }) => ({ dayOfWeek, startTime, endTime })),
     });
   };
@@ -280,7 +278,7 @@ export default function SessionsPage() {
                     key={session.id}
                     className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm"
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex flex-col gap-3 min-[390px]:flex-row min-[390px]:items-start min-[390px]:justify-between">
                       <div>
                         <h3 className="text-lg font-black text-slate-950">{session.title}</h3>
                         <p className="mt-1 text-sm font-medium text-slate-500">
@@ -402,7 +400,7 @@ export default function SessionsPage() {
         {activeTab === "availability" && (
           <div>
             <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="text-lg font-black text-slate-950">Weekly Availability</h2>
                   <p className="mt-1 text-sm font-medium text-slate-500">
@@ -436,19 +434,19 @@ export default function SessionsPage() {
                         <option key={idx} value={idx}>{day}</option>
                       ))}
                     </select>
-                    <div className="flex items-center gap-3">
+                     <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:flex sm:gap-3">
                       <input
                         type="time"
                         value={slot.startTime}
                         onChange={(e) => updateAvailabilitySlot(slot.id, "startTime", e.target.value)}
-                        className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none"
+                         className="min-w-0 rounded-xl border border-slate-200 bg-white px-2 py-2.5 text-sm font-bold text-slate-700 outline-none sm:px-4"
                       />
                       <span className="text-sm font-bold text-slate-400">to</span>
                       <input
                         type="time"
                         value={slot.endTime}
                         onChange={(e) => updateAvailabilitySlot(slot.id, "endTime", e.target.value)}
-                        className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none"
+                         className="min-w-0 rounded-xl border border-slate-200 bg-white px-2 py-2.5 text-sm font-bold text-slate-700 outline-none sm:px-4"
                       />
                     </div>
                     <button

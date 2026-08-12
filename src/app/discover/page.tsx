@@ -135,7 +135,7 @@ export default function DiscoverPage() {
     setError(null);
 
     try {
-      const response = await axiosPrivate.post("/api/swap-request", {
+      const response = await axiosPrivate.post("/api/swapRequest", {
         receiverId: swapModal.id,
         teachSkillName: teachSkill,
         learnSkillName: learnSkill,
@@ -344,7 +344,7 @@ export default function DiscoverPage() {
                         </div>
                       </div>
 
-                      <div className="mt-auto grid grid-cols-2 gap-2 pt-6">
+                      <div className="mt-auto grid gap-2 pt-6 min-[390px]:grid-cols-2">
                         <Link
                           href={`/profile/${user.id}`}
                           className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 text-sm font-extrabold text-slate-700 transition hover:border-blue-200 hover:text-blue-600"
@@ -391,7 +391,7 @@ export default function DiscoverPage() {
 
       {swapModal && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/50 p-5 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-7 shadow-2xl">
+          <div className="max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-[24px] border border-slate-200 bg-white p-5 shadow-2xl sm:rounded-[28px] sm:p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-xl font-black text-slate-950">Request a skill swap</h2>

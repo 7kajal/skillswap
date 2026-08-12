@@ -15,6 +15,8 @@ import {
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+type AuthStatus = "authenticated" | "loading" | "unauthenticated";
+
 const stepCopy = [
   {
     number: "01",
@@ -178,7 +180,7 @@ function SessionDemo() {
 
 const demos: ReactNode[] = [<SearchDemo key="search" />, <ScheduleDemo key="schedule" />, <SessionDemo key="session" />];
 
-export function HowItWorks() {
+export function HowItWorks({ authStatus }: { authStatus: AuthStatus }) {
   return (
     <section id="how-it-works" className="relative overflow-hidden bg-white py-24 sm:py-28">
       <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-100/60 blur-[130px]" />
@@ -225,10 +227,14 @@ export function HowItWorks() {
         </div>
 
         <div className="mt-10 flex justify-center">
-          <Link href="/auth/register" className="group inline-flex items-center gap-2 text-sm font-black text-blue-600">
-            Start your first skill swap
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+          {authStatus === "loading" ? (
+            <span className="h-5 w-44 animate-pulse rounded bg-slate-100" aria-label="Loading account actions" />
+          ) : (
+            <Link href={authStatus === "authenticated" ? "/discover" : "/auth/register"} className="group inline-flex items-center gap-2 text-sm font-black text-blue-600">
+              {authStatus === "authenticated" ? "Find a skill match" : "Start your first skill swap"}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          )}
         </div>
       </div>
     </section>

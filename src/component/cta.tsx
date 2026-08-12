@@ -1,8 +1,13 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
+import type { HomeData } from "@/app/api/home/types";
 
-export function CTA() {
+type AuthStatus = "authenticated" | "loading" | "unauthenticated";
+
+export function CTA({ stats, loading, authStatus }: { stats: HomeData["stats"]; loading: boolean; authStatus: AuthStatus }) {
+  const isAuthenticated = authStatus === "authenticated";
+
   return (
     <section id="join" className="bg-white px-5 py-20 sm:px-6 sm:py-24">
       <motion.div
@@ -28,18 +33,27 @@ export function CTA() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-base font-medium leading-8 text-blue-100 sm:text-lg">
-            Join thousands of people who believe useful knowledge should be
-            shared, not limited by money.
+            {loading
+              ? "See what people are teaching, learning and sharing with each other."
+              : stats.completedSwaps > 0
+                ? `${stats.peopleWhoSwapped} ${stats.peopleWhoSwapped === 1 ? "person has" : "people have"} completed ${stats.completedSwaps} ${stats.completedSwaps === 1 ? "skill swap" : "skill swaps"}, with ${stats.publishedReviews} published ${stats.publishedReviews === 1 ? "review" : "reviews"}.`
+                : isAuthenticated
+                  ? "Explore the community and find someone ready for your next skill exchange."
+                  : "Join the community, complete your profile and start the first skill exchange."}
           </p>
 
           <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              href="/auth/register"
-              className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-black text-blue-600 shadow-xl transition hover:-translate-y-1"
-            >
-              Create your free profile
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
+            {authStatus === "loading" ? (
+              <span className="h-13 w-52 animate-pulse rounded-full bg-white/20" aria-label="Loading account actions" />
+            ) : (
+              <Link
+                href={isAuthenticated ? "/dashboard" : "/auth/register"}
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-black text-blue-600 shadow-xl transition hover:-translate-y-1"
+              >
+                {isAuthenticated ? "Go to your dashboard" : "Create your free profile"}
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            )}
 
             <Link
               href="/discover"

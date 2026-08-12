@@ -2,10 +2,14 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
-import { findUserByEmail } from "@/app/api/auth/service";
-import { verifyPassword } from "@/app/api/auth/service";
+import {
+  findOrCreateOAuthUser,
+  findUserByEmail,
+  verifyPassword,
+} from "@/app/api/auth/service";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/auth/login",
@@ -38,9 +42,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials" && !user.email) return false;
+      return true;
+    },
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id;
+        if (account?.provider && account.provider !== "credentials" && user.email) {
+          const localUser = await findOrCreateOAuthUser({
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          });
+          token.id = localUser._id.toString();
+        } else {
+          token.id = user.id;
+        }
       }
       return token;
     },

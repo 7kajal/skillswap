@@ -1,164 +1,56 @@
-import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   ArrowRight,
-  BadgeCheck,
-  BookOpen,
-  BriefcaseBusiness,
-  Camera,
   Check,
-  ChevronRight,
-  Code2,
-  Compass,
-  Dumbbell,
-  Globe2,
-  GraduationCap,
   HeartHandshake,
-  Languages,
   MapPin,
-  MessageCircle,
-  Music2,
-  Palette,
-  Search,
-  ShieldCheck,
-  Sparkles,
   Star,
-  Users,
-  Utensils,
-  WandSparkles,
-  Zap,
 } from "lucide-react";
+import type { HomeMember } from "@/app/api/home/types";
 
-type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
+type AuthStatus = "authenticated" | "loading" | "unauthenticated";
 
-type Member = {
-  id: string;
-  name: string;
-  avatar: string;
-  role: string;
-  location: string;
-  rating: number;
-  reviews: number;
-  match: number;
-  online: boolean;
-  teaches: string[];
-  learning: string[];
-};
+function initials(name: string) {
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
 
-const members: Member[] = [
-  {
-    id: "1",
-    name: "Sarah Wilson",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&h=300&q=85",
-    role: "Frontend Engineer",
-    location: "London, UK",
-    rating: 4.9,
-    reviews: 154,
-    match: 96,
-    online: true,
-    teaches: ["React", "Next.js", "TypeScript"],
-    learning: ["Photography", "Brand Design"],
-  },
-  {
-    id: "2",
-    name: "Emma Brown",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=300&h=300&q=85",
-    role: "Product Designer",
-    location: "Sydney, Australia",
-    rating: 4.8,
-    reviews: 126,
-    match: 94,
-    online: true,
-    teaches: ["UI Design", "Figma", "Canva"],
-    learning: ["React", "Next.js"],
-  },
-  {
-    id: "3",
-    name: "Michael Lee",
-    avatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&h=300&q=85",
-    role: "Machine Learning Engineer",
-    location: "Toronto, Canada",
-    rating: 4.9,
-    reviews: 212,
-    match: 95,
-    online: false,
-    teaches: ["Python", "Machine Learning", "AI"],
-    learning: ["French", "Photography"],
-  },
-  {
-    id: "4",
-    name: "Olivia Taylor",
-    avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&h=300&q=85",
-    role: "Language Mentor",
-    location: "Paris, France",
-    rating: 5,
-    reviews: 265,
-    match: 98,
-    online: true,
-    teaches: ["French", "Baking"],
-    learning: ["JavaScript", "React"],
-  },
-];
-
-const steps = [
-  {
-    number: "01",
-    icon: GraduationCap,
-    title: "Add what you can teach",
-    description:
-      "Build a profile around your real skills, knowledge and experience.",
-  },
-  {
-    number: "02",
-    icon: Search,
-    title: "Find what you want to learn",
-    description:
-      "Search members, compare compatibility and discover a fair exchange.",
-  },
-  {
-    number: "03",
-    icon: HeartHandshake,
-    title: "Agree on the exchange",
-    description:
-      "Decide what each person shares, how you will meet and what success means.",
-  },
-  {
-    number: "04",
-    icon: Sparkles,
-    title: "Learn and grow together",
-    description:
-      "Complete sessions, exchange feedback and build a trusted network.",
-  },
-];
-
-export function ExchangeShowcase() {
+export function ExchangeShowcase({
+  member,
+  loading,
+  authStatus,
+}: {
+  member?: HomeMember;
+  loading: boolean;
+  authStatus: AuthStatus;
+}) {
   return (
     <section className="bg-white py-24 sm:py-28">
       <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
         <div>
           <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-blue-600">
-            Smart skill matching
+            Active community
           </p>
 
           <h2 className="mt-4 text-3xl font-black leading-tight tracking-[-0.055em] text-slate-950 sm:text-4xl lg:text-5xl">
-            Find an exchange where both sides win.
+            Learn from people who complete real swaps.
           </h2>
 
           <p className="mt-5 max-w-lg text-base font-medium leading-8 text-slate-600">
-            SkillSwap looks beyond a basic search. Discover people based on what
-            they teach, what they want to learn and how well your needs align.
+            Explore completed profiles, see what each member can teach and learn,
+            and connect around a clear exchange.
           </p>
 
           <div className="mt-8 space-y-4">
             {[
-              "Search by skill, category or location",
-              "Compare compatibility before connecting",
-              "Agree on sessions and expectations",
+              "Browse skills added by real members",
+              "See completed swaps and community reviews",
+              "Open a profile before sending a request",
             ].map((item) => (
               <div key={item} className="flex items-center gap-3">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600">
@@ -173,37 +65,56 @@ export function ExchangeShowcase() {
         <div className="relative overflow-hidden rounded-[34px] border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-5 sm:p-8">
           <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-300/30 blur-[90px]" />
 
-          <div className="relative rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_28px_80px_rgba(37,99,235,0.13)] sm:p-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-5">
+          <div className="relative min-h-[390px] rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_28px_80px_rgba(37,99,235,0.13)] sm:p-6">
+            {loading ? (
+              <div className="space-y-6" aria-label="Loading featured community member">
+                <div className="h-14 animate-pulse rounded-2xl bg-slate-100" />
+                <div className="flex items-center gap-4"><div className="h-16 w-16 animate-pulse rounded-2xl bg-slate-100" /><div className="h-12 flex-1 animate-pulse rounded-xl bg-slate-100" /></div>
+                <div className="grid gap-3 sm:grid-cols-2"><div className="h-24 animate-pulse rounded-2xl bg-slate-100" /><div className="h-24 animate-pulse rounded-2xl bg-slate-100" /></div>
+                <div className="h-12 animate-pulse rounded-xl bg-slate-100" />
+              </div>
+            ) : !member ? (
+              <div className="flex min-h-[340px] flex-col items-center justify-center text-center">
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600"><HeartHandshake className="h-6 w-6" /></span>
+                <h3 className="mt-5 text-xl font-black text-slate-950">Be the first featured member</h3>
+                <p className="mt-2 max-w-sm text-sm font-medium leading-6 text-slate-500">Complete your profile and add the skills you can teach to appear in the community.</p>
+                {authStatus === "loading" ? (
+                  <span className="mt-6 h-12 w-44 animate-pulse rounded-xl bg-slate-100" aria-label="Loading account actions" />
+                ) : (
+                  <Link href={authStatus === "authenticated" ? "/profile/complete" : "/auth/register"} className="mt-6 inline-flex h-12 items-center rounded-xl bg-blue-600 px-5 text-sm font-extrabold text-white">
+                    {authStatus === "authenticated" ? "Manage your profile" : "Create your profile"}
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <>
+            <div className="flex flex-col gap-3 border-b border-slate-100 pb-5 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
               <div>
                 <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-blue-600">
-                  Recommended match
+                  Community spotlight
                 </p>
                 <h3 className="mt-1 text-xl font-black text-slate-950">
-                  Strong exchange opportunity
+                  Experienced skill sharer
                 </h3>
               </div>
 
-              <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-emerald-600">
-                96% match
+              <span className="w-fit rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-extrabold text-emerald-700">
+                {member.completedSwaps} completed {member.completedSwaps === 1 ? "swap" : "swaps"}
               </span>
             </div>
 
             <div className="mt-6 flex items-center gap-4">
-              <img
-                src={members[0].avatar}
-                alt={members[0].name}
-                className="h-16 w-16 rounded-2xl object-cover"
-              />
+              {member.avatar ? (
+                <img src={member.avatar} alt={member.name} className="h-16 w-16 rounded-2xl object-cover" />
+              ) : (
+                <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-sm font-black text-white">{initials(member.name)}</span>
+              )}
 
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <p className="font-black text-slate-950">{members[0].name}</p>
-                  <BadgeCheck className="h-4 w-4 fill-blue-600 text-white" />
-                </div>
+              <div className="min-w-0">
+                <p className="truncate font-black text-slate-950">{member.name}</p>
 
                 <p className="mt-1 text-xs font-semibold text-slate-500">
-                  {members[0].role} · {members[0].location}
+                  {member.location || "Location not added"}
                 </p>
               </div>
             </div>
@@ -214,7 +125,7 @@ export function ExchangeShowcase() {
                   Can teach
                 </p>
                 <p className="mt-2 font-black text-slate-900">
-                  React & Next.js
+                  {member.teaches.slice(0, 2).join(" & ") || "Skills being added"}
                 </p>
               </div>
 
@@ -226,19 +137,13 @@ export function ExchangeShowcase() {
                 <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-blue-500">
                   Wants to learn
                 </p>
-                <p className="mt-2 font-black text-slate-900">Photography</p>
+                <p className="mt-2 font-black text-slate-900">{member.learning.slice(0, 2).join(" & ") || "Skills being added"}</p>
               </div>
             </div>
 
-            <div className="mt-5 flex gap-3">
-              <button className="flex-1 rounded-xl bg-blue-600 py-3.5 text-sm font-extrabold text-white">
-                Connect
-              </button>
-
-              <button className="flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 text-slate-500">
-                <MessageCircle className="h-4 w-4" />
-              </button>
-            </div>
+            <Link href={`/profile/${member.id}`} className="mt-5 flex h-12 w-full items-center justify-center rounded-xl bg-blue-600 text-sm font-extrabold text-white transition hover:bg-blue-700">View profile</Link>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -246,7 +151,16 @@ export function ExchangeShowcase() {
   );
 }
 
-export function Community() {
+export function Community({ members, loading }: { members: HomeMember[]; loading: boolean }) {
+  const memberGridClass =
+    members.length === 1
+      ? "mx-auto max-w-sm grid-cols-1"
+      : members.length === 2
+        ? "mx-auto max-w-3xl sm:grid-cols-2"
+        : members.length === 3
+          ? "mx-auto max-w-6xl sm:grid-cols-2 lg:grid-cols-3"
+          : "sm:grid-cols-2 lg:grid-cols-4";
+
   return (
     <section id="community" className="bg-slate-50 py-24 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
@@ -272,7 +186,17 @@ export function Community() {
           </Link>
         </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {loading ? (
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" aria-label="Loading community members">
+            {Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-[400px] animate-pulse rounded-[28px] border border-slate-200 bg-white" />)}
+          </div>
+        ) : members.length === 0 ? (
+          <div className="mt-12 rounded-[28px] border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+            <h3 className="text-xl font-black text-slate-950">No completed profiles yet</h3>
+            <p className="mt-2 text-sm font-medium text-slate-500">Community members will appear here after completing their profiles.</p>
+          </div>
+        ) : (
+          <div className={`mt-12 grid gap-5 ${memberGridClass}`}>
           {members.map((member, index) => (
             <motion.article
               key={member.id}
@@ -281,26 +205,20 @@ export function Community() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ delay: index * 0.06 }}
               whileHover={{ y: -7 }}
-              className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_12px_35px_rgba(15,23,42,0.05)] transition-shadow hover:border-blue-200 hover:shadow-[0_25px_60px_rgba(37,99,235,0.1)]"
+              className="flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_12px_35px_rgba(15,23,42,0.05)] transition-shadow hover:border-blue-200 hover:shadow-[0_25px_60px_rgba(37,99,235,0.1)]"
             >
-              <div className="relative bg-gradient-to-br from-slate-50 to-blue-50 p-5">
+              <div className="relative min-h-[228px] bg-gradient-to-br from-slate-50 to-blue-50 p-5">
                 <div className="flex items-start justify-between">
                   <div className="relative">
-                    <img
-                      src={member.avatar}
-                      alt={member.name}
-                      className="h-16 w-16 rounded-2xl object-cover ring-4 ring-white"
-                    />
-
-                    <span
-                      className={`absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-[3px] border-white ${
-                        member.online ? "bg-emerald-500" : "bg-slate-300"
-                      }`}
-                    />
+                    {member.avatar ? (
+                      <img src={member.avatar} alt={member.name} className="h-16 w-16 rounded-2xl object-cover ring-4 ring-white" />
+                    ) : (
+                      <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-sm font-black text-white ring-4 ring-white">{initials(member.name)}</span>
+                    )}
                   </div>
 
                   <span className="rounded-full border border-blue-100 bg-white px-2.5 py-1.5 text-[10px] font-extrabold text-blue-600">
-                    {member.match}% match
+                    {member.completedSwaps} {member.completedSwaps === 1 ? "swap" : "swaps"}
                   </span>
                 </div>
 
@@ -309,28 +227,26 @@ export function Community() {
                     <h3 className="text-lg font-black text-slate-950">
                       {member.name}
                     </h3>
-                    <BadgeCheck className="h-4 w-4 fill-blue-600 text-white" />
                   </div>
 
-                  <p className="mt-1 text-xs font-bold text-slate-500">
-                    {member.role}
+                   <p className="mt-1 line-clamp-3 text-xs font-bold leading-5 text-slate-500">
+                    {member.bio || "SkillSwap community member"}
                   </p>
 
                   <p className="mt-2 flex items-center gap-1 text-xs font-medium text-slate-400">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {member.location}
+                    {member.location && <><MapPin className="h-3.5 w-3.5" />{member.location}</>}
                   </p>
                 </div>
               </div>
 
-              <div className="p-5">
+              <div className="flex flex-1 flex-col p-5">
                 <div className="flex items-center gap-2">
                   <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                   <span className="text-sm font-black text-slate-900">
-                    {member.rating}
+                    {member.reviewCount > 0 ? member.rating.toFixed(1) : "New"}
                   </span>
                   <span className="text-xs text-slate-400">
-                    ({member.reviews})
+                    ({member.reviewCount} {member.reviewCount === 1 ? "review" : "reviews"})
                   </span>
                 </div>
 
@@ -348,17 +264,19 @@ export function Community() {
                         {skill}
                       </span>
                     ))}
+                    {member.teaches.length === 0 && <span className="text-xs font-semibold text-slate-400">No teaching skills added</span>}
                   </div>
                 </div>
 
-                <button className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 text-sm font-extrabold text-white transition hover:bg-slate-600">
+                <Link href={`/profile/${member.id}`} className="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 text-sm font-extrabold text-white transition hover:bg-blue-700">
                   View profile
                   <ArrowRight className="h-4 w-4" />
-                </button>
+                </Link>
               </div>
             </motion.article>
           ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -142,7 +142,7 @@ export default function ProfilePage() {
     setSending(true);
     setRequestError("");
     try {
-      const response = await axiosPrivate.post("/api/swap-request", {
+      const response = await axiosPrivate.post("/api/swapRequest", {
         receiverId: profile.id,
         teachSkillName: teachSkill,
         learnSkillName: learnSkill,

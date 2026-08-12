@@ -13,7 +13,6 @@ export async function POST(req: Request) {
         }
 
         const user = await findUserByEmail(email);
-        console.log(user)
         if (!user || !user.password) {
             return NextResponse.json(
                 { success: false, message: "Invalid email or password" },

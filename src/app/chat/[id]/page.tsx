@@ -155,7 +155,7 @@ export default function ChatPage() {
     if (!roomInfo?.swapRequest?.id) return;
     setCompleting(true);
     try {
-      const res = await axiosPrivate.patch(`/api/swap-request/${roomInfo.swapRequest.id}`, {
+      const res = await axiosPrivate.patch(`/api/swapRequest/${roomInfo.swapRequest.id}`, {
         status: "completed",
       });
       if (res.data.success) {
@@ -217,13 +217,14 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-4.5rem)] flex-col bg-slate-50 lg:h-[calc(100vh-5rem)]">
+    <div className="flex h-[calc(100dvh-4.5rem)] flex-col bg-slate-50 lg:h-[calc(100dvh-5rem)]">
       {/* Header */}
-      <div className="border-b border-slate-200 bg-white px-5 py-3">
+      <div className="border-b border-slate-200 bg-white px-3 py-3 sm:px-5">
         <div className="mx-auto flex max-w-4xl items-center justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <button
               onClick={() => router.push("/dashboard")}
+              aria-label="Back to swap center"
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -268,10 +269,10 @@ export default function ChatPage() {
               <button
                 onClick={markComplete}
                 disabled={completing}
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-xs font-extrabold text-emerald-600 transition hover:bg-emerald-100 disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2.5 text-xs font-extrabold text-emerald-600 transition hover:bg-emerald-100 disabled:opacity-50 sm:px-4"
               >
                 <CheckCircle className="h-4 w-4" />
-                {completing ? "Completing..." : "Mark Complete"}
+                <span className="hidden sm:inline">{completing ? "Completing..." : "Mark Complete"}</span>
               </button>
             )}
 
@@ -301,7 +302,7 @@ export default function ChatPage() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-5 py-6">
+      <div className="flex-1 overflow-y-auto px-3 py-5 sm:px-5 sm:py-6">
         <div className="mx-auto max-w-4xl space-y-1">
           {messages.length === 0 && (
             <div className="rounded-[24px] border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
@@ -340,7 +341,7 @@ export default function ChatPage() {
                   className={`flex ${isOwn ? "justify-end" : "justify-start"} ${showSenderLabel && !showDate ? "mt-4" : "mt-0.5"}`}
                 >
                   <div
-                    className={`flex max-w-[70%] items-end gap-2.5 ${isOwn ? "flex-row-reverse" : ""}`}
+                    className={`flex max-w-[88%] items-end gap-2 sm:max-w-[70%] sm:gap-2.5 ${isOwn ? "flex-row-reverse" : ""}`}
                   >
                     {!isOwn &&
                       (showSenderLabel ? (
@@ -386,18 +387,20 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-slate-200 bg-white px-5 py-4">
+      <div className="border-t border-slate-200 bg-white px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:px-5 sm:py-4">
         <div className="mx-auto flex max-w-4xl items-center gap-3">
           <input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
             placeholder="Type a message..."
+            aria-label="Message"
             className="h-12 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
           />
           <button
             onClick={sendMessage}
             disabled={!newMessage.trim() || sending}
+            aria-label={sending ? "Sending message" : "Send message"}
             className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-40"
           >
             <Send className="h-5 w-5" />

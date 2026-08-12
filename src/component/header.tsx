@@ -30,6 +30,7 @@ function initials(name?: string | null) {
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const { data: session, status } = useSession();
@@ -50,10 +51,7 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    if (status !== "authenticated") {
-      setProfileAvatar(null);
-      return;
-    }
+    if (status !== "authenticated") return;
 
     fetch("/api/profile")
       .then((response) => response.json())
@@ -62,8 +60,16 @@ export function Header() {
   }, [pathname, status]);
 
   const user = session?.user;
-  const avatar = profileAvatar || user?.image;
+  const avatar = status === "authenticated" ? profileAvatar || user?.image : null;
   const profileHref = user?.id ? `/profile/${user.id}` : "/profile/complete";
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    setMobileMenuOpen(false);
+    setProfileMenuOpen(false);
+    await signOut({ redirectTo: "/" });
+  };
 
   const accountLinks = [
     { label: "My profile", href: profileHref, icon: UserRound },
@@ -83,7 +89,8 @@ export function Header() {
             <Link
               key={item.label}
               href={item.href}
-              className="rounded-full px-4 py-2 text-sm font-bold text-slate-600 transition hover:bg-white hover:text-blue-600 hover:shadow-sm"
+              aria-current={pathname === item.href ? "page" : undefined}
+              className={`rounded-full px-4 py-2 text-sm font-bold transition hover:bg-white hover:text-blue-600 hover:shadow-sm ${pathname === item.href ? "bg-white text-blue-600 shadow-sm" : "text-slate-600"}`}
             >
               {item.label}
             </Link>
@@ -100,7 +107,7 @@ export function Header() {
                 onClick={() => setProfileMenuOpen((open) => !open)}
                 aria-expanded={profileMenuOpen}
                 aria-label="Open account menu"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white p-1 shadow-sm transition hover:border-blue-200 hover:shadow-md"
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white p-1 shadow-sm transition hover:border-blue-200 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
               >
                 {avatar ? (
                   <img
@@ -152,11 +159,12 @@ export function Header() {
 
                     <button
                       type="button"
-                      onClick={() => signOut({ callbackUrl: "/" })}
+                      onClick={handleLogout}
+                      disabled={loggingOut}
                       className="flex w-full items-center gap-3 border-t border-slate-100 px-3 py-3 text-sm font-bold text-rose-600 transition hover:bg-rose-50"
                     >
                       <LogOut className="h-4 w-4" />
-                      Log out
+                      {loggingOut ? "Logging out..." : "Log out"}
                     </button>
                   </motion.div>
                 )}
@@ -184,6 +192,7 @@ export function Header() {
           type="button"
           onClick={() => setMobileMenuOpen((open) => !open)}
           aria-label="Toggle menu"
+          aria-expanded={mobileMenuOpen}
           className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-900 shadow-sm lg:hidden"
         >
           {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -220,7 +229,8 @@ export function Header() {
                   key={item.label}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                  aria-current={pathname === item.href ? "page" : undefined}
+                  className={`rounded-2xl px-4 py-3 text-sm font-bold transition hover:bg-blue-50 hover:text-blue-600 ${pathname === item.href ? "bg-blue-50 text-blue-600" : "text-slate-700"}`}
                 >
                   {item.label}
                 </Link>
@@ -248,10 +258,11 @@ export function Header() {
               ) : user ? (
                 <button
                   type="button"
-                  onClick={() => signOut({ callbackUrl: "/" })}
+                  onClick={handleLogout}
+                  disabled={loggingOut}
                   className="flex w-full items-center justify-center gap-2 rounded-full border border-rose-200 px-4 py-3 text-sm font-bold text-rose-600"
                 >
-                  <LogOut className="h-4 w-4" /> Log out
+                  <LogOut className="h-4 w-4" /> {loggingOut ? "Logging out..." : "Log out"}
                 </button>
               ) : (
                 <div className="grid grid-cols-2 gap-3">

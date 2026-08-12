@@ -87,7 +87,7 @@ export default function DashboardPage() {
   useEffect(() => {
     Promise.all([
       axiosPrivate.get("/api/dashboard"),
-      axiosPrivate.get("/api/swap-request"),
+      axiosPrivate.get("/api/swapRequest"),
       axiosPrivate.get("/api/chat/rooms"),
     ])
       .then(([dashboardResponse, requestsResponse, roomsResponse]) => {
@@ -100,7 +100,7 @@ export default function DashboardPage() {
   }, []);
 
   const updateRequest = async (id: string, status: "accepted" | "rejected") => {
-    const response = await axiosPrivate.patch(`/api/swap-request/${id}`, { status });
+    const response = await axiosPrivate.patch(`/api/swapRequest/${id}`, { status });
     const result = response.data;
     if (!result.success) return;
 
@@ -156,7 +156,7 @@ export default function DashboardPage() {
           <h1 className="mt-2 text-2xl font-black tracking-[-0.045em] text-slate-950 sm:text-3xl">Swap center</h1>
           <p className="mt-2 text-sm font-medium text-slate-500">Manage requests, conversations, and upcoming learning sessions.</p>
 
-          <div className="mt-7 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:w-fit">
+          <div className="mt-7 grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1 sm:flex sm:w-fit">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -177,7 +177,7 @@ export default function DashboardPage() {
         {activeTab === "overview" && (
           <div className="space-y-8">
             <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-              <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-3 lg:grid-cols-5 sm:divide-y-0">
+              <div className="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-3 lg:grid-cols-5 lg:divide-y-0">
                 {[
                   ["Skills taught", dashboard.stats.skillsTaught],
                   ["Skills learning", dashboard.stats.skillsLearned],
@@ -264,8 +264,8 @@ export default function DashboardPage() {
                 const otherUser = dashboard.user.id === room.swapRequest.sender.id ? room.swapRequest.receiver : room.swapRequest.sender;
                 const latestMessage = room.messages.at(-1);
                 return (
-                  <Link key={room.id} href={`/chat/${room.id}`} className={`flex items-center gap-4 px-5 py-5 transition hover:bg-slate-50 ${index > 0 ? "border-t border-slate-100" : ""}`}>
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-sm font-black text-blue-700">{initials(otherUser.name)}</span>
+                   <Link key={room.id} href={`/chat/${room.id}`} className={`flex items-center gap-3 px-4 py-4 transition hover:bg-slate-50 sm:gap-4 sm:px-5 sm:py-5 ${index > 0 ? "border-t border-slate-100" : ""}`}>
+                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-black text-blue-700 sm:h-12 sm:w-12">{initials(otherUser.name)}</span>
                     <div className="min-w-0 flex-1"><p className="text-sm font-black text-slate-900">{otherUser.name}</p><p className="mt-1 truncate text-xs font-medium text-slate-500">{latestMessage?.content || `${room.swapRequest.teachSkill.name} ↔ ${room.swapRequest.learnSkill.name}`}</p></div>
                     <ChevronRight className="h-4 w-4 text-slate-300" />
                   </Link>
@@ -294,9 +294,9 @@ function RequestList({ requests, emptyTitle, emptyDescription, currentUserId, on
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-black text-blue-700">{initials(otherUser.name)}</span>
                 <div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h2 className="font-black text-slate-900">{otherUser.name}</h2><span className={`rounded-full px-2.5 py-1 text-[10px] font-black capitalize ${statusStyles[request.status] || "bg-slate-100 text-slate-600"}`}>{request.status}</span></div><p className="mt-1 text-sm font-bold text-slate-600">{request.teachSkill.name} <span className="text-slate-300">↔</span> {request.learnSkill.name}</p>{request.message && <p className="mt-2 line-clamp-2 text-sm font-medium text-slate-500">“{request.message}”</p>}</div>
               </div>
-              <div className="flex shrink-0 gap-2">
+              <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:shrink-0">
                 {request.status === "pending" && onAccept && onReject && (<><button type="button" onClick={() => onReject(request.id)} className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 px-4 text-sm font-extrabold text-slate-600"><X className="h-4 w-4" /> Decline</button><button type="button" onClick={() => onAccept(request.id)} className="inline-flex h-10 items-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-extrabold text-white"><Check className="h-4 w-4" /> Accept</button></>)}
-                {request.status === "accepted" && <span className="inline-flex h-10 items-center gap-2 rounded-xl bg-emerald-50 px-4 text-sm font-extrabold text-emerald-700"><Clock3 className="h-4 w-4" /> Active swap</span>}
+                {request.status === "accepted" && <span className="col-span-2 inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-emerald-50 px-4 text-sm font-extrabold text-emerald-700"><Clock3 className="h-4 w-4" /> Active swap</span>}
               </div>
             </div>
           </article>
