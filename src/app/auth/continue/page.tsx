@@ -1,5 +1,6 @@
 import { findUserById } from "@/app/api/auth/service";
 import { auth } from "@/lib/auth";
+import type { ContinuePageProps } from "@/types/auth";
 import { redirect } from "next/navigation";
 
 function safeRedirect(value?: string) {
@@ -10,9 +11,7 @@ function safeRedirect(value?: string) {
 
 export default async function ContinuePage({
   searchParams,
-}: {
-  searchParams: Promise<{ redirectTo?: string }>;
-}) {
+}: ContinuePageProps) {
   const session = await auth();
   if (!session?.user?.id) redirect("/auth/login");
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -27,37 +27,15 @@ import {
   X,
   Megaphone,
 } from "lucide-react";
-
-type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
-
-export type Category = {
-  id: string;
-  name: string;
-  icon: IconType;
-  skills: number;
-  members: number;
-  iconClassName: string;
-};
-
-export type Teacher = {
-  id: string;
-  name: string;
-  avatar: string;
-  location: string;
-  role: string;
-  rating: number;
-  reviews: number;
-  match: number;
-  online: boolean;
-  teach: string[];
-  learn: string[];
-};
-
-export type TrendingSkill = {
-  id: string;
-  name: string;
-  teachers: number;
-};
+import type {
+  Category,
+  CategoryCardProps,
+  ExploreSectionHeaderProps,
+  MentorCardProps,
+  SearchAreaProps,
+  Teacher,
+  TrendingSkill,
+} from "@/types/explore";
 
 const categories: Category[] = [
   {
@@ -277,12 +255,7 @@ function SectionHeader({
   title,
   description,
   action,
-}: {
-  badge?: string;
-  title: string;
-  description: string;
-  action?: React.ReactNode;
-}) {
+}: ExploreSectionHeaderProps) {
   return (
     <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
       <div className="max-w-2xl">
@@ -309,10 +282,7 @@ function SectionHeader({
 function SearchArea({
   value,
   onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
+}: SearchAreaProps) {
   return (
     <div className="relative mx-auto mt-9 max-w-2xl">
       <div className="absolute -inset-2 rounded-[26px] bg-blue-600/10 blur-xl" />
@@ -374,12 +344,7 @@ function CategoryCard({
   active,
   onClick,
   index,
-}: {
-  category: Category;
-  active: boolean;
-  onClick: () => void;
-  index: number;
-}) {
+}: CategoryCardProps) {
   const Icon = category.icon;
 
   return (
@@ -436,7 +401,7 @@ function CategoryCard({
   );
 }
 
-function MentorCard({ teacher, index }: { teacher: Teacher; index: number }) {
+function MentorCard({ teacher, index }: MentorCardProps) {
   return (
     <motion.article
       initial={{ opacity: 0, y: 22 }}

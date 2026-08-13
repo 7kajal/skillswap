@@ -30,7 +30,6 @@ export const config = {
     "/dashboard/:path*",
     "/chat/:path*",
     "/sessions/:path*",
-    "/review/:path*",
     "/reputation/:path*",
     "/profile/complete",
     "/auth/login",

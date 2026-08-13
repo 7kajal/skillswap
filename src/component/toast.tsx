@@ -9,19 +9,11 @@ import {
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, CircleAlert, Info, X } from "lucide-react";
-
-type ToastType = "success" | "error" | "info";
-
-type ToastItem = {
-  id: number;
-  type: ToastType;
-  title: string;
-  message?: string;
-};
-
-type ToastContextValue = {
-  showToast: (toast: Omit<ToastItem, "id">) => void;
-};
+import type {
+  ToastContextValue,
+  ToastItem,
+  ToastProviderProps,
+} from "@/types/toast";
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
@@ -40,7 +32,7 @@ const toastStyles = {
   },
 };
 
-export function ToastProvider({ children }: { children: React.ReactNode }) {
+export function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const dismiss = useCallback((id: number) => {

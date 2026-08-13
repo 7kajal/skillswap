@@ -1,11 +1,9 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Search } from "lucide-react";
 import Link from "next/link";
-import type { HomeData } from "@/app/api/home/types";
+import type { CTAProps } from "@/types/home";
 
-type AuthStatus = "authenticated" | "loading" | "unauthenticated";
-
-export function CTA({ stats, loading, authStatus }: { stats: HomeData["stats"]; loading: boolean; authStatus: AuthStatus }) {
+export function CTA({ stats, loading, authStatus }: CTAProps) {
   const isAuthenticated = authStatus === "authenticated";
 
   return (

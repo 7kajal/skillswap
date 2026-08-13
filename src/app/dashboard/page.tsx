@@ -14,51 +14,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import axiosPrivate from "@/lib/axiosPrivate";
-
-type DashboardData = {
-  user: { id: string; name: string };
-  stats: {
-    skillsTaught: number;
-    skillsLearned: number;
-    completedSwaps: number;
-    hoursShared: number;
-    averageRating: number;
-  };
-  badges: { name: string; icon: string; description: string; earned: boolean }[];
-  recentActivity: { type: string; description: string; date: string }[];
-  upcomingSessions: {
-    id: string;
-    title: string;
-    date: string;
-    startTime: string;
-    otherUser: { name: string; avatar: string | null };
-  }[];
-};
-
-type SwapRequest = {
-  id: string;
-  status: string;
-  message: string | null;
-  createdAt: string;
-  sender: { id: string; name: string; avatar: string | null };
-  receiver: { id: string; name: string; avatar: string | null };
-  teachSkill: { name: string };
-  learnSkill: { name: string };
-};
-
-type ChatRoom = {
-  id: string;
-  swapRequest: {
-    sender: { id: string; name: string; avatar: string | null };
-    receiver: { id: string; name: string; avatar: string | null };
-    teachSkill: { name: string };
-    learnSkill: { name: string };
-    status: string;
-  };
-  messages: { content: string; createdAt: string }[];
-};
-
-type Tab = "overview" | "received" | "sent" | "chats";
+import type {
+  DashboardChatRoom,
+  DashboardData,
+  DashboardSwapRequest,
+  DashboardTab,
+  EmptyStateProps,
+  RequestListProps,
+} from "@/types/dashboard";
 
 const statusStyles: Record<string, string> = {
   pending: "bg-amber-50 text-amber-700",
@@ -78,10 +41,10 @@ function initials(name: string) {
 
 export default function DashboardPage() {
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
-  const [sentRequests, setSentRequests] = useState<SwapRequest[]>([]);
-  const [receivedRequests, setReceivedRequests] = useState<SwapRequest[]>([]);
-  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
-  const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [sentRequests, setSentRequests] = useState<DashboardSwapRequest[]>([]);
+  const [receivedRequests, setReceivedRequests] = useState<DashboardSwapRequest[]>([]);
+  const [chatRooms, setChatRooms] = useState<DashboardChatRoom[]>([]);
+  const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -280,7 +243,7 @@ export default function DashboardPage() {
   );
 }
 
-function RequestList({ requests, emptyTitle, emptyDescription, currentUserId, onAccept, onReject }: { requests: SwapRequest[]; emptyTitle: string; emptyDescription: string; currentUserId: string; onAccept?: (id: string) => void; onReject?: (id: string) => void }) {
+function RequestList({ requests, emptyTitle, emptyDescription, currentUserId, onAccept, onReject }: RequestListProps) {
   if (requests.length === 0) return <EmptyState title={emptyTitle} description={emptyDescription} icon={Inbox} />;
 
   return (
@@ -306,7 +269,7 @@ function RequestList({ requests, emptyTitle, emptyDescription, currentUserId, on
   );
 }
 
-function EmptyState({ title, description, icon: Icon }: { title: string; description: string; icon: typeof Inbox }) {
+function EmptyState({ title, description, icon: Icon }: EmptyStateProps) {
   return (
     <div className="rounded-[26px] border border-dashed border-slate-300 bg-white px-6 py-16 text-center"><span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600"><Icon className="h-6 w-6" /></span><h2 className="mt-5 text-xl font-black text-slate-950">{title}</h2><p className="mx-auto mt-2 max-w-md text-sm font-medium text-slate-500">{description}</p></div>
   );

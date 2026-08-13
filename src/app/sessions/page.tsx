@@ -14,54 +14,26 @@ import {
   Star,
 } from "lucide-react";
 import axiosPrivate from "@/lib/axiosPrivate";
-
-type Session = {
-  id: string;
-  swapRequestId: string;
-  organizer: { id: string; name: string; avatar: string | null };
-  participant: { id: string; name: string; avatar: string | null };
-  title: string;
-  description: string | null;
-  date: string;
-  startTime: string;
-  endTime: string;
-  timezone: string;
-  status: string;
-  meetLink: string | null;
-  notes: string | null;
-  teachSkill: string;
-  learnSkill: string;
-};
-
-type SwapRequest = {
-  id: string;
-  status: string;
-  sender: { id: string; name: string };
-  receiver: { id: string; name: string };
-  teachSkill: { name: string };
-  learnSkill: { name: string };
-};
-
-type Availability = {
-  id: string;
-  dayOfWeek: number;
-  startTime: string;
-  endTime: string;
-};
+import type {
+  Availability,
+  SessionsTab,
+  SessionSwapRequest,
+  SkillSession,
+} from "@/types/sessions";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export default function SessionsPage() {
-  const [upcoming, setUpcoming] = useState<Session[]>([]);
-  const [past, setPast] = useState<Session[]>([]);
+  const [upcoming, setUpcoming] = useState<SkillSession[]>([]);
+  const [past, setPast] = useState<SkillSession[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"upcoming" | "past" | "availability">("upcoming");
+  const [activeTab, setActiveTab] = useState<SessionsTab>("upcoming");
   const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [acceptedSwaps, setAcceptedSwaps] = useState<SwapRequest[]>([]);
+  const [acceptedSwaps, setAcceptedSwaps] = useState<SessionSwapRequest[]>([]);
   const [availability, setAvailability] = useState<Availability[]>([]);
   const [currentUserId, setCurrentUserId] = useState("");
   const [completingId, setCompletingId] = useState<string | null>(null);
-  const [reviewSession, setReviewSession] = useState<Session | null>(null);
+  const [reviewSession, setReviewSession] = useState<SkillSession | null>(null);
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewHoverRating, setReviewHoverRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");

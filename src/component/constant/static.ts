@@ -1,33 +1,18 @@
 import {
-  ArrowRight,
-  BadgeCheck,
   BookOpen,
   BriefcaseBusiness,
-  Check,
-  ChevronRight,
   Code2,
-  Globe2,
-  HeartHandshake,
   Languages,
-  Menu,
-  MessageCircle,
   Music2,
   Palette,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  Users,
-  X,
-  Zap,
 } from "lucide-react";
 
 export const navigation = [
-  { label: "Explore skills", href: "/#skills" },
+  { label: "Home ", href: "/" },
+  { label: "Skills", href: "/skills" },
   { label: "Discover", href: "/discover" },
   { label: "How it works", href: "/#how-it-works" },
   { label: "Community", href: "/#community" },
-  { label: "Safety", href: "/#safety" },
 ];
 
 export const categories = [
@@ -176,24 +161,5 @@ export const floatingProfiles = [
     label: "Public speaking",
     position: "right-[0%] bottom-[12%]",
     delay: 0.9,
-  },
-];
-
-export const footerLinks = [
-  {
-    title: "Platform",
-    links: ["Explore", "How it works", "Community", "Safety"],
-  },
-  {
-    title: "Company",
-    links: ["About", "Careers", "Stories", "Contact"],
-  },
-  {
-    title: "Resources",
-    links: ["Help centre", "Guidelines", "Blog", "Events"],
-  },
-  {
-    title: "Legal",
-    links: ["Privacy", "Terms", "Cookies", "Accessibility"],
   },
 ];

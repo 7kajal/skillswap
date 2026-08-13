@@ -6,9 +6,9 @@ import type { HomeData } from "./api/home/types";
 import { Community, ExchangeShowcase } from "../component/community";
 import { CTA } from "../component/cta";
 import { Hero, SkillsMarquee } from "../component/hero";
-import { HowItWorks } from "../component/howItWorks";
 import { Safety } from "../component/safety";
 import { Testimonials } from "../component/testimonials";
+import { HowItWorks } from "@/component/howItWorks";
 
 export default function HomePage() {
   const { status } = useSession();
@@ -28,7 +28,7 @@ export default function HomePage() {
       .then((result) => {
         if (active && result?.data) setHomeData(result.data);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => {
         if (active) setLoadingCommunity(false);
       });

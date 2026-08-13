@@ -1,54 +1,161 @@
-import { Globe2 } from "lucide-react";
-import { footerLinks } from "./constant/static";
 import { Logo } from "./logo";
+import type { IconProps } from "@/types/common";
 
 export function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-slate-50">
-      <div className="mx-auto max-w-7xl px-5 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-[1.3fr_2fr]">
-          <div>
+    <footer className="border-t border-slate-200 bg-white">
+      <div className="mx-auto max-w-7xl px-5 py-10 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center gap-8 text-center md:flex-row md:justify-between md:text-left">
+          {/* Logo */}
+          <div className="flex items-center justify-center gap-3 md:justify-start">
             <Logo />
-
-            <p className="mt-5 max-w-sm text-sm font-medium leading-7 text-slate-500">
-              A trusted community where skills, knowledge and human connection
-              create a new kind of value.
-            </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
-            {footerLinks.map((column) => (
-              <div key={column.title}>
-                <h2 className="text-xs font-black uppercase tracking-[0.15em] text-slate-900">
-                  {column.title}
-                </h2>
+          {/* Social links */}
+          <div className="flex flex-wrap items-center justify-center gap-3 md:justify-end">
+            {/* GitHub */}
+            <a
+              href="#"
+              rel="noreferrer"
+              aria-label="Open GitHub"
+              className="
+            flex h-11 w-11 items-center justify-center
+            rounded-full border border-blue-600
+            bg-blue-600 text-white
+            shadow-md transition-all duration-300
+            hover:-translate-y-1 hover:border-blue-600
+            hover:bg-blue-600 hover:text-white hover:shadow-lg
+            md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
+          "
+            >
+              <GitHubIcon className="h-5 w-5" />
+            </a>
 
-                <ul className="mt-5 space-y-3">
-                  {column.links.map((link) => (
-                    <li key={link}>
-                      <a
-                        href="#"
-                        className="text-sm font-semibold text-slate-500 transition hover:text-blue-600"
-                      >
-                        {link}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            {/* Discord */}
+            <a
+              href="#"
+              rel="noreferrer"
+              aria-label="Join Discord"
+              className="
+            flex h-11 w-11 items-center justify-center
+            rounded-full border border-blue-600
+            bg-blue-600 text-white
+            shadow-md transition-all duration-300
+            hover:-translate-y-1 hover:border-blue-600
+            hover:bg-blue-600 hover:text-white hover:shadow-lg
+            md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
+          "
+            >
+              <DiscordIcon className="h-5 w-5" />
+            </a>
+
+            {/* YouTube */}
+            <a
+              href="#"
+              rel="noreferrer"
+              aria-label="Open YouTube"
+              className="
+            flex h-11 w-11 items-center justify-center
+            rounded-full border border-blue-600
+            bg-blue-600 text-white
+            shadow-md transition-all duration-300
+            hover:-translate-y-1 hover:border-blue-600
+            hover:bg-blue-600 hover:text-white hover:shadow-lg
+            md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
+          "
+            >
+              <YouTubeIcon className="h-5 w-5" />
+            </a>
+
+            {/* X */}
+            <a
+              href="#"
+              rel="noreferrer"
+              aria-label="Open X"
+              className="
+            flex h-11 w-11 items-center justify-center
+            rounded-full border border-blue-600
+            bg-blue-600 text-white
+            shadow-md transition-all duration-300
+            hover:-translate-y-1 hover:border-blue-600
+            hover:bg-blue-600 hover:text-white hover:shadow-lg
+            md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
+          "
+            >
+              <XIcon className="h-5 w-5" />
+            </a>
           </div>
         </div>
-
-        <div className="mt-12 flex flex-col gap-4 border-t border-slate-200 pt-6 text-xs font-semibold text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 SkillSwap. Built for shared growth.</p>
-
-          <p className="flex items-center gap-1.5">
-            Made for curious people everywhere
-            <Globe2 className="h-3.5 w-3.5" />
-          </p>
-        </div>
+        <p className="text-xs text-center mt-4 md:mt-3 md:text-left">
+          © {new Date().getFullYear()}{" "}
+          <span>
+            <a href="https://github.com/7kajal/skillswap" className="underline">
+              SkillSwap{" "}
+            </a>
+          </span>
+          . All Rights Reserved.
+        </p>
       </div>
     </footer>
+  );
+}
+
+export function XIcon({ className, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+      {...props}
+    >
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.214-6.817-5.967 6.817H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231Zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77Z" />
+    </svg>
+  );
+}
+
+export function YouTubeIcon({ className, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+      {...props}
+    >
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.016 3.016 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z" />
+    </svg>
+  );
+}
+
+export function GitHubIcon({ className, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+      {...props}
+    >
+      <path
+        fillRule="evenodd"
+        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.426 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.009-.866-.014-1.7-2.782.605-3.369-1.343-3.369-1.343-.455-1.158-1.11-1.466-1.11-1.466-.908-.621.069-.608.069-.608 1.003.071 1.531 1.031 1.531 1.031.892 1.53 2.341 1.088 2.91.832.091-.647.349-1.088.635-1.338-2.221-.253-4.555-1.112-4.555-4.947 0-1.093.39-1.987 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.748-1.027 2.748-1.027.546 1.379.202 2.398.1 2.651.64.701 1.028 1.595 1.028 2.688 0 3.845-2.337 4.691-4.566 4.94.359.31.678.921.678 1.856 0 1.34-.012 2.421-.012 2.75 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.523 2 12 2Z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+export function DiscordIcon({ className, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+      {...props}
+    >
+      <path d="M20.317 4.369A19.79 19.79 0 0 0 15.885 3a13.78 13.78 0 0 0-.566 1.165 18.27 18.27 0 0 0-6.634 0A12.64 12.64 0 0 0 8.119 3a19.74 19.74 0 0 0-4.437 1.371C.874 8.53.113 12.584.493 16.579a19.9 19.9 0 0 0 5.455 2.756 14.9 14.9 0 0 0 1.329-2.154 12.91 12.91 0 0 1-2.093-1.007c.176-.13.348-.264.515-.393 4.034 1.881 8.41 1.881 12.397 0 .168.138.341.272.516.393-.667.396-1.366.733-2.096 1.009.384.75.83 1.475 1.33 2.152a19.82 19.82 0 0 0 5.457-2.756c.446-4.63-.762-8.647-2.986-12.21ZM8.02 14.158c-1.21 0-2.206-1.117-2.206-2.49s.974-2.49 2.206-2.49c1.243 0 2.228 1.127 2.206 2.49 0 1.373-.974 2.49-2.206 2.49Zm7.974 0c-1.21 0-2.206-1.117-2.206-2.49s.974-2.49 2.206-2.49c1.243 0 2.228 1.127 2.206 2.49 0 1.373-.963 2.49-2.206 2.49Z" />
+    </svg>
   );
 }

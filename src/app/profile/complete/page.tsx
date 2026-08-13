@@ -18,11 +18,36 @@ import Link from "next/link";
 import axiosPrivate from "@/lib/axiosPrivate";
 
 const allSkills = [
-  "React", "Next.js", "TypeScript", "Python", "UI Design", "Figma",
-  "Photography", "Spanish", "French", "English", "Piano", "Guitar",
-  "Marketing", "SEO", "Public Speaking", "Cooking", "Baking", "Fitness",
-  "Yoga", "Video Editing", "Canva", "Machine Learning", "Node.js",
-  "MongoDB", "Flutter", "Korean", "Portuguese", "German", "Italian", "Japanese",
+  "React",
+  "Next.js",
+  "TypeScript",
+  "Python",
+  "UI Design",
+  "Figma",
+  "Photography",
+  "Spanish",
+  "French",
+  "English",
+  "Piano",
+  "Guitar",
+  "Marketing",
+  "SEO",
+  "Public Speaking",
+  "Cooking",
+  "Baking",
+  "Fitness",
+  "Yoga",
+  "Video Editing",
+  "Canva",
+  "Machine Learning",
+  "Node.js",
+  "MongoDB",
+  "Flutter",
+  "Korean",
+  "Portuguese",
+  "German",
+  "Italian",
+  "Japanese",
 ];
 
 const availabilityOptions = ["Weekdays", "Evenings", "Weekends"];
@@ -46,7 +71,8 @@ export default function CompleteProfilePage() {
   useEffect(() => {
     if (status !== "authenticated") return;
 
-    axiosPrivate.get("/api/profile")
+    axiosPrivate
+      .get("/api/profile")
       .then((response) => {
         const profile = response.data.data;
         if (!profile?.isProfileComplete) return;
@@ -60,12 +86,12 @@ export default function CompleteProfilePage() {
         setTeachSkills(
           profile.userSkills
             .filter((skill: { type: string }) => skill.type === "teach")
-            .map((skill: { skill: { name: string } }) => skill.skill.name)
+            .map((skill: { skill: { name: string } }) => skill.skill.name),
         );
         setLearnSkills(
           profile.userSkills
             .filter((skill: { type: string }) => skill.type === "learn")
-            .map((skill: { skill: { name: string } }) => skill.skill.name)
+            .map((skill: { skill: { name: string } }) => skill.skill.name),
         );
       })
       .catch(() => undefined);
@@ -80,18 +106,22 @@ export default function CompleteProfilePage() {
 
   const toggleAvailability = (opt: string) => {
     setAvailability((prev) =>
-      prev.includes(opt) ? prev.filter((a) => a !== opt) : [...prev, opt]
+      prev.includes(opt) ? prev.filter((a) => a !== opt) : [...prev, opt],
     );
   };
 
   const toggleSkill = (skill: string, type: "teach" | "learn") => {
     if (type === "teach") {
       setTeachSkills((prev) =>
-        prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
+        prev.includes(skill)
+          ? prev.filter((s) => s !== skill)
+          : [...prev, skill],
       );
     } else {
       setLearnSkills((prev) =>
-        prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
+        prev.includes(skill)
+          ? prev.filter((s) => s !== skill)
+          : [...prev, skill],
       );
     }
   };
@@ -104,14 +134,18 @@ export default function CompleteProfilePage() {
         avatar,
         bio,
         location,
-        languages: languages.split(",").map((l) => l.trim()).filter(Boolean),
+        languages: languages
+          .split(",")
+          .map((l) => l.trim())
+          .filter(Boolean),
         availability,
         teachSkills,
         learnSkills,
       });
-      if (!res.data.success) throw new Error(res.data.message || "Failed to save profile");
+      if (!res.data.success)
+        throw new Error(res.data.message || "Failed to save profile");
       router.push(
-        session?.user?.id ? `/profile/${session.user.id}` : "/discover"
+        session?.user?.id ? `/profile/${session.user.id}` : "/discover",
       );
     } catch {
       setError("Something went wrong. Please try again.");
@@ -124,9 +158,6 @@ export default function CompleteProfilePage() {
     <div className="bg-slate-50 px-5 py-12">
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
-            <Sparkles className="h-6 w-6" />
-          </div>
           <h1 className="mt-5 text-2xl font-black text-slate-950 sm:text-3xl">
             {editing ? "Edit your profile" : "Complete your profile"}
           </h1>
@@ -149,11 +180,15 @@ export default function CompleteProfilePage() {
                   step === i
                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                     : step > i
-                    ? "bg-blue-50 text-blue-600"
-                    : "bg-slate-100 text-slate-400"
+                      ? "bg-blue-50 text-blue-600"
+                      : "bg-slate-100 text-slate-400"
                 }`}
               >
-                {step > i ? <Check className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
+                {step > i ? (
+                  <Check className="h-3.5 w-3.5" />
+                ) : (
+                  <Icon className="h-3.5 w-3.5" />
+                )}
                 <span className="hidden sm:inline">{s.label}</span>
               </button>
             );
@@ -161,17 +196,23 @@ export default function CompleteProfilePage() {
         </div>
 
         {error && (
-          <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-bold text-red-600">{error}</div>
+          <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-bold text-red-600">
+            {error}
+          </div>
         )}
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
           {/* Step 0: Personal Info */}
           {step === 0 && (
             <div className="space-y-5">
-              <h2 className="text-xl font-black text-slate-950">Personal Information</h2>
+              <h2 className="text-xl font-black text-slate-950">
+                Personal Information
+              </h2>
 
               <div>
-                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Profile Photo URL</label>
+                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                  Profile Photo URL
+                </label>
                 <div className="relative mt-2">
                   <User className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
                   <input
@@ -184,7 +225,9 @@ export default function CompleteProfilePage() {
               </div>
 
               <div>
-                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Bio</label>
+                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                  Bio
+                </label>
                 <textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
@@ -195,7 +238,9 @@ export default function CompleteProfilePage() {
               </div>
 
               <div>
-                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Location</label>
+                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                  Location
+                </label>
                 <div className="relative mt-2">
                   <MapPin className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
                   <input
@@ -208,7 +253,9 @@ export default function CompleteProfilePage() {
               </div>
 
               <div>
-                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Languages</label>
+                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                  Languages
+                </label>
                 <div className="relative mt-2">
                   <Globe2 className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
                   <input
@@ -225,8 +272,12 @@ export default function CompleteProfilePage() {
           {/* Step 1: Availability */}
           {step === 1 && (
             <div className="space-y-5">
-              <h2 className="text-xl font-black text-slate-950">When are you available?</h2>
-              <p className="text-sm font-medium text-slate-500">Select all times that work for you.</p>
+              <h2 className="text-xl font-black text-slate-950">
+                When are you available?
+              </h2>
+              <p className="text-sm font-medium text-slate-500">
+                Select all times that work for you.
+              </p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {availabilityOptions.map((opt) => (
                   <button
@@ -248,8 +299,12 @@ export default function CompleteProfilePage() {
           {/* Step 2: Skills to Teach */}
           {step === 2 && (
             <div className="space-y-5">
-              <h2 className="text-xl font-black text-slate-950">What can you teach?</h2>
-              <p className="text-sm font-medium text-slate-500">Select the skills you can share with others.</p>
+              <h2 className="text-xl font-black text-slate-950">
+                What can you teach?
+              </h2>
+              <p className="text-sm font-medium text-slate-500">
+                Select the skills you can share with others.
+              </p>
               <div className="flex flex-wrap gap-2">
                 {allSkills.map((skill) => (
                   <button
@@ -266,7 +321,10 @@ export default function CompleteProfilePage() {
                 ))}
               </div>
               {teachSkills.length > 0 && (
-                <p className="text-xs font-bold text-blue-600">{teachSkills.length} skill{teachSkills.length !== 1 ? "s" : ""} selected</p>
+                <p className="text-xs font-bold text-blue-600">
+                  {teachSkills.length} skill
+                  {teachSkills.length !== 1 ? "s" : ""} selected
+                </p>
               )}
             </div>
           )}
@@ -274,8 +332,12 @@ export default function CompleteProfilePage() {
           {/* Step 3: Skills to Learn */}
           {step === 3 && (
             <div className="space-y-5">
-              <h2 className="text-xl font-black text-slate-950">What do you want to learn?</h2>
-              <p className="text-sm font-medium text-slate-500">Select the skills you'd like to acquire.</p>
+              <h2 className="text-xl font-black text-slate-950">
+                What do you want to learn?
+              </h2>
+              <p className="text-sm font-medium text-slate-500">
+                Select the skills you'd like to acquire.
+              </p>
               <div className="flex flex-wrap gap-2">
                 {allSkills.map((skill) => (
                   <button
@@ -292,7 +354,10 @@ export default function CompleteProfilePage() {
                 ))}
               </div>
               {learnSkills.length > 0 && (
-                <p className="text-xs font-bold text-blue-600">{learnSkills.length} skill{learnSkills.length !== 1 ? "s" : ""} selected</p>
+                <p className="text-xs font-bold text-blue-600">
+                  {learnSkills.length} skill
+                  {learnSkills.length !== 1 ? "s" : ""} selected
+                </p>
               )}
             </div>
           )}
@@ -308,7 +373,10 @@ export default function CompleteProfilePage() {
               Back
             </button>
           ) : (
-            <Link href={session?.user?.id ? `/profile/${session.user.id}` : "/"} className="rounded-xl px-6 py-3 text-sm font-extrabold text-slate-600 transition hover:bg-slate-100">
+            <Link
+              href={session?.user?.id ? `/profile/${session.user.id}` : "/"}
+              className="rounded-xl px-6 py-3 text-sm font-extrabold text-slate-600 transition hover:bg-slate-100"
+            >
               {editing ? "Cancel" : "Skip for now"}
             </Link>
           )}
@@ -327,7 +395,11 @@ export default function CompleteProfilePage() {
               disabled={loading}
               className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-50"
             >
-              {loading ? "Saving..." : editing ? "Save changes" : "Complete Profile"}
+              {loading
+                ? "Saving..."
+                : editing
+                  ? "Save changes"
+                  : "Complete Profile"}
               <ArrowRight className="h-4 w-4" />
             </button>
           )}

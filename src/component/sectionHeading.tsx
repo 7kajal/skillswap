@@ -1,14 +1,11 @@
+import type { SectionHeadingProps } from "@/types/home";
+
 export function SectionHeading({
   eyebrow,
   title,
   description,
   align = "center",
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-  align?: "left" | "center";
-}) {
+}: SectionHeadingProps) {
   return (
     <div className={align === "center" ? "mx-auto max-w-2xl text-center" : ""}>
       <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600">

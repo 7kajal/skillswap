@@ -2,35 +2,11 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  Send,
-  CheckCircle,
-  BadgeCheck,
-  ArrowLeft,
-  Star,
-  X,
-} from "lucide-react";
+import { Send, CheckCircle, BadgeCheck, ArrowLeft, Star } from "lucide-react";
 import axiosPrivate from "@/lib/axiosPrivate";
-
-type Message = {
-  id: string;
-  content: string;
-  fileUrl: string | null;
-  createdAt: string;
-  sender: { id: string; name: string; avatar: string | null };
-};
-
-type RoomInfo = {
-  id: string;
-  swapRequest: {
-    id: string;
-    sender: { id: string; name: string; avatar: string | null };
-    receiver: { id: string; name: string; avatar: string | null };
-    teachSkill: { name: string };
-    learnSkill: { name: string };
-    status: string;
-  };
-};
+import ReviewDialog from "@/component/reviewDialog";
+import type { ChatMessage, ChatRoomInfo } from "@/types/chat";
+import type { ReviewFormData } from "@/types/review";
 
 function formatDateLabel(dateStr: string) {
   const d = new Date(dateStr);
@@ -47,7 +23,7 @@ function formatDateLabel(dateStr: string) {
   });
 }
 
-function shouldShowDateSeparator(messages: Message[], index: number) {
+function shouldShowDateSeparator(messages: ChatMessage[], index: number) {
   if (index === 0) return true;
   const prev = new Date(messages[index - 1].createdAt);
   const curr = new Date(messages[index].createdAt);
@@ -59,19 +35,14 @@ export default function ChatPage() {
   const router = useRouter();
   const roomId = params.id as string;
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [roomInfo, setRoomInfo] = useState<ChatRoomInfo | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
-  const [reviewRating, setReviewRating] = useState(0);
-  const [reviewHoverRating, setReviewHoverRating] = useState(0);
-  const [reviewComment, setReviewComment] = useState("");
-  const [reviewSubmitting, setReviewSubmitting] = useState(false);
-  const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -83,18 +54,25 @@ export default function ChatPage() {
       axiosPrivate.get("/api/profile"),
       axiosPrivate.get("/api/chat/rooms"),
     ]).then(([messagesRes, profileRes, roomsRes]) => {
-      setMessages(Array.isArray(messagesRes.data.data) ? messagesRes.data.data : []);
+      setMessages(
+        Array.isArray(messagesRes.data.data) ? messagesRes.data.data : [],
+      );
       const userId = profileRes.data.data.id;
       setCurrentUserId(userId);
 
       const rooms = Array.isArray(roomsRes.data.data) ? roomsRes.data.data : [];
-      const currentRoom = rooms.find((r: RoomInfo) => r.id === roomId);
+      const currentRoom = rooms.find((room: ChatRoomInfo) => room.id === roomId);
       if (currentRoom) {
         setRoomInfo(currentRoom);
 
-        if (currentRoom.swapRequest?.status === "completed" && currentRoom.swapRequest?.id) {
+        if (
+          currentRoom.swapRequest?.status === "completed" &&
+          currentRoom.swapRequest?.id
+        ) {
           axiosPrivate
-            .get(`/api/review?swapRequestId=${currentRoom.swapRequest.id}&reviewerId=${userId}`)
+            .get(
+              `/api/review?swapRequestId=${currentRoom.swapRequest.id}&reviewerId=${userId}`,
+            )
             .then((res) => {
               if (res.data?.data?.id) setHasReviewed(true);
             })
@@ -155,9 +133,12 @@ export default function ChatPage() {
     if (!roomInfo?.swapRequest?.id) return;
     setCompleting(true);
     try {
-      const res = await axiosPrivate.patch(`/api/swapRequest/${roomInfo.swapRequest.id}`, {
-        status: "completed",
-      });
+      const res = await axiosPrivate.patch(
+        `/api/swapRequest/${roomInfo.swapRequest.id}`,
+        {
+          status: "completed",
+        },
+      );
       if (res.data.success) {
         setRoomInfo((prev) =>
           prev
@@ -165,12 +146,9 @@ export default function ChatPage() {
                 ...prev,
                 swapRequest: { ...prev.swapRequest, status: "completed" },
               }
-            : prev
+            : prev,
         );
         setShowReviewModal(true);
-        setReviewRating(0);
-        setReviewComment("");
-        setReviewSubmitted(false);
       }
     } catch {
       // ignore
@@ -179,27 +157,27 @@ export default function ChatPage() {
     }
   };
 
-  const submitReview = async () => {
-    if (!roomInfo?.swapRequest?.id || !reviewRating) return;
-    const reviewedId = roomInfo.swapRequest.sender.id === currentUserId
-      ? roomInfo.swapRequest.receiver.id
-      : roomInfo.swapRequest.sender.id;
-    setReviewSubmitting(true);
+  const handleReviewSubmit = async ({ rating, comment }: ReviewFormData) => {
+    if (!roomInfo?.swapRequest?.id || !rating) return;
+    const reviewedId =
+      roomInfo.swapRequest.sender.id === currentUserId
+        ? roomInfo.swapRequest.receiver.id
+        : roomInfo.swapRequest.sender.id;
+
     try {
       const res = await axiosPrivate.post("/api/review", {
         swapRequestId: roomInfo.swapRequest.id,
         reviewedId,
-        rating: reviewRating,
-        comment: reviewComment.trim() || null,
+        rating,
+        comment: comment.trim() || null,
       });
+
       if (res.data.success) {
-        setReviewSubmitted(true);
         setHasReviewed(true);
+        setShowReviewModal(false);
       }
     } catch {
       // ignore
-    } finally {
-      setReviewSubmitting(false);
     }
   };
 
@@ -219,7 +197,7 @@ export default function ChatPage() {
   return (
     <div className="flex h-[calc(100dvh-4.5rem)] flex-col bg-slate-50 lg:h-[calc(100dvh-5rem)]">
       {/* Header */}
-      <div className="border-b border-slate-200 bg-white px-3 py-3 sm:px-5">
+      <div className="border-b border-slate-200 px-3 py-3 sm:px-5">
         <div className="mx-auto flex max-w-4xl items-center justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <button
@@ -272,7 +250,9 @@ export default function ChatPage() {
                 className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2.5 text-xs font-extrabold text-emerald-600 transition hover:bg-emerald-100 disabled:opacity-50 sm:px-4"
               >
                 <CheckCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">{completing ? "Completing..." : "Mark Complete"}</span>
+                <span className="hidden sm:inline">
+                  {completing ? "Completing..." : "Mark Complete"}
+                </span>
               </button>
             )}
 
@@ -285,12 +265,7 @@ export default function ChatPage() {
 
             {roomInfo?.swapRequest?.status === "completed" && !hasReviewed && (
               <button
-                onClick={() => {
-                  setShowReviewModal(true);
-                  setReviewRating(0);
-                  setReviewComment("");
-                  setReviewSubmitted(false);
-                }}
+                onClick={() => setShowReviewModal(true)}
                 className="inline-flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-2.5 text-xs font-extrabold text-amber-600 transition hover:bg-amber-100"
               >
                 <Star className="h-4 w-4" />
@@ -323,9 +298,7 @@ export default function ChatPage() {
             const showDate = shouldShowDateSeparator(messages, index);
             const prevMsg = index > 0 ? messages[index - 1] : null;
             const showSenderLabel =
-              !prevMsg ||
-              prevMsg.sender.id !== msg.sender.id ||
-              showDate;
+              !prevMsg || prevMsg.sender.id !== msg.sender.id || showDate;
 
             return (
               <div key={msg.id}>
@@ -338,10 +311,14 @@ export default function ChatPage() {
                 )}
 
                 <div
-                  className={`flex ${isOwn ? "justify-end" : "justify-start"} ${showSenderLabel && !showDate ? "mt-4" : "mt-0.5"}`}
+                  className={`flex ${
+                    isOwn ? "justify-end" : "justify-start"
+                  } ${showSenderLabel && !showDate ? "mt-4" : "mt-0.5"}`}
                 >
                   <div
-                    className={`flex max-w-[88%] items-end gap-2 sm:max-w-[70%] sm:gap-2.5 ${isOwn ? "flex-row-reverse" : ""}`}
+                    className={`flex max-w-[88%] items-end gap-2 sm:max-w-[70%] sm:gap-2.5 ${
+                      isOwn ? "flex-row-reverse" : ""
+                    }`}
                   >
                     {!isOwn &&
                       (showSenderLabel ? (
@@ -368,7 +345,9 @@ export default function ChatPage() {
                       </div>
                       {showSenderLabel && (
                         <p
-                          className={`mt-1 text-[10px] text-slate-400 ${isOwn ? "text-right" : ""}`}
+                          className={`mt-1 text-[10px] text-slate-400 ${
+                            isOwn ? "text-right" : ""
+                          }`}
                         >
                           {new Date(msg.createdAt).toLocaleTimeString([], {
                             hour: "2-digit",
@@ -387,7 +366,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-slate-200 bg-white px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:px-5 sm:py-4">
+      <div className="px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 sm:px-5 sm:py-4">
         <div className="mx-auto flex max-w-4xl items-center gap-3">
           <input
             value={newMessage}
@@ -407,116 +386,16 @@ export default function ChatPage() {
           </button>
         </div>
       </div>
-      {/* Review Modal */}
-      {showReviewModal && roomInfo?.swapRequest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-            {reviewSubmitted ? (
-              <div className="py-8 text-center">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
-                  <Star className="h-8 w-8 fill-emerald-500" />
-                </div>
-                <h2 className="mt-6 text-xl font-black text-slate-950">Review Submitted!</h2>
-                <p className="mt-2 text-sm font-medium text-slate-500">Thank you for your feedback.</p>
-                <button
-                  onClick={() => setShowReviewModal(false)}
-                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white transition hover:bg-blue-700"
-                >
-                  Done
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-xl font-black text-slate-950">Rate Your Experience</h2>
-                    <p className="mt-1 text-sm font-medium text-slate-500">
-                      with {otherUser?.name}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setShowReviewModal(false)}
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
 
-                {/* Swap Info */}
-                <div className="mt-6 grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
-                  <div className="rounded-2xl bg-slate-50 p-4">
-                    <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-slate-400">You taught</p>
-                    <p className="mt-2 font-black text-slate-900">{roomInfo.swapRequest.teachSkill.name}</p>
-                  </div>
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white">
-                    <Star className="h-4 w-4" />
-                  </div>
-                  <div className="rounded-2xl bg-blue-50 p-4">
-                    <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-blue-500">You learned</p>
-                    <p className="mt-2 font-black text-slate-900">{roomInfo.swapRequest.learnSkill.name}</p>
-                  </div>
-                </div>
-
-                {/* Star Rating */}
-                <div className="mt-8">
-                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Rating</label>
-                  <div className="mt-3 flex items-center gap-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        onMouseEnter={() => setReviewHoverRating(star)}
-                        onMouseLeave={() => setReviewHoverRating(0)}
-                        onClick={() => setReviewRating(star)}
-                        className="transition hover:scale-110"
-                      >
-                        <Star
-                          className={`h-10 w-10 ${
-                            star <= (reviewHoverRating || reviewRating)
-                              ? "fill-amber-400 text-amber-400"
-                              : "text-slate-200"
-                          }`}
-                        />
-                      </button>
-                    ))}
-                    {reviewRating > 0 && (
-                      <span className="ml-3 text-sm font-bold text-slate-600">{reviewRating}/5</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Comment */}
-                <div className="mt-6">
-                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Review</label>
-                  <textarea
-                    value={reviewComment}
-                    onChange={(e) => setReviewComment(e.target.value)}
-                    placeholder="How was your experience? What did you learn? Would you recommend this person?"
-                    rows={4}
-                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                  />
-                </div>
-
-                {/* Actions */}
-                <div className="mt-6 flex gap-3">
-                  <button
-                    onClick={() => setShowReviewModal(false)}
-                    className="flex-1 rounded-xl border border-slate-200 py-3.5 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50"
-                  >
-                    Skip for now
-                  </button>
-                  <button
-                    onClick={submitReview}
-                    disabled={!reviewRating || reviewSubmitting}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-50"
-                  >
-                    {reviewSubmitting ? "Submitting..." : "Submit Review"}
-                    <Star className="h-4 w-4" />
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+      {/* Reusable Review Dialog */}
+      {roomInfo && (
+        <ReviewDialog
+          open={showReviewModal}
+          onClose={() => setShowReviewModal(false)}
+          otherUser={otherUser || null}
+          roomInfo={roomInfo}
+          onSubmit={handleReviewSubmit}
+        />
       )}
     </div>
   );
