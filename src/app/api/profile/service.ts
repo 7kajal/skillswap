@@ -82,6 +82,9 @@ export async function completeProfile(
     location?: string;
     languages?: string[];
     availability?: string[];
+    githubUrl?: string;
+    portfolioUrl?: string;
+    linkedinUrl?: string;
     teachSkills: string[];
     learnSkills: string[];
   }
@@ -94,6 +97,9 @@ export async function completeProfile(
     location: data.location || null,
     languages: data.languages || [],
     availability: data.availability || [],
+    githubUrl: data.githubUrl || null,
+    portfolioUrl: data.portfolioUrl || null,
+    linkedinUrl: data.linkedinUrl || null,
     isProfileComplete: true,
   });
 

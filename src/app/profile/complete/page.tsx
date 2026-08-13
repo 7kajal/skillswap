@@ -13,6 +13,8 @@ import {
   ArrowRight,
   Check,
   Sparkles,
+  GitBranch,
+  Link2,
 } from "lucide-react";
 import Link from "next/link";
 import axiosPrivate from "@/lib/axiosPrivate";
@@ -64,6 +66,9 @@ export default function CompleteProfilePage() {
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
   const [languages, setLanguages] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
+  const [portfolioUrl, setPortfolioUrl] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
   const [availability, setAvailability] = useState<string[]>([]);
   const [teachSkills, setTeachSkills] = useState<string[]>([]);
   const [learnSkills, setLearnSkills] = useState<string[]>([]);
@@ -83,6 +88,9 @@ export default function CompleteProfilePage() {
         setLocation(profile.location || "");
         setLanguages((profile.languages || []).join(", "));
         setAvailability(profile.availability || []);
+        setGithubUrl(profile.githubUrl || "");
+        setPortfolioUrl(profile.portfolioUrl || "");
+        setLinkedinUrl(profile.linkedinUrl || "");
         setTeachSkills(
           profile.userSkills
             .filter((skill: { type: string }) => skill.type === "teach")
@@ -139,6 +147,9 @@ export default function CompleteProfilePage() {
           .map((l) => l.trim())
           .filter(Boolean),
         availability,
+        githubUrl,
+        portfolioUrl,
+        linkedinUrl,
         teachSkills,
         learnSkills,
       });
@@ -264,6 +275,41 @@ export default function CompleteProfilePage() {
                     placeholder="English, Spanish, French..."
                     className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                  Links
+                </label>
+                <div className="mt-2 space-y-3">
+                  <div className="relative">
+                    <GitBranch className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                    <input
+                      value={githubUrl}
+                      onChange={(e) => setGithubUrl(e.target.value)}
+                      placeholder="https://github.com/username"
+                      className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Globe2 className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                    <input
+                      value={portfolioUrl}
+                      onChange={(e) => setPortfolioUrl(e.target.value)}
+                      placeholder="https://yoursite.com"
+                      className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Link2 className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                    <input
+                      value={linkedinUrl}
+                      onChange={(e) => setLinkedinUrl(e.target.value)}
+                      placeholder="https://linkedin.com/in/username"
+                      className="h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

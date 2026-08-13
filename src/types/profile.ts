@@ -8,6 +8,9 @@ export interface Profile {
   location: string | null;
   languages: string[];
   availability: string[];
+  githubUrl?: string | null;
+  portfolioUrl?: string | null;
+  linkedinUrl?: string | null;
   rating: number;
   reviewCount: number;
   completedSwaps: number;

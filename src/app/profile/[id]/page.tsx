@@ -7,9 +7,11 @@ import {
   BadgeCheck,
   BookOpen,
   Clock,
+  GitBranch,
   Globe2,
   GraduationCap,
   HeartHandshake,
+  Link2,
   MapPin,
   Pencil,
   Send,
@@ -21,6 +23,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { OwnProfileSummary, Profile } from "@/types/profile";
+import { GitHubIcon } from "@/component/footer";
 
 function getInitials(name: string) {
   return name
@@ -148,6 +151,7 @@ export default function ProfilePage() {
                       <MapPin className="h-4 w-4" /> {profile.location}
                     </p>
                   )}
+
                   <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
                     <span className="flex items-center gap-1 font-black text-slate-800">
                       <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
@@ -348,6 +352,52 @@ export default function ProfilePage() {
                 </section>
               )}
 
+              {(profile.githubUrl ||
+                profile.linkedinUrl ||
+                profile.portfolioUrl) && (
+                <div className="my-4 flex flex-col gap-2">
+                  {/* Section Header */}
+                  <p className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                    <Link2 className="h-4 w-4" /> Links
+                  </p>
+
+                  {/* Links List */}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {profile.githubUrl && (
+                      <a
+                        href={profile.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition hover:border-blue-300 hover:text-blue-600"
+                      >
+                        <GitHubIcon className="h-4 w-4" /> GitHub
+                      </a>
+                    )}
+
+                    {profile.linkedinUrl && (
+                      <a
+                        href={profile.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition hover:border-blue-300 hover:text-blue-600"
+                      >
+                        <Link2 className="h-4 w-4" /> LinkedIn
+                      </a>
+                    )}
+
+                    {profile.portfolioUrl && (
+                      <a
+                        href={profile.portfolioUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 transition hover:border-blue-300 hover:text-blue-600"
+                      >
+                        <Globe2 className="h-4 w-4" /> Portfolio
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
               {profile.reviewsReceived.length > 0 && (
                 <section className="border-t border-slate-100 pt-8">
                   <h3 className="text-lg font-black text-slate-950">
