@@ -68,8 +68,9 @@ export default function RegisterPage() {
         title: "Account created",
         message: "You are signed in. Complete your profile to start matching.",
       });
-      router.push("/profile/complete");
-      router.refresh();
+      window.setTimeout(() => {
+        window.location.replace("/profile/complete");
+      }, 700);
     } catch {
       setError("Something went wrong. Please try again.");
       showToast({

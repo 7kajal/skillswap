@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Mail, Lock, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/component/toast";
 
 export default function LoginPage() {
-  const router = useRouter();
   const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,8 +37,9 @@ export default function LoginPage() {
           title: "Welcome back",
           message: "You signed in successfully.",
         });
-        router.replace(continueUrl());
-        router.refresh();
+        window.setTimeout(() => {
+          window.location.replace(continueUrl());
+        }, 700);
       } else {
         setError("Invalid email or password");
         showToast({

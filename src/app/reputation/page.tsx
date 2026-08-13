@@ -138,7 +138,7 @@ export default function ReputationPage() {
           {/* Trust Score Banner Card */}
           <div className="mt-8 rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
             <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-              <div className="flex items-center gap-5">
+              <div className="flex w-full flex-col items-start gap-4 sm:w-auto sm:flex-row sm:items-center sm:gap-5">
                 <div
                   className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl ${trustBg}`}
                 >
@@ -146,14 +146,14 @@ export default function ReputationPage() {
                     {data.trustScore}%
                   </span>
                 </div>
-                <div>
+                <div className="w-full sm:w-auto">
                   <h2 className="text-xl font-black text-slate-950">
                     Trust Score
                   </h2>
                   <p className="mt-0.5 text-sm font-medium text-slate-500">
                     Based on reviews, completed swaps, and verifications
                   </p>
-                  <div className="mt-3 h-2.5 w-48 overflow-hidden rounded-full bg-slate-100 sm:w-64">
+                  <div className="mt-3 h-2.5 w-full max-w-60 overflow-hidden rounded-full bg-slate-100 sm:w-64">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-500"
                       style={{ width: `${data.trustScore}%` }}
@@ -205,20 +205,20 @@ export default function ReputationPage() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="mt-8 flex gap-2 border-b border-slate-200">
+          <div className="mt-8 flex gap-2 overflow-x-auto border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
               onClick={() => setActiveTab("overview")}
-              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-extrabold transition ${
+              className={`flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-extrabold transition ${
                 activeTab === "overview"
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-slate-500 hover:text-slate-900"
               }`}
             >
-              <Award className="h-4 w-4" /> Overview & Skills
+              <Award className="h-4 w-4" /> Overview &amp; Skills
             </button>
             <button
               onClick={() => setActiveTab("reviews")}
-              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-extrabold transition ${
+              className={`flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-extrabold transition ${
                 activeTab === "reviews"
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-slate-500 hover:text-slate-900"
@@ -229,7 +229,7 @@ export default function ReputationPage() {
             </button>
             <button
               onClick={() => setActiveTab("links")}
-              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-extrabold transition ${
+              className={`flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-extrabold transition ${
                 activeTab === "links"
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-slate-500 hover:text-slate-900"
