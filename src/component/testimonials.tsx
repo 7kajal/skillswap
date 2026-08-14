@@ -21,7 +21,7 @@ function ReviewCard({
   index: number;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const isLong = review.comment.length > 120;
+  const isLong = review.comment.length > 80;
 
   return (
     <motion.article
@@ -33,39 +33,41 @@ function ReviewCard({
         duration: 0.5,
         delay: index * 0.1,
       }}
-      className="group relative flex h-full w-[280px] sm:w-[320px] lg:w-[360px] shrink-0 snap-start flex-col justify-between rounded-[32px] border border-slate-200 bg-white p-6 sm:p-7 shadow-[0_12px_35px_rgba(15,23,42,0.04)] transition-all duration-300 hover:border-blue-200 hover:shadow-[0_24px_55px_rgba(37,99,235,0.08)] hover:-translate-y-1"
+      className="group relative flex w-[280px] sm:w-[320px] lg:w-[360px] shrink-0 snap-start self-stretch flex-col justify-between rounded-[32px] border border-slate-200 bg-white p-6 sm:p-7 shadow-[0_12px_35px_rgba(15,23,42,0.04)] transition-all duration-300 hover:border-blue-200 hover:shadow-[0_24px_55px_rgba(37,99,235,0.08)] hover:-translate-y-1"
     >
       <div className="absolute right-7 top-6 text-5xl font-black text-slate-300/80 pointer-events-none select-none font-serif">
         &ldquo;
       </div>
 
-      <div className="flex-1">
-        <div className="flex items-center gap-1">
-          {Array.from({ length: 5 }).map((_, starIndex) => (
-            <Star
-              key={starIndex}
-              className={`h-4.5 w-4.5 transition-all duration-300 ${
-                starIndex < review.rating
-                  ? "fill-amber-400 text-amber-400 group-hover:scale-110 drop-shadow-[0_0_4px_rgba(245,158,11,0.2)]"
-                  : "text-slate-200"
-              }`}
-            />
-          ))}
-        </div>
+      <div className="flex flex-1 flex-col justify-between">
+        <div>
+          <div className="flex items-center gap-1">
+            {Array.from({ length: 5 }).map((_, starIndex) => (
+              <Star
+                key={starIndex}
+                className={`h-4.5 w-4.5 transition-all duration-300 ${
+                  starIndex < review.rating
+                    ? "fill-amber-400 text-amber-400 group-hover:scale-110 drop-shadow-[0_0_4px_rgba(245,158,11,0.2)]"
+                    : "text-slate-200"
+                }`}
+              />
+            ))}
+          </div>
 
-        <blockquote
-          className={`mt-5 [overflow-wrap:anywhere] tracking-tight text-slate-800 text-base font-semibold leading-relaxed ${
-            !expanded && isLong ? "line-clamp-3" : ""
-          }`}
-        >
-          {review.comment}
-        </blockquote>
+          <blockquote
+            className={`mt-5 [overflow-wrap:anywhere] tracking-tight text-slate-800 text-base font-semibold leading-relaxed ${
+              !expanded && isLong ? "line-clamp-2" : ""
+            }`}
+          >
+            {review.comment}
+          </blockquote>
+        </div>
 
         {isLong && (
           <button
             type="button"
             onClick={() => setExpanded(!expanded)}
-            className="mt-2 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
+            className="mt-2 text-left text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors"
           >
             {expanded ? "Show less" : "View more"}
           </button>
@@ -111,7 +113,7 @@ export function Testimonials({ reviews, loading }: TestimonialsProps) {
         />
 
         {loading ? (
-          <div className="mt-14 flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-none">
+          <div className="mt-14 flex items-stretch gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-none">
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
@@ -130,7 +132,7 @@ export function Testimonials({ reviews, loading }: TestimonialsProps) {
           </div>
         ) : (
           <div
-            className={`mt-14 flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+            className={`mt-14 flex items-stretch gap-6 overflow-x-auto pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
               reviews.length < 4
                 ? "justify-start sm:justify-center"
                 : "justify-start"
