@@ -277,7 +277,10 @@ export default function ReputationPage() {
             {/* Badges */}
             <div>
               {data.badges.length > 0 ? (
-                <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
+                <div
+                  className="rounded-[28px] border border-slate-200 bg-white p-8
+                 shadow-sm"
+                >
                   <h2 className="text-lg font-black text-slate-950">Badges</h2>
                   <div className="mt-4 space-y-3">
                     {data.badges.map((badge) => (

@@ -157,7 +157,7 @@ export function Header() {
   }, [pathname, status]);
 
   const user = session?.user;
-  const avatar = status === "authenticated" ? profileAvatar || user?.image : null;
+  const avatar = status === "authenticated" ? profileAvatar || user?.image || null : null;
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">

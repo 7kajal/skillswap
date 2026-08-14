@@ -62,7 +62,7 @@ export default function SessionsPage() {
         setPast(sessionsRes.data.data.past || []);
       }
       const all = [...(swapsRes.data.data?.sent || []), ...(swapsRes.data.data?.received || [])];
-      setAcceptedSwaps(all.filter((s: SwapRequest) => s.status === "accepted"));
+      setAcceptedSwaps(all.filter((s: SessionSwapRequest) => s.status === "accepted"));
       setAvailability(availRes.data.data || []);
       setCurrentUserId(profileRes.data.data?.id || "");
       setLoading(false);
