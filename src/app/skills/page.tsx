@@ -194,17 +194,15 @@ export default function SkillsPage() {
   }, [selectedCategory, searchQuery]);
 
   return (
-    <main className="min-h-screen bg-slate-50/50 pb-20 pt-10">
+    <main className="relative min-h-screen w-full overflow-x-hidden bg-slate-50/50 pb-20 pt-10">
       {/* Background Gradients */}
       <div className="absolute -left-48 top-8 h-[500px] w-[500px] rounded-full bg-blue-100/40 blur-[130px] pointer-events-none" />
       <div className="absolute -right-48 top-0 h-[500px] w-[500px] rounded-full bg-indigo-100/40 blur-[130px] pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-        {/* Navigation */}
-
         {/* Heading */}
-        <div className="mt-8 flex flex-col ">
-          <div className="inline-flex items-center gap-2  text-[11px] font-extrabold tracking-[0.16em] uppercase text-blue-600 mb-4 animate-fade-in">
+        <div className="mt-8 flex flex-col">
+          <div className="inline-flex items-center gap-2 text-[11px] font-extrabold tracking-[0.16em] uppercase text-blue-600 mb-4 animate-fade-in">
             SKILL INDEX
           </div>
           <h1 className="text-3xl font-black tracking-[-0.055em] text-slate-950 sm:text-4xl lg:text-5xl">
@@ -214,10 +212,6 @@ export default function SkillsPage() {
             Browse categories, find what you want to learn next, and meet real
             people who can swap with you.
           </p>
-          {/* <div className="mt-4 flex items-center gap-2 text-sm font-bold text-slate-400">
-            <Sparkles className="h-4 w-4 text-blue-500" />
-            {SKILLS_LIST.length} skills available to trade
-          </div> */}
         </div>
 
         {/* Search */}
@@ -232,21 +226,23 @@ export default function SkillsPage() {
           />
         </div>
 
-        {/* Filters */}
-        <div className="mt-8 flex flex-nowrap gap-2 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`snap-start h-11 px-6 rounded-full text-xs font-black transition-all flex items-center justify-center whitespace-nowrap ${
-                selectedCategory === cat.id
-                  ? "bg-blue-600 text-white shadow-[0_8px_20px_rgba(37,99,235,0.2)]"
-                  : "bg-white border border-slate-200 text-slate-600 hover:border-slate-300"
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
+        {/* Filters Container */}
+        <div className="relative mt-8 w-full overflow-hidden">
+          <div className="flex flex-nowrap gap-2 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`snap-start h-11 px-6 rounded-full text-xs font-black transition-all flex items-center justify-center whitespace-nowrap shrink-0 ${
+                  selectedCategory === cat.id
+                    ? "bg-blue-600 text-white shadow-[0_8px_20px_rgba(37,99,235,0.2)]"
+                    : "bg-white border border-slate-200 text-slate-600 hover:border-slate-300"
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Grid List */}

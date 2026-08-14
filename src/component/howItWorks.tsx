@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -107,10 +107,11 @@ function SearchDemo() {
                   },
                 }}
                 whileHover={{ scale: 1.02 }}
-                className={`cursor-pointer flex items-center gap-3 rounded-xl border p-2.5 shadow-sm transition-all ${isSelected
-                  ? "border-blue-500 bg-blue-50/40 ring-2 ring-blue-500/10"
-                  : "border-slate-200/80 bg-white hover:border-slate-300"
-                  }`}
+                className={`cursor-pointer flex items-center gap-3 rounded-xl border p-2.5 shadow-sm transition-all ${
+                  isSelected
+                    ? "border-blue-500 bg-blue-50/40 ring-2 ring-blue-500/10"
+                    : "border-slate-200/80 bg-white hover:border-slate-300"
+                }`}
               >
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-[10px] font-black text-blue-700 shadow-inner">
                   {person.id}
@@ -162,7 +163,6 @@ function ScheduleDemo() {
             <CalendarDays className="h-4 w-4 text-blue-600" />
             This week
           </div>
-
         </div>
 
         {/* Days Grid */}
@@ -180,20 +180,24 @@ function ScheduleDemo() {
                   animate={
                     isCurrent
                       ? {
-                        scale: [1, 1.05, 1],
-                        boxShadow: [
-                          "0 0 0 rgba(37,99,235,0)",
-                          "0 6px 16px rgba(37,99,235,.25)",
-                          "0 0 0 rgba(37,99,235,0)",
-                        ],
-                      }
+                          scale: [1, 1.05, 1],
+                          boxShadow: [
+                            "0 0 0 rgba(37,99,235,0)",
+                            "0 6px 16px rgba(37,99,235,.25)",
+                            "0 0 0 rgba(37,99,235,0)",
+                          ],
+                        }
                       : {}
                   }
-                  transition={{ duration: 2.2, repeat: isCurrent ? Infinity : 0 }}
-                  className={`w-full flex h-8 items-center justify-center rounded-lg text-[10px] font-black transition-colors ${isCurrent
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
-                    : "bg-slate-50 text-slate-600 hover:bg-slate-100"
-                    }`}
+                  transition={{
+                    duration: 2.2,
+                    repeat: isCurrent ? Infinity : 0,
+                  }}
+                  className={`w-full flex h-8 items-center justify-center rounded-lg text-[10px] font-black transition-colors ${
+                    isCurrent
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+                      : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                  }`}
                 >
                   {18 + index}
                 </motion.button>
@@ -210,10 +214,11 @@ function ScheduleDemo() {
               <button
                 key={time}
                 onClick={() => setSelectedTime(time)}
-                className={`py-1.5 px-2 rounded-lg text-[10px] font-extrabold transition-all ${isSelected
-                  ? "bg-blue-100 text-blue-700 border border-blue-300"
-                  : "bg-slate-50 text-slate-500 hover:bg-slate-100"
-                  }`}
+                className={`py-1.5 px-2 rounded-lg text-[10px] font-extrabold transition-all ${
+                  isSelected
+                    ? "bg-blue-100 text-blue-700 border border-blue-300"
+                    : "bg-slate-50 text-slate-500 hover:bg-slate-100"
+                }`}
               >
                 {time}
               </button>
@@ -302,7 +307,7 @@ function SessionDemo() {
               AK
             </span>
             <span className="mt-1 text-[8px] font-bold text-white/90">
-              Teaching Figma
+              Learning React
             </span>
 
             {/* Peer Audio Visualizer */}
@@ -328,10 +333,11 @@ function SessionDemo() {
           <div className="flex gap-2.5 sm:gap-2">
             <button
               onClick={() => setMicActive(!micActive)}
-              className={`flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-colors ${micActive
-                ? "bg-white/15 text-white"
-                : "bg-rose-500/80 text-white"
-                }`}
+              className={`flex  px-3.5 md:px-0 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-colors ${
+                micActive
+                  ? "bg-white/15 text-white"
+                  : "bg-rose-500/80 text-white"
+              }`}
             >
               {micActive ? (
                 <Mic className="h-4 w-4 sm:h-4 sm:w-4" />
@@ -342,10 +348,11 @@ function SessionDemo() {
 
             <button
               onClick={() => setVideoActive(!videoActive)}
-              className={`flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-colors ${videoActive
-                ? "bg-white/15 text-white"
-                : "bg-rose-500/80 text-white"
-                }`}
+              className={`flex px-3.5 md:px-0 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-colors ${
+                videoActive
+                  ? "bg-white/15 text-white"
+                  : "bg-rose-500/80 text-white"
+              }`}
             >
               {videoActive ? (
                 <Video className="h-4 w-4 sm:h-4 sm:w-4" />
@@ -354,14 +361,14 @@ function SessionDemo() {
               )}
             </button>
 
-            <button className="flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-white/15 text-white">
+            <button className="flex px-3.5 md:px-0 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-white/15 text-white">
               <MessageCircle className="h-4 w-4 sm:h-4 sm:w-4" />
             </button>
           </div>
 
           <button
             onClick={() => setShowRating(!showRating)}
-            className="flex items-center gap-1.5 rounded-lg bg-amber-500/20 px-3 py-1.5 sm:px-2 sm:py-1 text-[9px] sm:text-[8px] font-bold text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all"
+            className="flex items-center gap-1.5 rounded-lg bg-amber-500/20 px-4 py-0 sm:px-2 sm:py-1 text-[8px] sm:text-[8px] font-bold text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all"
           >
             <Award className="h-3 w-3 sm:h-2.5 sm:w-2.5 text-amber-400" />
             {showRating ? "Hide Rep" : "Swap Done"}
@@ -385,10 +392,11 @@ function SessionDemo() {
               <Star
                 key={s}
                 onClick={() => setStars(s)}
-                className={`h-3 w-3 cursor-pointer ${s <= stars
-                  ? "fill-amber-400 text-amber-400"
-                  : "text-slate-300"
-                  }`}
+                className={`h-3 w-3 cursor-pointer ${
+                  s <= stars
+                    ? "fill-amber-400 text-amber-400"
+                    : "text-slate-300"
+                }`}
               />
             ))}
           </div>
@@ -404,17 +412,21 @@ const demos = [
   <SessionDemo key="session" />,
 ];
 
-export function HowItWorks({ authStatus = "unauthenticated" }: HowItWorksProps) {
-  const [currentAuthStatus, setCurrentAuthStatus] = useState<AuthStatus>(authStatus);
+export function HowItWorks({
+  authStatus = "unauthenticated",
+}: HowItWorksProps) {
+  const [currentAuthStatus, setCurrentAuthStatus] =
+    useState<AuthStatus>(authStatus);
 
   return (
-    <section id="how-it-works" className="relative overflow-hidden bg-white py-24 sm:py-28">
+    <section
+      id="how-it-works"
+      className="relative overflow-hidden bg-white py-24 sm:py-28"
+    >
       {/* Background Subtle Gradient Glow */}
       <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-blue-100/60 blur-[130px] pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-
-
         {/* Section Header */}
         <div className="mx-auto max-w-3xl text-center">
           <div className=" items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-blue-600 ">
@@ -424,7 +436,8 @@ export function HowItWorks({ authStatus = "unauthenticated" }: HowItWorksProps) 
             Skill swapping made simple.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base font-medium leading-8 text-slate-500">
-            From finding the right person to starting your session, every step is designed to feel effortless.
+            From finding the right person to starting your session, every step
+            is designed to feel effortless.
           </p>
         </div>
 

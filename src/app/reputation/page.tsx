@@ -5,16 +5,14 @@ import {
   Star,
   Shield,
   BadgeCheck,
-  GitBranch,
   Globe2,
   Link2,
-  TrendingUp,
   Check,
   Edit3,
   Save,
-  RefreshCw,
   Award,
   MessageSquare,
+  GitBranch,
 } from "lucide-react";
 import axiosPrivate from "@/lib/axiosPrivate";
 import type { ReputationData } from "@/types/reputation";
@@ -32,7 +30,6 @@ export default function ReputationPage() {
     linkedinUrl: "",
   });
   const [saving, setSaving] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
   const fetchReputation = async () => {
     try {
@@ -106,98 +103,87 @@ export default function ReputationPage() {
         : "bg-slate-50";
 
   return (
-    <div className="min-h-screen  pb-16">
+    <div className="min-h-screen pb-16">
       {/* Top Banner Header */}
-      <div className=" border-slate-200 bg-white">
-        <div className="mx-auto max-w-5xl px-5 pt-9 pb-6 sm:px-6 lg:px-8">
+      <div className="border-slate-200 bg-white">
+        <div className="mx-auto max-w-5xl px-5 pb-6 pt-9 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl font-black text-slate-950 sm:text-3xl">
-                Reputation & Verification
+                Reputation &amp; Verification
               </h1>
               <p className="mt-1 text-sm font-medium text-slate-500">
                 Your trust profile and verified credentials
               </p>
             </div>
-            <button
-              onClick={async () => {
-                setRefreshing(true);
-                await fetchReputation();
-                setRefreshing(false);
-              }}
-              disabled={refreshing}
-              className="inline-flex w-fit items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
-              />
-              Refresh
-            </button>
           </div>
 
           {/* Trust Score Banner Card */}
-          <div className="mt-8 rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-            <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-              <div className="flex w-full flex-col items-start gap-4 sm:w-auto sm:flex-row sm:items-center sm:gap-5">
-                <div
-                  className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl ${trustBg}`}
-                >
-                  <span className={`text-2xl font-black ${trustColor}`}>
-                    {data.trustScore}%
-                  </span>
-                </div>
-                <div className="w-full sm:w-auto">
-                  <h2 className="text-xl font-black text-slate-950">
-                    Trust Score
-                  </h2>
-                  <p className="mt-0.5 text-sm font-medium text-slate-500">
-                    Based on reviews, completed swaps, and verifications
-                  </p>
-                  <div className="mt-3 h-2.5 w-full max-w-60 overflow-hidden rounded-full bg-slate-100 sm:w-64">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-500"
-                      style={{ width: `${data.trustScore}%` }}
-                    />
-                  </div>
+          <div className="mt-8 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              {/* Left Side: Progress Details */}
+              <div>
+                <h2 className="text-xl font-black text-slate-950">
+                  Trust Score
+                </h2>
+                <p className="mt-0.5 text-sm font-medium text-slate-500">
+                  Based on reviews, completed swaps, and verifications
+                </p>
+                <div className="mt-3 h-2.5 w-full max-w-xs overflow-hidden rounded-full bg-slate-100 sm:w-64">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-500"
+                    style={{ width: `${data.trustScore}%` }}
+                  />
                 </div>
               </div>
 
-              {/* Stats Highlights Bar */}
-              <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 md:w-auto">
-                <div className="rounded-xl bg-slate-50 p-3.5 text-center sm:w-24">
+              {/* Right Side: Reordered Stats (35% Trust -> Rating -> Swaps -> Reviews) */}
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:flex lg:items-center">
+                {/* 1. Trust Score Percentage */}
+                <div className="min-w-0 rounded-xl bg-slate-50 p-3.5 text-center sm:w-24">
+                  <div
+                    className={`mx-auto flex h-8 w-8 font-bold items-center justify-center rounded-full text-[12px] ${trustBg} ${trustColor}`}
+                  >
+                    %
+                  </div>
+                  <p className={`mt-1.5 text-lg font-black ${trustColor}`}>
+                    {data.trustScore}
+                  </p>
+                  <p className="truncate text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                    Trust
+                  </p>
+                </div>
+
+                {/* 2. Rating */}
+                <div className="min-w-0 rounded-xl bg-slate-50 p-3.5 text-center sm:w-24">
                   <Star className="mx-auto h-5 w-5 fill-amber-400 text-amber-400" />
                   <p className="mt-1.5 text-lg font-black text-slate-950">
                     {data.rating.toFixed(1)}
                   </p>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                  <p className="truncate text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
                     Rating
                   </p>
                 </div>
-                <div className="rounded-xl bg-slate-50 p-3.5 text-center sm:w-24">
-                  <Shield className="mx-auto h-5 w-5 text-blue-600" />
-                  <p className="mt-1.5 text-lg font-black text-slate-950">
-                    {data.reviewCount}
-                  </p>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                    Reviews
-                  </p>
-                </div>
-                <div className="rounded-xl bg-slate-50 p-3.5 text-center sm:w-24">
+
+                {/* 3. Completed Swaps */}
+                <div className="min-w-0 rounded-xl bg-slate-50 p-3.5 text-center sm:w-24">
                   <BadgeCheck className="mx-auto h-5 w-5 text-emerald-600" />
                   <p className="mt-1.5 text-lg font-black text-slate-950">
                     {data.completedSwaps}
                   </p>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                  <p className="truncate text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
                     Swaps
                   </p>
                 </div>
-                <div className="rounded-xl bg-slate-50 p-3.5 text-center sm:w-24">
-                  <TrendingUp className="mx-auto h-5 w-5 text-violet-600" />
+
+                {/* 4. Reviews */}
+                <div className="min-w-0 rounded-xl bg-slate-50 p-3.5 text-center sm:w-24">
+                  <Shield className="mx-auto h-5 w-5 text-blue-600" />
                   <p className="mt-1.5 text-lg font-black text-slate-950">
-                    {data.totalHoursShared}h
+                    {data.reviewCount}
                   </p>
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-                    Hours
+                  <p className="truncate text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                    Reviews
                   </p>
                 </div>
               </div>
@@ -247,13 +233,10 @@ export default function ReputationPage() {
         {activeTab === "overview" && (
           <div className="grid gap-6 lg:grid-cols-[1fr_350px]">
             {/* Verified Skills */}
-            <div className="rounded-[28px] border border-slate-200  p-8 shadow-sm">
+            <div className="rounded-[28px] border border-slate-200 p-8 shadow-sm">
               <h2 className="text-lg font-black text-slate-950">
                 Verified Skills
               </h2>
-              {/* <p className="mt-1 text-sm font-medium text-slate-500">
-                Skills that have been verified through completed exchanges
-              </p> */}
 
               {data.verifiedSkills.length > 0 ? (
                 <div className="mt-6 flex flex-wrap gap-2">
@@ -277,10 +260,7 @@ export default function ReputationPage() {
             {/* Badges */}
             <div>
               {data.badges.length > 0 ? (
-                <div
-                  className="rounded-[28px] border border-slate-200 bg-white p-8
-                 shadow-sm"
-                >
+                <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
                   <h2 className="text-lg font-black text-slate-950">Badges</h2>
                   <div className="mt-4 space-y-3">
                     {data.badges.map((badge) => (
@@ -377,7 +357,7 @@ export default function ReputationPage() {
 
         {/* TAB 3: SOCIAL LINKS */}
         {activeTab === "links" && (
-          <div className="max-w-xl rounded-[28px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+          <div className="max-w-xl rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-black text-slate-950">Links</h2>
               {!editingLinks ? (

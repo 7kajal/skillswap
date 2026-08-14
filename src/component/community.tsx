@@ -10,10 +10,7 @@ import {
   ArrowUpRight,
   Zap,
 } from "lucide-react";
-import type {
-  CommunityProps,
-  ExchangeShowcaseProps,
-} from "@/types/home";
+import type { CommunityProps, ExchangeShowcaseProps } from "@/types/home";
 
 function initials(name: string) {
   return name
@@ -213,7 +210,7 @@ export function ExchangeShowcase({
                     <div className="h-9 w-9 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-600 shadow-xs animate-pulse">
                       <HeartHandshake className="h-4 w-4" />
                     </div>
-                    <div className="w-px h-6 bg-dashed border-r border-blue-200 md:hidden block" />
+                    {/* <div className="w-px h-6 bg-dashed border-r border-blue-200 md:hidden block" /> */}
                   </div>
 
                   {/* Member 2 (Matching Partner) */}
@@ -308,10 +305,7 @@ export function ExchangeShowcase({
   );
 }
 
-export function Community({
-  members,
-  loading,
-}: CommunityProps) {
+export function Community({ members, loading }: CommunityProps) {
   return (
     <section
       id="community"
@@ -327,14 +321,6 @@ export function Community({
               Learn from people, not libraries.
             </h2>
           </div>
-
-          {/* <Link
-            href="/discover"
-            className="group inline-flex items-center gap-2 text-sm font-extrabold text-blue-600 transition hover:text-blue-700"
-          >
-            Browse all members
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link> */}
         </div>
 
         {loading ? (
@@ -368,7 +354,7 @@ export function Community({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                className="group relative flex w-[69%] min-w-[240px] sm:w-[calc(50%-12px)] lg:w-[calc((100%-1rem)/3.5)] shrink-0 snap-start flex-col justify-between overflow-hidden rounded-[28px] border border-slate-200 bg-white p-5 sm:p-6 shadow-[0_12px_35px_rgba(15,23,42,0.04)] transition-all duration-300 hover:translate-y-1 hover:border-blue-200 hover:shadow-[0_24px_55px_rgba(37,99,235,0.08)] animate-in fade-in"
+                className="group relative flex w-[69%] min-w-[280px] sm:w-[calc(50%-12px)] lg:w-[calc((100%-1rem)/3.5)] shrink-0 snap-start flex-col justify-between overflow-hidden rounded-[28px] border border-slate-200 bg-white p-5 sm:p-6 shadow-[0_12px_35px_rgba(15,23,42,0.04)] transition-all duration-300 hover:translate-y-1 hover:border-blue-200 hover:shadow-[0_24px_55px_rgba(37,99,235,0.08)] animate-in fade-in"
               >
                 <div>
                   <div className="flex items-start justify-between gap-4">

@@ -28,7 +28,7 @@ function ReviewCard({
       key={review.id}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.25 }}
+      viewport={{ once: true, amount: 0.1 }}
       transition={{
         duration: 0.5,
         delay: index * 0.1,
@@ -131,7 +131,9 @@ export function Testimonials({ reviews, loading }: TestimonialsProps) {
         ) : (
           <div
             className={`mt-14 flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-              reviews.length < 4 ? "justify-center" : "justify-start"
+              reviews.length < 4
+                ? "justify-start sm:justify-center"
+                : "justify-start"
             }`}
           >
             {reviews.map((review, index) => (

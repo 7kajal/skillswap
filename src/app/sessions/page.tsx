@@ -21,7 +21,15 @@ import type {
   SkillSession,
 } from "@/types/sessions";
 
-const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const DAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 export default function SessionsPage() {
   const [upcoming, setUpcoming] = useState<SkillSession[]>([]);
@@ -56,26 +64,42 @@ export default function SessionsPage() {
       axiosPrivate.get("/api/swapRequest"),
       axiosPrivate.get("/api/sessions/availability"),
       axiosPrivate.get("/api/profile"),
-    ]).then(([sessionsRes, swapsRes, availRes, profileRes]) => {
-      if (sessionsRes.data.data) {
-        setUpcoming(sessionsRes.data.data.upcoming || []);
-        setPast(sessionsRes.data.data.past || []);
-      }
-      const all = [...(swapsRes.data.data?.sent || []), ...(swapsRes.data.data?.received || [])];
-      setAcceptedSwaps(all.filter((s: SessionSwapRequest) => s.status === "accepted"));
-      setAvailability(availRes.data.data || []);
-      setCurrentUserId(profileRes.data.data?.id || "");
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    ])
+      .then(([sessionsRes, swapsRes, availRes, profileRes]) => {
+        if (sessionsRes.data.data) {
+          setUpcoming(sessionsRes.data.data.upcoming || []);
+          setPast(sessionsRes.data.data.past || []);
+        }
+        const all = [
+          ...(swapsRes.data.data?.sent || []),
+          ...(swapsRes.data.data?.received || []),
+        ];
+        setAcceptedSwaps(
+          all.filter((s: SessionSwapRequest) => s.status === "accepted"),
+        );
+        setAvailability(availRes.data.data || []);
+        setCurrentUserId(profileRes.data.data?.id || "");
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   const scheduleSession = async () => {
-    if (!newSession.swapRequestId || !newSession.title || !newSession.date) return;
+    if (!newSession.swapRequestId || !newSession.title || !newSession.date)
+      return;
     const res = await axiosPrivate.post("/api/sessions", newSession);
     if (res.data.success) {
       setUpcoming((prev) => [res.data.data, ...prev]);
       setShowScheduleModal(false);
-      setNewSession({ swapRequestId: "", title: "", description: "", date: "", startTime: "09:00", endTime: "10:00", meetLink: "" });
+      setNewSession({
+        swapRequestId: "",
+        title: "",
+        description: "",
+        date: "",
+        startTime: "09:00",
+        endTime: "10:00",
+        meetLink: "",
+      });
     }
   };
 
@@ -83,7 +107,9 @@ export default function SessionsPage() {
     if (status === "completed" && completingId) return;
     if (status === "completed") setCompletingId(sessionId);
     try {
-      const res = await axiosPrivate.patch(`/api/sessions/${sessionId}`, { status });
+      const res = await axiosPrivate.patch(`/api/sessions/${sessionId}`, {
+        status,
+      });
       if (res.data.success) {
         if (status === "completed") {
           const completedSession = upcoming.find((s) => s.id === sessionId);
@@ -96,7 +122,9 @@ export default function SessionsPage() {
             setReviewSubmitted(false);
           }
         } else {
-          setUpcoming((prev) => prev.map((s) => s.id === sessionId ? res.data.data : s));
+          setUpcoming((prev) =>
+            prev.map((s) => (s.id === sessionId ? res.data.data : s)),
+          );
         }
       } else {
         console.error(res.data.message || "Failed to update session");
@@ -110,9 +138,10 @@ export default function SessionsPage() {
 
   const submitReview = async () => {
     if (!reviewSession || !reviewRating) return;
-    const reviewedId = reviewSession.organizer.id === currentUserId
-      ? reviewSession.participant.id
-      : reviewSession.organizer.id;
+    const reviewedId =
+      reviewSession.organizer.id === currentUserId
+        ? reviewSession.participant.id
+        : reviewSession.organizer.id;
     setReviewSubmitting(true);
     try {
       const res = await axiosPrivate.post("/api/review", {
@@ -133,14 +162,23 @@ export default function SessionsPage() {
 
   const saveAvailability = async () => {
     await axiosPrivate.put("/api/sessions/availability", {
-      slots: availability.map(({ dayOfWeek, startTime, endTime }) => ({ dayOfWeek, startTime, endTime })),
+      slots: availability.map(({ dayOfWeek, startTime, endTime }) => ({
+        dayOfWeek,
+        startTime,
+        endTime,
+      })),
     });
   };
 
   const addAvailabilitySlot = () => {
     setAvailability((prev) => [
       ...prev,
-      { id: `temp-${Date.now()}`, dayOfWeek: 1, startTime: "09:00", endTime: "10:00" },
+      {
+        id: `temp-${Date.now()}`,
+        dayOfWeek: 1,
+        startTime: "09:00",
+        endTime: "10:00",
+      },
     ]);
   };
 
@@ -148,15 +186,23 @@ export default function SessionsPage() {
     setAvailability((prev) => prev.filter((s) => s.id !== id));
   };
 
-  const updateAvailabilitySlot = (id: string, field: string, value: string | number) => {
+  const updateAvailabilitySlot = (
+    id: string,
+    field: string,
+    value: string | number,
+  ) => {
     setAvailability((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, [field]: value } : s))
+      prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)),
     );
   };
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+    return d.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    });
   };
 
   if (loading) {
@@ -169,55 +215,70 @@ export default function SessionsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-        <div className="mx-auto max-w-5xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-black text-slate-950">Sessions</h1>
-              <p className="mt-1 text-sm font-medium text-slate-500">
-                Schedule and manage your learning sessions
-              </p>
-            </div>
-            {acceptedSwaps.length > 0 && (
-              <button
-                onClick={() => setShowScheduleModal(true)}
-                className="inline-flex w-fit items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
-              >
-                <Plus className="h-4 w-4" />
-                Schedule Session
-              </button>
-            )}
+      <div className="mx-auto max-w-5xl px-5 pb-2 pt-9 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-black text-slate-950">Sessions</h1>
+            <p className="mt-1 text-sm font-medium text-slate-500">
+              Schedule and manage your learning sessions
+            </p>
           </div>
-
-          {/* Tabs */}
-          <div className="mt-6 flex gap-2 overflow-x-auto border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {[
-              { id: "upcoming" as const, label: "Upcoming", icon: CalendarCheck, count: upcoming.length },
-              { id: "past" as const, label: "Past", icon: CalendarX, count: past.length },
-              { id: "availability" as const, label: "Availability", icon: Clock, count: availability.length },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 border-b-2 px-5 py-3 text-sm font-extrabold transition ${
-                    activeTab === tab.id
-                      ? "border-blue-600 text-blue-600"
-                      : "border-transparent text-slate-500 hover:text-slate-700"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {tab.label}
-                  {tab.count > 0 && (
-                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-100 px-1.5 text-[10px] font-extrabold text-blue-600">
-                      {tab.count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+          {acceptedSwaps.length > 0 && (
+            <button
+              onClick={() => setShowScheduleModal(true)}
+              className="inline-flex w-fit items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
+            >
+              <Plus className="h-4 w-4" />
+              Schedule Session
+            </button>
+          )}
         </div>
+
+        {/* Tabs */}
+        <div className="mt-6 flex gap-2 overflow-x-auto border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {[
+            {
+              id: "upcoming" as const,
+              label: "Upcoming",
+              icon: CalendarCheck,
+              count: upcoming.length,
+            },
+            {
+              id: "past" as const,
+              label: "Past",
+              icon: CalendarX,
+              count: past.length,
+            },
+            {
+              id: "availability" as const,
+              label: "Availability",
+              icon: Clock,
+              count: availability.length,
+            },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 border-b-2 px-5 py-3 text-sm font-extrabold transition ${
+                  activeTab === tab.id
+                    ? "border-blue-600 text-blue-600"
+                    : "border-transparent text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {tab.label}
+                {tab.count > 0 && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-100 px-1.5 text-[10px] font-extrabold text-blue-600">
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="mx-auto max-w-5xl px-5 py-8 sm:px-6 lg:px-8">
         {/* Upcoming Sessions */}
@@ -228,9 +289,12 @@ export default function SessionsPage() {
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
                   <Calendar className="h-6 w-6" />
                 </div>
-                <h3 className="mt-5 text-xl font-black text-slate-950">No upcoming sessions</h3>
+                <h3 className="mt-5 text-xl font-black text-slate-950">
+                  No upcoming sessions
+                </h3>
                 <p className="mx-auto mt-2 max-w-md text-sm font-medium text-slate-500">
-                  Schedule a session with one of your accepted skill swap partners.
+                  Schedule a session with one of your accepted skill swap
+                  partners.
                 </p>
                 {acceptedSwaps.length > 0 && (
                   <button
@@ -244,7 +308,10 @@ export default function SessionsPage() {
               </div>
             ) : (
               upcoming.map((session) => {
-                const other = session.organizer.id === currentUserId ? session.participant : session.organizer;
+                const other =
+                  session.organizer.id === currentUserId
+                    ? session.participant
+                    : session.organizer;
                 return (
                   <div
                     key={session.id}
@@ -252,7 +319,9 @@ export default function SessionsPage() {
                   >
                     <div className="flex flex-col gap-3 min-[390px]:flex-row min-[390px]:items-start min-[390px]:justify-between">
                       <div>
-                        <h3 className="text-lg font-black text-slate-950">{session.title}</h3>
+                        <h3 className="text-lg font-black text-slate-950">
+                          {session.title}
+                        </h3>
                         <p className="mt-1 text-sm font-medium text-slate-500">
                           with {other.name}
                         </p>
@@ -265,20 +334,28 @@ export default function SessionsPage() {
                     <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
                       <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
                         <Calendar className="h-4 w-4 text-slate-400" />
-                        <span className="text-sm font-bold text-slate-700">{formatDate(session.date)}</span>
+                        <span className="text-sm font-bold text-slate-700">
+                          {formatDate(session.date)}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
                         <Clock className="h-4 w-4 text-slate-400" />
-                        <span className="text-sm font-bold text-slate-700">{session.startTime} - {session.endTime}</span>
+                        <span className="text-sm font-bold text-slate-700">
+                          {session.startTime} - {session.endTime}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
                         <Video className="h-4 w-4 text-slate-400" />
-                        <span className="text-sm font-bold text-blue-600">{session.teachSkill} ↔ {session.learnSkill}</span>
+                        <span className="text-sm font-bold text-blue-600">
+                          {session.teachSkill} ↔ {session.learnSkill}
+                        </span>
                       </div>
                     </div>
 
                     {session.description && (
-                      <p className="mt-3 text-sm text-slate-500">{session.description}</p>
+                      <p className="mt-3 text-sm text-slate-500">
+                        {session.description}
+                      </p>
                     )}
 
                     {session.meetLink && (
@@ -301,7 +378,9 @@ export default function SessionsPage() {
                           className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-sm font-extrabold text-emerald-600 transition hover:bg-emerald-100 disabled:opacity-50"
                         >
                           <Check className="h-4 w-4" />
-                          {completingId === session.id ? "Completing..." : "Mark Complete"}
+                          {completingId === session.id
+                            ? "Completing..."
+                            : "Mark Complete"}
                         </button>
                       )}
                     </div>
@@ -320,14 +399,19 @@ export default function SessionsPage() {
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
                   <CalendarX className="h-6 w-6" />
                 </div>
-                <h3 className="mt-5 text-xl font-black text-slate-950">No past sessions</h3>
+                <h3 className="mt-5 text-xl font-black text-slate-950">
+                  No past sessions
+                </h3>
                 <p className="mx-auto mt-2 max-w-md text-sm font-medium text-slate-500">
                   Your completed and cancelled sessions will appear here.
                 </p>
               </div>
             ) : (
               past.map((session) => {
-                const other = session.organizer.id === currentUserId ? session.participant : session.organizer;
+                const other =
+                  session.organizer.id === currentUserId
+                    ? session.participant
+                    : session.organizer;
                 return (
                   <div
                     key={session.id}
@@ -335,14 +419,20 @@ export default function SessionsPage() {
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="text-lg font-black text-slate-950">{session.title}</h3>
-                        <p className="mt-1 text-sm font-medium text-slate-500">with {other.name}</p>
+                        <h3 className="text-lg font-black text-slate-950">
+                          {session.title}
+                        </h3>
+                        <p className="mt-1 text-sm font-medium text-slate-500">
+                          with {other.name}
+                        </p>
                       </div>
-                      <span className={`rounded-full px-3 py-1.5 text-xs font-extrabold ${
-                        session.status === "completed"
-                          ? "bg-emerald-50 text-emerald-600"
-                          : "bg-red-50 text-red-600"
-                      }`}>
+                      <span
+                        className={`rounded-full px-3 py-1.5 text-xs font-extrabold ${
+                          session.status === "completed"
+                            ? "bg-emerald-50 text-emerald-600"
+                            : "bg-red-50 text-red-600"
+                        }`}
+                      >
                         {session.status}
                       </span>
                     </div>
@@ -350,15 +440,21 @@ export default function SessionsPage() {
                     <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
                       <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
                         <Calendar className="h-4 w-4 text-slate-400" />
-                        <span className="text-sm font-bold text-slate-700">{formatDate(session.date)}</span>
+                        <span className="text-sm font-bold text-slate-700">
+                          {formatDate(session.date)}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
                         <Clock className="h-4 w-4 text-slate-400" />
-                        <span className="text-sm font-bold text-slate-700">{session.startTime} - {session.endTime}</span>
+                        <span className="text-sm font-bold text-slate-700">
+                          {session.startTime} - {session.endTime}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3">
                         <Video className="h-4 w-4 text-slate-400" />
-                        <span className="text-sm font-bold text-blue-600">{session.teachSkill} ↔ {session.learnSkill}</span>
+                        <span className="text-sm font-bold text-blue-600">
+                          {session.teachSkill} ↔ {session.learnSkill}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -374,14 +470,16 @@ export default function SessionsPage() {
             <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h2 className="text-lg font-black text-slate-950">Weekly Availability</h2>
+                  <h2 className="text-lg font-black text-slate-950">
+                    Weekly Availability
+                  </h2>
                   <p className="mt-1 text-sm font-medium text-slate-500">
                     Set your available time slots for scheduling sessions
                   </p>
                 </div>
                 <button
                   onClick={addAvailabilitySlot}
-                  className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-extrabold text-white transition hover:bg-blue-700"
+                  className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-extrabold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
                   <Plus className="h-4 w-4" />
                   Add Slot
@@ -390,40 +488,68 @@ export default function SessionsPage() {
 
               <div className="mt-6 space-y-3">
                 {availability.length === 0 && (
-                  <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/50 p-8 text-center">
                     <Clock className="mx-auto h-8 w-8 text-slate-300" />
-                    <p className="mt-3 text-sm font-bold text-slate-400">No availability set. Add time slots to get started.</p>
+                    <p className="mt-3 text-sm font-bold text-slate-400">
+                      No availability set. Add time slots to get started.
+                    </p>
                   </div>
                 )}
                 {availability.map((slot) => (
-                  <div key={slot.id} className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center">
+                  <div
+                    key={slot.id}
+                    className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:flex-row sm:items-center"
+                  >
                     <select
                       value={slot.dayOfWeek}
-                      onChange={(e) => updateAvailabilitySlot(slot.id, "dayOfWeek", parseInt(e.target.value))}
-                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none sm:w-auto"
+                      onChange={(e) =>
+                        updateAvailabilitySlot(
+                          slot.id,
+                          "dayOfWeek",
+                          parseInt(e.target.value),
+                        )
+                      }
+                      className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 sm:w-auto"
                     >
                       {DAYS.map((day, idx) => (
-                        <option key={idx} value={idx}>{day}</option>
+                        <option key={idx} value={idx}>
+                          {day}
+                        </option>
                       ))}
                     </select>
-                     <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:flex sm:gap-3">
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:flex sm:gap-3">
                       <input
                         type="time"
                         value={slot.startTime}
-                        onChange={(e) => updateAvailabilitySlot(slot.id, "startTime", e.target.value)}
-                         className="min-w-0 rounded-xl border border-slate-200 bg-white px-2 py-2.5 text-sm font-bold text-slate-700 outline-none sm:px-4"
+                        onChange={(e) =>
+                          updateAvailabilitySlot(
+                            slot.id,
+                            "startTime",
+                            e.target.value,
+                          )
+                        }
+                        className="min-w-0 rounded-xl border border-slate-200 bg-white px-2 py-2.5 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 sm:px-4"
                       />
-                      <span className="text-sm font-bold text-slate-400">to</span>
+                      <span className="text-sm font-bold text-slate-400">
+                        to
+                      </span>
                       <input
                         type="time"
                         value={slot.endTime}
-                        onChange={(e) => updateAvailabilitySlot(slot.id, "endTime", e.target.value)}
-                         className="min-w-0 rounded-xl border border-slate-200 bg-white px-2 py-2.5 text-sm font-bold text-slate-700 outline-none sm:px-4"
+                        onChange={(e) =>
+                          updateAvailabilitySlot(
+                            slot.id,
+                            "endTime",
+                            e.target.value,
+                          )
+                        }
+                        className="min-w-0 rounded-xl border border-slate-200 bg-white px-2 py-2.5 text-sm font-bold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 sm:px-4"
                       />
                     </div>
                     <button
                       onClick={() => removeAvailabilitySlot(slot.id)}
-                      className="ml-auto rounded-xl p-2.5 text-slate-400 transition hover:bg-red-50 hover:text-red-500"
+                      className="self-end rounded-xl p-2.5 text-slate-400 transition hover:bg-red-50 hover:text-red-500 sm:ml-auto sm:self-center"
+                      aria-label="Remove slot"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -434,7 +560,7 @@ export default function SessionsPage() {
               {availability.length > 0 && (
                 <button
                   onClick={saveAvailability}
-                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
+                  className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 >
                   <Check className="h-4 w-4" />
                   Save Availability
@@ -450,7 +576,9 @@ export default function SessionsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black text-slate-950">Schedule Session</h2>
+              <h2 className="text-xl font-black text-slate-950">
+                Schedule Session
+              </h2>
               <button
                 onClick={() => setShowScheduleModal(false)}
                 className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100"
@@ -467,21 +595,29 @@ export default function SessionsPage() {
                 <select
                   value={newSession.swapRequestId}
                   onChange={(e) => {
-                    const swap = acceptedSwaps.find((s) => s.id === e.target.value);
+                    const swap = acceptedSwaps.find(
+                      (s) => s.id === e.target.value,
+                    );
                     setNewSession((prev) => ({
                       ...prev,
                       swapRequestId: e.target.value,
-                      title: swap ? `${swap.teachSkill.name} ↔ ${swap.learnSkill.name} Session` : prev.title,
+                      title: swap
+                        ? `${swap.teachSkill.name} ↔ ${swap.learnSkill.name} Session`
+                        : prev.title,
                     }));
                   }}
                   className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none"
                 >
                   <option value="">Select a partner</option>
                   {acceptedSwaps.map((swap) => {
-                    const other = swap.sender.id === currentUserId ? swap.receiver : swap.sender;
+                    const other =
+                      swap.sender.id === currentUserId
+                        ? swap.receiver
+                        : swap.sender;
                     return (
                       <option key={swap.id} value={swap.id}>
-                        {other.name} - {swap.teachSkill.name} ↔ {swap.learnSkill.name}
+                        {other.name} - {swap.teachSkill.name} ↔{" "}
+                        {swap.learnSkill.name}
                       </option>
                     );
                   })}
@@ -494,7 +630,12 @@ export default function SessionsPage() {
                 </label>
                 <input
                   value={newSession.title}
-                  onChange={(e) => setNewSession((prev) => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) =>
+                    setNewSession((prev) => ({
+                      ...prev,
+                      title: e.target.value,
+                    }))
+                  }
                   placeholder="e.g., React Hooks Deep Dive"
                   className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none"
                 />
@@ -506,7 +647,12 @@ export default function SessionsPage() {
                 </label>
                 <textarea
                   value={newSession.description}
-                  onChange={(e) => setNewSession((prev) => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setNewSession((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
                   placeholder="What will you cover in this session?"
                   rows={2}
                   className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-900 outline-none"
@@ -515,29 +661,50 @@ export default function SessionsPage() {
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div>
-                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Date</label>
+                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                    Date
+                  </label>
                   <input
                     type="date"
                     value={newSession.date}
-                    onChange={(e) => setNewSession((prev) => ({ ...prev, date: e.target.value }))}
+                    onChange={(e) =>
+                      setNewSession((prev) => ({
+                        ...prev,
+                        date: e.target.value,
+                      }))
+                    }
                     className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Start</label>
+                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                    Start
+                  </label>
                   <input
                     type="time"
                     value={newSession.startTime}
-                    onChange={(e) => setNewSession((prev) => ({ ...prev, startTime: e.target.value }))}
+                    onChange={(e) =>
+                      setNewSession((prev) => ({
+                        ...prev,
+                        startTime: e.target.value,
+                      }))
+                    }
                     className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">End</label>
+                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                    End
+                  </label>
                   <input
                     type="time"
                     value={newSession.endTime}
-                    onChange={(e) => setNewSession((prev) => ({ ...prev, endTime: e.target.value }))}
+                    onChange={(e) =>
+                      setNewSession((prev) => ({
+                        ...prev,
+                        endTime: e.target.value,
+                      }))
+                    }
                     className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none"
                   />
                 </div>
@@ -549,7 +716,12 @@ export default function SessionsPage() {
                 </label>
                 <input
                   value={newSession.meetLink}
-                  onChange={(e) => setNewSession((prev) => ({ ...prev, meetLink: e.target.value }))}
+                  onChange={(e) =>
+                    setNewSession((prev) => ({
+                      ...prev,
+                      meetLink: e.target.value,
+                    }))
+                  }
                   placeholder="https://meet.google.com/..."
                   className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none"
                 />
@@ -565,7 +737,11 @@ export default function SessionsPage() {
               </button>
               <button
                 onClick={scheduleSession}
-                disabled={!newSession.swapRequestId || !newSession.title || !newSession.date}
+                disabled={
+                  !newSession.swapRequestId ||
+                  !newSession.title ||
+                  !newSession.date
+                }
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:opacity-50"
               >
                 <CalendarCheck className="h-4 w-4" />
@@ -585,8 +761,12 @@ export default function SessionsPage() {
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
                   <Star className="h-8 w-8 fill-emerald-500" />
                 </div>
-                <h2 className="mt-6 text-xl font-black text-slate-950">Review Submitted!</h2>
-                <p className="mt-2 text-sm font-medium text-slate-500">Thank you for your feedback.</p>
+                <h2 className="mt-6 text-xl font-black text-slate-950">
+                  Review Submitted!
+                </h2>
+                <p className="mt-2 text-sm font-medium text-slate-500">
+                  Thank you for your feedback.
+                </p>
                 <button
                   onClick={() => setReviewSession(null)}
                   className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white transition hover:bg-blue-700"
@@ -598,9 +778,14 @@ export default function SessionsPage() {
               <>
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-xl font-black text-slate-950">Rate Your Session</h2>
+                    <h2 className="text-xl font-black text-slate-950">
+                      Rate Your Session
+                    </h2>
                     <p className="mt-1 text-sm font-medium text-slate-500">
-                      with {reviewSession.organizer.id === currentUserId ? reviewSession.participant.name : reviewSession.organizer.name}
+                      with{" "}
+                      {reviewSession.organizer.id === currentUserId
+                        ? reviewSession.participant.name
+                        : reviewSession.organizer.name}
                     </p>
                   </div>
                   <button
@@ -614,21 +799,31 @@ export default function SessionsPage() {
                 {/* Swap Info */}
                 <div className="mt-6 grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
                   <div className="rounded-2xl bg-slate-50 p-4">
-                    <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-slate-400">Skill exchanged</p>
-                    <p className="mt-2 font-black text-slate-900">{reviewSession.teachSkill}</p>
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-slate-400">
+                      Skill exchanged
+                    </p>
+                    <p className="mt-2 font-black text-slate-900">
+                      {reviewSession.teachSkill}
+                    </p>
                   </div>
                   <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white">
                     <Star className="h-4 w-4" />
                   </div>
                   <div className="rounded-2xl bg-blue-50 p-4">
-                    <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-blue-500">Skill learned</p>
-                    <p className="mt-2 font-black text-slate-900">{reviewSession.learnSkill}</p>
+                    <p className="text-[10px] font-extrabold uppercase tracking-[0.13em] text-blue-500">
+                      Skill learned
+                    </p>
+                    <p className="mt-2 font-black text-slate-900">
+                      {reviewSession.learnSkill}
+                    </p>
                   </div>
                 </div>
 
                 {/* Star Rating */}
                 <div className="mt-8">
-                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Rating</label>
+                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                    Rating
+                  </label>
                   <div className="mt-3 flex items-center gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -648,14 +843,18 @@ export default function SessionsPage() {
                       </button>
                     ))}
                     {reviewRating > 0 && (
-                      <span className="ml-3 text-sm font-bold text-slate-600">{reviewRating}/5</span>
+                      <span className="ml-3 text-sm font-bold text-slate-600">
+                        {reviewRating}/5
+                      </span>
                     )}
                   </div>
                 </div>
 
                 {/* Comment */}
                 <div className="mt-6">
-                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Review</label>
+                  <label className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">
+                    Review
+                  </label>
                   <textarea
                     value={reviewComment}
                     onChange={(e) => setReviewComment(e.target.value)}

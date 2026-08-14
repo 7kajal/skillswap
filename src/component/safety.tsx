@@ -74,10 +74,10 @@ export function Safety() {
 
             {/* Title & Description */}
             <div className="mt-7">
-              <h3 className="text-2xl font-black text-slate-950 tracking-tight">
+              <h3 className="text-lg sm:text-2xl font-black text-slate-950 tracking-tight">
                 Exchange with confidence
               </h3>
-              <p className="mt-3 text-sm font-medium leading-relaxed text-slate-500">
+              <p className="mt-3 text-xs sm:text-sm font-medium leading-relaxed text-slate-500">
                 Verification, community reviews and clear exchange expectations
                 help create a safer network.
               </p>
@@ -85,21 +85,21 @@ export function Safety() {
 
             {/* Checklist items */}
             <div className="mt-7 space-y-3">
-              <div className="flex items-center gap-3.5 rounded-2xl bg-slate-50/80 p-3.5 text-sm font-bold text-slate-800">
+              <div className="flex items-center gap-3.5 rounded-2xl bg-slate-50/80 p-3.5 text-xs sm:text-sm font-bold text-slate-800">
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                   <Check className="h-3.5 w-3.5 stroke-[3]" />
                 </div>
                 <span>Identity and profile verification</span>
               </div>
 
-              <div className="flex items-center gap-3.5 rounded-2xl bg-slate-50/80 p-3.5 text-sm font-bold text-slate-800">
+              <div className="flex items-center gap-3.5 rounded-2xl bg-slate-50/80 p-3.5 text-xs sm:text-sm font-bold text-slate-800">
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                   <Check className="h-3.5 w-3.5 stroke-[3]" />
                 </div>
                 <span>Member ratings and reviews</span>
               </div>
 
-              <div className="flex items-center gap-3.5 rounded-2xl bg-slate-50/80 p-3.5 text-sm font-bold text-slate-800">
+              <div className="flex items-center gap-3.5 rounded-2xl bg-slate-50/80 p-3.5 text-xs sm:text-sm font-bold text-slate-800">
                 <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
                   <Check className="h-3.5 w-3.5 stroke-[3]" />
                 </div>
@@ -114,10 +114,10 @@ export function Safety() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="absolute left-4 bottom-6 sm:left-8 sm:bottom-10 z-10 flex items-center gap-3.5 rounded-2xl bg-white p-4 shadow-[0_15px_35px_rgba(0,0,0,0.08)] border border-slate-100"
+            className="absolute left-4 bottom-6 sm:left-8 sm:bottom-10 z-10 flex items-center gap-3.5 rounded-2xl bg-white p-3 shadow-[0_15px_35px_rgba(0,0,0,0.08)] border border-slate-100"
           >
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-              <MessageCircle className="h-5 w-5" />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <MessageCircle className="h-3 w-3" />
             </div>
             <div>
               <h4 className="text-xs font-black text-slate-900">
@@ -146,7 +146,7 @@ export function Safety() {
               return (
                 <article
                   key={feature.title}
-                  className={`rounded-[24px] border bg-white p-5 shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md ${feature.color}`}
+                  className={`rounded-[24px] border  p-5  transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md ${feature.color}`}
                 >
                   <div
                     className={`flex h-10 w-10 items-center justify-center rounded-xl ${feature.badgeColor}`}
