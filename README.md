@@ -1,20 +1,20 @@
-# Skill Exchange
+# Skill Swap
 
-## What is Skill Exchange?
+## What is Skill Swap?
 
-**Skill Exchange** is a platform where people can **teach what they know and learn what they want** by connecting with others who have complementary skills.
+**Skill Swap** is a platform where people can **teach what they know and learn what they want** by connecting with others who have complementary skills.
 
 For example:
 
 > Rahul can teach React and wants to learn UI/UX.
 > Priya can teach UI/UX and wants to learn React.
-> **Skill Exchange connects them.**
+> **Skill Swap connects them.**
 
 ## Goal
 
 The goal is to create a community where **everyone can be both a teacher and a learner**.
 
-Skill Exchange makes learning more:
+Skill Swap makes learning more:
 
 * Collaborative
 * Accessible
@@ -50,13 +50,13 @@ They can also share meeting links such as Google Meet or Zoom.
 
 ### 5. Teach & Learn
 
-Both users exchange knowledge by teaching their skills and learning something new from each other.
+Both users Swap knowledge by teaching their skills and learning something new from each other.
 
 ### 6. Complete & Review
 
-After completing the exchange, both users can mark it as complete and **rate and review each other**.
+After completing the Swap, both users can mark it as complete and **rate and review each other**.
 
-Successful exchanges help build their **rating, reputation, completed exchanges, and achievements**.
+Successful Swaps help build their **rating, reputation, completed exchanges, and achievements**.
 
 ## Vision
 
