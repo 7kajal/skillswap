@@ -10,7 +10,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     await completeProfile(session.user.id, body);
     return apiSuccess({ success: true }, "Profile completed");
-  } catch {
-    return apiError("Internal server error");
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Internal server error";
+    return apiError(message);
   }
 }

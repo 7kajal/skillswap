@@ -123,21 +123,21 @@ export default function ProfilePage() {
       <main className="mx-auto max-w-6xl px-5 py-8 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
           <div className="relative overflow-hidden bg-blue-50/45 px-6 py-8 sm:px-10 sm:py-10">
-            <div className="flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-row items-start gap-5">
                 {profile.avatar ? (
                   <img
                     src={profile.avatar}
                     alt={profile.name}
-                    className="h-28 w-28 rounded-[26px] border-4 border-white object-cover shadow-lg"
+                    className="h-20 w-20 sm:h-28 sm:w-28 shrink-0 rounded-[22px] sm:rounded-[26px] border-4 border-white object-cover shadow-lg"
                   />
                 ) : (
-                  <div className="flex h-28 w-28 items-center justify-center rounded-[26px] border-4 border-white bg-blue-600 text-3xl font-black text-white shadow-lg">
+                  <div className="flex h-20 w-20 sm:h-28 sm:w-28 shrink-0 items-center justify-center rounded-[22px] sm:rounded-[26px] border-4 border-white bg-blue-600 text-2xl sm:text-3xl font-black text-white shadow-lg">
                     {getInitials(profile.name)}
                   </div>
                 )}
 
-                <div className="pb-1">
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <h2 className="text-2xl font-black tracking-[-0.04em] text-slate-950 sm:text-3xl">
                       {profile.name}
@@ -147,12 +147,12 @@ export default function ProfilePage() {
                     )}
                   </div>
                   {profile.location && (
-                    <p className="mt-2 flex items-center gap-1.5 text-sm font-medium text-slate-500">
+                    <p className="mt-1.5 flex items-center gap-1.5 text-sm font-medium text-slate-500">
                       <MapPin className="h-4 w-4" /> {profile.location}
                     </p>
                   )}
 
-                  <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+                  <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
                     <span className="flex items-center gap-1 font-black text-slate-800">
                       <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                       {profile.rating.toFixed(1)}
@@ -173,7 +173,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="w-full sm:w-auto sm:pb-1">
+              <div>
                 {isOwnProfile ? (
                   <Link
                     href="/profile/complete"

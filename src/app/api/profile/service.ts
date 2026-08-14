@@ -91,6 +91,13 @@ export async function completeProfile(
 ) {
   await connectDB();
 
+  if (!data.teachSkills || data.teachSkills.length === 0) {
+    throw new Error("At least one teach skill is required.");
+  }
+  if (!data.learnSkills || data.learnSkills.length === 0) {
+    throw new Error("At least one learn skill is required.");
+  }
+
   await User.findByIdAndUpdate(userId, {
     avatar: data.avatar || null,
     bio: data.bio || null,

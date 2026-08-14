@@ -19,7 +19,7 @@ export function Footer() {
               rel="noreferrer"
               aria-label="Open GitHub"
               className="
-            flex h-11 w-11 items-center justify-center
+            flex h-9 w-9 items-center justify-center sm:h-11 sm:w-11
             rounded-full border border-blue-600
             bg-blue-600 text-white
             shadow-md transition-all duration-300
@@ -28,7 +28,7 @@ export function Footer() {
             md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
           "
             >
-              <GitHubIcon className="h-5 w-5" />
+              <GitHubIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </a>
 
             {/* Discord */}
@@ -37,7 +37,7 @@ export function Footer() {
               rel="noreferrer"
               aria-label="Join Discord"
               className="
-            flex h-11 w-11 items-center justify-center
+            flex h-9 w-9 items-center justify-center sm:h-11 sm:w-11
             rounded-full border border-blue-600
             bg-blue-600 text-white
             shadow-md transition-all duration-300
@@ -46,7 +46,7 @@ export function Footer() {
             md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
           "
             >
-              <DiscordIcon className="h-5 w-5" />
+              <DiscordIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </a>
 
             {/* YouTube */}
@@ -55,7 +55,7 @@ export function Footer() {
               rel="noreferrer"
               aria-label="Open YouTube"
               className="
-            flex h-11 w-11 items-center justify-center
+            flex h-9 w-9 items-center justify-center sm:h-11 sm:w-11
             rounded-full border border-blue-600
             bg-blue-600 text-white
             shadow-md transition-all duration-300
@@ -64,7 +64,7 @@ export function Footer() {
             md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
           "
             >
-              <YouTubeIcon className="h-5 w-5" />
+              <YouTubeIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </a>
 
             {/* X */}
@@ -73,7 +73,7 @@ export function Footer() {
               rel="noreferrer"
               aria-label="Open X"
               className="
-            flex h-11 w-11 items-center justify-center
+            flex h-9 w-9 items-center justify-center sm:h-11 sm:w-11
             rounded-full border border-blue-600
             bg-blue-600 text-white
             shadow-md transition-all duration-300
@@ -82,7 +82,7 @@ export function Footer() {
             md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
           "
             >
-              <XIcon className="h-5 w-5" />
+              <XIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             </a>
           </div>
         </div>

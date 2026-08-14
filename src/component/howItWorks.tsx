@@ -249,7 +249,7 @@ function SessionDemo() {
   const [stars, setStars] = useState(5);
 
   return (
-    <div className="h-full px-5 pt-6 pb-4 flex flex-col justify-between select-none">
+    <div className="h-full px-4 sm:px-5 pt-5 sm:pt-6 pb-4 flex flex-col justify-between select-none">
       <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-950 shadow-md">
         {/* Live Bar Header */}
         <div className="flex items-center gap-1.5 border-b border-white/10 px-3 py-1.5 bg-slate-900/60">
@@ -267,9 +267,9 @@ function SessionDemo() {
         </div>
 
         {/* Video Call Tiles Grid */}
-        <div className="grid grid-cols-2 gap-2 p-3.5">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-2 p-3 sm:p-3.5">
           {/* YOU Tile */}
-          <div className="relative flex h-26 flex-col items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 p-2 shadow">
+          <div className="relative flex h-24 sm:h-26 flex-col items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 p-2 shadow">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-[9px] font-black text-white shadow-inner">
               YOU
             </span>
@@ -297,7 +297,7 @@ function SessionDemo() {
           </div>
 
           {/* AK Tile */}
-          <div className="relative flex h-26 flex-col items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-800 p-2 shadow">
+          <div className="relative flex h-24 sm:h-26 flex-col items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-800 p-2 shadow">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-[9px] font-black text-white shadow-inner">
               AK
             </span>
@@ -324,46 +324,46 @@ function SessionDemo() {
         </div>
 
         {/* Video Controls Bar */}
-        <div className="flex items-center justify-between border-t border-white/10 px-3.5 py-4 bg-slate-900/80">
-          <div className="flex gap-1.5">
+        <div className="flex items-center justify-between border-t border-white/10 px-3 sm:px-3.5 py-3 sm:py-4 bg-slate-900/80">
+          <div className="flex gap-2.5 sm:gap-2">
             <button
               onClick={() => setMicActive(!micActive)}
-              className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${micActive
+              className={`flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-colors ${micActive
                 ? "bg-white/15 text-white"
                 : "bg-rose-500/80 text-white"
                 }`}
             >
               {micActive ? (
-                <Mic className="h-3 w-3" />
+                <Mic className="h-4 w-4 sm:h-4 sm:w-4" />
               ) : (
-                <MicOff className="h-3 w-3" />
+                <MicOff className="h-4 w-4 sm:h-4 sm:w-4" />
               )}
             </button>
 
             <button
               onClick={() => setVideoActive(!videoActive)}
-              className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${videoActive
+              className={`flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-colors ${videoActive
                 ? "bg-white/15 text-white"
                 : "bg-rose-500/80 text-white"
                 }`}
             >
               {videoActive ? (
-                <Video className="h-3 w-3" />
+                <Video className="h-4 w-4 sm:h-4 sm:w-4" />
               ) : (
-                <VideoOff className="h-3 w-3" />
+                <VideoOff className="h-4 w-4 sm:h-4 sm:w-4" />
               )}
             </button>
 
-            <button className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15 text-white">
-              <MessageCircle className="h-3 w-3" />
+            <button className="flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-white/15 text-white">
+              <MessageCircle className="h-4 w-4 sm:h-4 sm:w-4" />
             </button>
           </div>
 
           <button
             onClick={() => setShowRating(!showRating)}
-            className="flex items-center gap-1 rounded bg-amber-500/20 px-2 py-0.5 text-[8px] font-bold text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all"
+            className="flex items-center gap-1.5 rounded-lg bg-amber-500/20 px-3 py-1.5 sm:px-2 sm:py-1 text-[9px] sm:text-[8px] font-bold text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all"
           >
-            <Award className="h-2.5 w-2.5 text-amber-400" />
+            <Award className="h-3 w-3 sm:h-2.5 sm:w-2.5 text-amber-400" />
             {showRating ? "Hide Rep" : "Swap Done"}
           </button>
         </div>

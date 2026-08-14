@@ -92,7 +92,7 @@ export default function RequestDialog({
 
   return (
     <Dialog open={Boolean(swapUser)} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[calc(95dvh-1rem)] w-full min-w-md overflow-y-auto rounded-[24px] border border-slate-200 bg-white p-5 shadow-2xl sm:rounded-[28px] sm:p-7">
+      <DialogContent className="max-h-[calc(95dvh-1rem)] w-full sm:min-w-md overflow-y-auto rounded-[24px] border border-slate-200 bg-white p-5 shadow-2xl sm:rounded-[28px] sm:p-7">
         <DialogHeader className="p-0 space-y-0 text-left">
           <DialogTitle className="text-xl font-black text-slate-950">
             Request a skill swap with

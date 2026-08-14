@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import axiosPrivate from "@/lib/axiosPrivate";
+import { useToast } from "@/component/toast";
 
 const allSkills = [
   "React",
@@ -57,10 +58,10 @@ const availabilityOptions = ["Weekdays", "Evenings", "Weekends"];
 export default function CompleteProfilePage() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { showToast } = useToast();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [error, setError] = useState("");
 
   const [avatar, setAvatar] = useState("");
   const [bio, setBio] = useState("");
@@ -135,7 +136,14 @@ export default function CompleteProfilePage() {
   };
 
   const handleSubmit = async () => {
-    setError("");
+    if (teachSkills.length === 0) {
+      showToast({ type: "error", title: "Select teach skills", message: "Please select at least one skill you can teach." });
+      return;
+    }
+    if (learnSkills.length === 0) {
+      showToast({ type: "error", title: "Select learn skills", message: "Please select at least one skill you want to learn." });
+      return;
+    }
     setLoading(true);
     try {
       const res = await axiosPrivate.post("/api/profile/complete", {
@@ -158,8 +166,9 @@ export default function CompleteProfilePage() {
       router.push(
         session?.user?.id ? `/profile/${session.user.id}` : "/discover",
       );
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      showToast({ type: "error", title: "Profile error", message });
     } finally {
       setLoading(false);
     }
@@ -205,12 +214,6 @@ export default function CompleteProfilePage() {
             );
           })}
         </div>
-
-        {error && (
-          <div className="mb-4 rounded-xl bg-red-50 p-3 text-sm font-bold text-red-600">
-            {error}
-          </div>
-        )}
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-8 shadow-[0_12px_35px_rgba(15,23,42,0.05)]">
           {/* Step 0: Personal Info */}
@@ -429,7 +432,13 @@ export default function CompleteProfilePage() {
 
           {step < 3 ? (
             <button
-              onClick={() => setStep(step + 1)}
+              onClick={() => {
+                if (step === 2 && teachSkills.length === 0) {
+                  showToast({ type: "error", title: "Select teach skills", message: "Please select at least one skill you can teach." });
+                  return;
+                }
+                setStep(step + 1);
+              }}
               className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
             >
               Continue

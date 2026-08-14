@@ -355,7 +355,7 @@ function CategoryCard({
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.45, delay: index * 0.04 }}
       onClick={onClick}
-      className={`group min-w-[190px] rounded-[24px] border p-5 text-left transition duration-300 md:min-w-0 ${
+      className={`group snap-start min-w-[190px] rounded-[24px] border p-5 text-left transition duration-300 md:min-w-0 ${
         active
           ? "border-blue-500 bg-blue-600 text-white shadow-[0_20px_45px_rgba(37,99,235,0.2)]"
           : "border-slate-200 bg-white text-slate-900 hover:-translate-y-1 hover:border-blue-200 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]"
@@ -611,7 +611,7 @@ export default function ExploreSkillsSection() {
             }
           />
 
-          <div className="mt-9 flex gap-4 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-5">
+          <div className="mt-9 flex flex-nowrap gap-4 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:grid md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-5">
             {categories.map((category, index) => (
               <CategoryCard
                 key={category.id}

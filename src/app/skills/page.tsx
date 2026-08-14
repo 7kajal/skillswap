@@ -233,12 +233,12 @@ export default function SkillsPage() {
         </div>
 
         {/* Filters */}
-        <div className="mt-8 flex flex-wrap gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <div className="mt-8 flex flex-nowrap gap-2 overflow-x-auto pb-2 snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {CATEGORIES.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`h-11 px-6 rounded-full text-xs font-black transition-all flex items-center justify-center ${
+              className={`snap-start h-11 px-6 rounded-full text-xs font-black transition-all flex items-center justify-center whitespace-nowrap ${
                 selectedCategory === cat.id
                   ? "bg-blue-600 text-white shadow-[0_8px_20px_rgba(37,99,235,0.2)]"
                   : "bg-white border border-slate-200 text-slate-600 hover:border-slate-300"

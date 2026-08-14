@@ -44,7 +44,7 @@ export function Hero({ authStatus }: HeroProps) {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08 }}
-          className="mx-auto mt-7 max-w-4xl text-4xl font-black leading-20 tracking-[-0.04em] text-slate-950 sm:text-5xl md:text-6xl lg:text-[4.2rem]"
+          className="mx-auto mt-7 max-w-4xl text-4xl font-black leading-[1.12] tracking-[-0.04em] text-slate-950 sm:text-5xl sm:leading-[1.15] md:text-6xl lg:text-[4.2rem] lg:leading-20"
         >
           Learn anything by sharing
           <span className="block text-blue-600">what you know.</span>

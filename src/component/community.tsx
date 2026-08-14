@@ -339,11 +339,11 @@ export function Community({
 
         {loading ? (
           /* Loading Skeletons in Scroll Row */
-          <div className="mt-12 flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-5 px-5 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+          <div className="mt-12 flex gap-4 sm:gap-6 overflow-x-auto pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-5 px-5 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
             {Array.from({ length: 3 }).map((_, index) => (
               <div
                 key={index}
-                className="h-[380px] w-[85%] sm:w-[calc(50%-12px)] lg:w-[calc((100%-3rem)/3)] shrink-0 snap-start animate-pulse rounded-[28px] border border-slate-200 bg-white"
+                className="h-[340px] w-[69%] min-w-[240px] sm:w-[calc(50%-12px)] lg:w-[calc((100%-3rem)/3)] shrink-0 snap-start animate-pulse rounded-[28px] border border-slate-200 bg-white"
               />
             ))}
           </div>
@@ -360,7 +360,7 @@ export function Community({
           </div>
         ) : (
           /* Scrollable Horizontal Container */
-          <div className="mt-12 flex gap-6 overflow-x-auto pb-6  snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden  px-5 mx-2 lg:px-8">
+          <div className="mt-12 flex gap-4 sm:gap-6 overflow-x-auto pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pl-5 sm:pl-6 lg:pl-8 pr-5 sm:pr-6 lg:pr-8">
             {members.map((member, index) => (
               <motion.article
                 key={member.id}
@@ -368,7 +368,7 @@ export function Community({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                className="group relative flex w-[80%] sm:w-[calc(50%-12px)] lg:w-[calc((100%-1rem)/3.5)] shrink-0 snap-start flex-col justify-between overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_12px_35px_rgba(15,23,42,0.04)] transition-all duration-300 hover:translate-y-1 hover:border-blue-200 hover:shadow-[0_24px_55px_rgba(37,99,235,0.08)] animate-in fade-in"
+                className="group relative flex w-[69%] min-w-[240px] sm:w-[calc(50%-12px)] lg:w-[calc((100%-1rem)/3.5)] shrink-0 snap-start flex-col justify-between overflow-hidden rounded-[28px] border border-slate-200 bg-white p-5 sm:p-6 shadow-[0_12px_35px_rgba(15,23,42,0.04)] transition-all duration-300 hover:translate-y-1 hover:border-blue-200 hover:shadow-[0_24px_55px_rgba(37,99,235,0.08)] animate-in fade-in"
               >
                 <div>
                   <div className="flex items-start justify-between gap-4">
@@ -409,12 +409,12 @@ export function Community({
                     </div>
                   </div>
 
-                  <p className="mt-4 line-clamp-2 text-xs font-bold leading-5 text-slate-500">
+                  <p className="mt-3 line-clamp-2 text-xs font-bold leading-5 text-slate-500">
                     {member.bio || "SkillSwap community member"}
                   </p>
 
                   {/* Skills Grid */}
-                  <div className="mt-5 pt-4 border-t border-slate-100 space-y-3">
+                  <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
                     <div>
                       <span className="text-[9px] font-black uppercase tracking-[0.12em] text-blue-600">
                         Can Teach
@@ -452,7 +452,7 @@ export function Community({
 
                 <Link
                   href={`/profile/${member.id}`}
-                  className="mt-6 flex items-center justify-center rounded-xl bg-blue-600 border border-blue-600 px-4 py-3 text-xs font-extrabold text-white transition duration-300 hover:bg-blue-700 hover:border-blue-700"
+                  className="mt-4 flex items-center justify-center rounded-xl bg-blue-600 border border-blue-600 px-4 py-2.5 text-xs font-extrabold text-white transition duration-300 hover:bg-blue-700 hover:border-blue-700"
                 >
                   <span>View profile</span>
                 </Link>
