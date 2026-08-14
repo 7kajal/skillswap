@@ -12,9 +12,10 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "SkillSwap — Exchange skills and grow together",
+  title: "SkillSwap - Exchange skills and grow together",
   description:
     "A trusted community where people exchange skills and knowledge without exchanging money.",
+  icons: "/logo.png",
 };
 
 export default function RootLayout({

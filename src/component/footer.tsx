@@ -1,100 +1,147 @@
 import { Logo } from "./logo";
 import type { IconProps } from "@/types/common";
 
+const FOOTER_NAV = [
+  {
+    title: "Product",
+    links: [
+      { label: "Features", href: "#" },
+      { label: "Pricing", href: "#" },
+      { label: "Integrations", href: "#" },
+      { label: "Changelog", href: "#" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Documentation", href: "#" },
+      { label: "Tutorials", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "Support", href: "#" },
+    ],
+  },
+  {
+    title: "Community",
+    links: [
+      { label: "Explore Swaps", href: "#" },
+      { label: "Events", href: "#" },
+      { label: "Guilds", href: "#" },
+      { label: "Leaderboard", href: "#" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "#" },
+      { label: "Careers", href: "#" },
+      { label: "Contact", href: "#" },
+      { label: "Partners", href: "#" },
+    ],
+  },
+];
+
+const LEGAL_LINKS = [
+  { label: "Privacy Policy", href: "#" },
+  { label: "Terms of Service", href: "#" },
+  { label: "Cookies Settings", href: "#" },
+];
+
 export function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto max-w-7xl px-5 py-10 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center gap-8 text-center md:flex-row md:justify-between md:text-left">
-          {/* Logo */}
-          <div className="flex items-center justify-center gap-3 md:justify-start">
-            <Logo />
+    <footer className="border-t border-slate-100 bg-white font-sans text-slate-600">
+      <div className="mx-auto max-w-7xl px-6 pb-12 pt-16 lg:px-8">
+        {/* Main Content */}
+        <div className="flex flex-col justify-between gap-12 lg:flex-row lg:gap-12">
+          {/* Brand Column */}
+          <div className="max-w-xs space-y-4">
+            <div className="flex items-center gap-2">
+              <Logo />
+            </div>
+
+            <p className="text-sm leading-relaxed text-slate-500">
+              SkillSwap empowers individuals to exchange practical skills, build
+              confidence, and create meaningful professional connections.
+            </p>
+
+            {/* Social Icons */}
+            <div className="flex items-center gap-4 pt-2">
+              <a
+                href="#"
+                aria-label="X"
+                className="text-slate-700 transition-colors hover:text-black"
+              >
+                <XIcon className="h-4.5 w-4.5" />
+              </a>
+              <a
+                href="#"
+                aria-label="Discord"
+                className="text-slate-700 transition-colors hover:text-black"
+              >
+                <DiscordIcon className="h-4.5 w-4.5" />
+              </a>
+              <a
+                href="#"
+                aria-label="YouTube"
+                className="text-slate-700 transition-colors hover:text-black"
+              >
+                <YouTubeIcon className="h-4.5 w-4.5" />
+              </a>
+              <a
+                href="https://github.com/7kajal/skillswap"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub"
+                className="text-slate-700 transition-colors hover:text-black"
+              >
+                <GitHubIcon className="h-4.5 w-4.5" />
+              </a>
+            </div>
           </div>
 
-          {/* Social links */}
-          <div className="flex flex-wrap items-center justify-center gap-3 md:justify-end">
-            {/* GitHub */}
-            <a
-              href="#"
-              rel="noreferrer"
-              aria-label="Open GitHub"
-              className="
-            flex h-9 w-9 items-center justify-center sm:h-11 sm:w-11
-            rounded-full border border-blue-600
-            bg-blue-600 text-white
-            shadow-md transition-all duration-300
-            hover:-translate-y-1 hover:border-blue-600
-            hover:bg-blue-600 hover:text-white hover:shadow-lg
-            md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
-          "
-            >
-              <GitHubIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-            </a>
-
-            {/* Discord */}
-            <a
-              href="#"
-              rel="noreferrer"
-              aria-label="Join Discord"
-              className="
-            flex h-9 w-9 items-center justify-center sm:h-11 sm:w-11
-            rounded-full border border-blue-600
-            bg-blue-600 text-white
-            shadow-md transition-all duration-300
-            hover:-translate-y-1 hover:border-blue-600
-            hover:bg-blue-600 hover:text-white hover:shadow-lg
-            md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
-          "
-            >
-              <DiscordIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-            </a>
-
-            {/* YouTube */}
-            <a
-              href="#"
-              rel="noreferrer"
-              aria-label="Open YouTube"
-              className="
-            flex h-9 w-9 items-center justify-center sm:h-11 sm:w-11
-            rounded-full border border-blue-600
-            bg-blue-600 text-white
-            shadow-md transition-all duration-300
-            hover:-translate-y-1 hover:border-blue-600
-            hover:bg-blue-600 hover:text-white hover:shadow-lg
-            md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
-          "
-            >
-              <YouTubeIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-            </a>
-
-            {/* X */}
-            <a
-              href="#"
-              rel="noreferrer"
-              aria-label="Open X"
-              className="
-            flex h-9 w-9 items-center justify-center sm:h-11 sm:w-11
-            rounded-full border border-blue-600
-            bg-blue-600 text-white
-            shadow-md transition-all duration-300
-            hover:-translate-y-1 hover:border-blue-600
-            hover:bg-blue-600 hover:text-white hover:shadow-lg
-            md:border-slate-200 md:bg-white md:text-slate-700 md:shadow-none
-          "
-            >
-              <XIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-            </a>
+          {/* 4 Navigation Link Columns */}
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 lg:gap-12">
+            {FOOTER_NAV.map((section) => (
+              <div key={section.title}>
+                <h3 className="text-sm font-semibold text-slate-900">
+                  {section.title}
+                </h3>
+                <ul className="mt-4 space-y-3">
+                  {section.links.map((link) => (
+                    <li key={link.label}>
+                      <a
+                        href={link.href}
+                        className="text-sm text-slate-500 transition-colors hover:text-slate-900"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
-        <p className="text-xs text-center mt-4 md:mt-3 md:text-left">
-          © {new Date().getFullYear()}{" "}
-          <span>
-            <a href="https://github.com/7kajal/skillswap" className="underline">
-              SkillSwap{" "}
-            </a>
-          </span>
-          . All Rights Reserved.
-        </p>
+
+        {/* Bottom Bar Divider */}
+        <div className="mt-16 border-t border-slate-100 pt-8">
+          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+            <p className="text-xs text-slate-400">
+              © {new Date().getFullYear()} SkillSwap. All rights reserved.
+            </p>
+
+            <div className="flex flex-wrap gap-6">
+              {LEGAL_LINKS.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-xs text-slate-400 transition-colors hover:text-slate-600"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );
