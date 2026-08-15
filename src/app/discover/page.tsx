@@ -71,14 +71,10 @@ function DiscoverContent() {
     const query = search.trim().toLowerCase();
     if (!query) return users;
 
-    return users.filter(
-      (user) =>
-        user.name.toLowerCase().includes(query) ||
-        user.location?.toLowerCase().includes(query) ||
-        user.bio?.toLowerCase().includes(query) ||
-        user.userSkills.some((item) =>
-          item.skill.name.toLowerCase().includes(query),
-        ),
+    return users.filter((user) =>
+      user.userSkills.some((item) =>
+        item.skill.name.toLowerCase().includes(query),
+      ),
     );
   }, [search, users]);
 
@@ -103,8 +99,8 @@ function DiscoverContent() {
               Discover people
             </h1>
             <p className="mt-3 max-w-xl text-base font-semibold leading-7 text-slate-500">
-              Search the community by skill, person, or location. Open a profile
-              to see their experience, reviews, and what they want to exchange.
+              Search the community by skill. Open a profile to see their
+              experience, reviews, and what they want to exchange.
             </p>
           </div>
 
@@ -113,7 +109,7 @@ function DiscoverContent() {
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search React, photography, Spanish, a name or location..."
+              placeholder="Search by skill, e.g. React, photography, Spanish..."
               className="h-14 w-full rounded-2xl border border-slate-200 bg-white pl-14 pr-5 text-sm font-semibold text-slate-900 shadow-xs outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:h-16"
             />
             {search && (
@@ -325,7 +321,32 @@ function DiscoverContent() {
               })}
             </div>
           </>
-        ) : null}
+        ) : (
+          <div className="rounded-[28px] border border-dashed border-slate-300 bg-white px-6 py-20 text-center">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+              <Search className="h-6 w-6" />
+            </span>
+            <h2 className="mt-5 text-xl font-black text-slate-950">
+              {search
+                ? `No user found for "${search}"`
+                : "No members found"}
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-sm font-medium text-slate-500">
+              {search
+                ? "No one has this skill available for swap yet. Try a related skill or check back later."
+                : "No members available right now. Check back later!"}
+            </p>
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-extrabold text-white transition hover:bg-blue-700"
+              >
+                Clear search
+              </button>
+            )}
+          </div>
+        )}
       </section>
 
       {swapModal && (
