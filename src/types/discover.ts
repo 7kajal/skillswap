@@ -24,6 +24,7 @@ export interface MatchedUser {
   skillsTheyCanTeachMe: string[];
   reasons: MatchReason[];
   userSkills: ProfileSkill[];
+  swapCount?: number;
 }
 
 export interface OwnProfile {

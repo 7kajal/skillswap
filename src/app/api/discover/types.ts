@@ -18,6 +18,7 @@ export interface MatchedUser {
   skillsTheyCanTeachMe: string[];
   reasons: MatchReason[];
   userSkills: { skill: { name: string }; type: string }[];
+  swapCount?: number;
 }
 
 export type SkillSet = { teach: string[]; learn: string[] };

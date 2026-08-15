@@ -6,6 +6,7 @@ import {
   ArrowRight,
   BadgeCheck,
   HeartHandshake,
+  Lock,
   MapPin,
   Search,
   Star,
@@ -130,7 +131,26 @@ function DiscoverContent() {
       </section>
 
       <section className="mx-auto max-w-7xl px-5 py-9 sm:px-6 lg:px-8">
-        {loading ? (
+        {status === "unauthenticated" ? (
+          <div className="rounded-[28px] border border-dashed border-slate-300 bg-white px-6 py-20 text-center">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+              <Lock className="h-6 w-6" />
+            </span>
+            <h2 className="mt-5 text-xl font-black text-slate-950">
+              Login to see match profiles
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-sm font-medium text-slate-500">
+              Sign in to discover people whose skills complement yours and
+              connect with the community.
+            </p>
+            <Link
+              href="/auth/login"
+              className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-extrabold text-white transition hover:bg-blue-700"
+            >
+              Login to get started
+            </Link>
+          </div>
+        ) : loading ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
               <div
@@ -139,21 +159,7 @@ function DiscoverContent() {
               />
             ))}
           </div>
-        ) : filteredUsers.length === 0 ? (
-          <div className="rounded-[28px] border border-dashed border-slate-300 bg-white px-6 py-20 text-center">
-            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
-              <Search className="h-6 w-6" />
-            </span>
-            <h2 className="mt-5 text-xl font-black text-slate-950">
-              {search ? `No results for “${search}”` : "No public profiles yet"}
-            </h2>
-            <p className="mx-auto mt-2 max-w-md text-sm font-medium text-slate-500">
-              {search
-                ? "Try another skill, name, or location."
-                : "Completed member profiles will appear here."}
-            </p>
-          </div>
-        ) : (
+        ) : filteredUsers.length > 0 ? (
           <>
             <div className="mb-6 flex items-center justify-between">
               <p className="text-sm font-bold text-slate-500">
@@ -180,7 +186,7 @@ function DiscoverContent() {
                 const canRequest =
                   status === "authenticated" &&
                   ownProfile?.isProfileComplete &&
-                  ownTeachingSkills.length > 0;
+                  (ownTeachingSkills.length > 0 || (user.swapCount && user.swapCount > 0));
 
                 return (
                   <article
@@ -319,7 +325,7 @@ function DiscoverContent() {
               })}
             </div>
           </>
-        )}
+        ) : null}
       </section>
 
       {swapModal && (

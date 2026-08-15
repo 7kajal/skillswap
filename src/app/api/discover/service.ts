@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/mongodb";
 import { computeMatchScore } from "@/lib/skillSimilarity";
 import { User } from "@/app/api/auth/model";
 import { UserSkill } from "@/app/api/skill/model";
+import { SwapRequest } from "@/app/api/swapRequest/model";
 import mongoose from "mongoose";
 import type { MatchedUser, SkillSet } from "./types";
 
@@ -60,6 +61,24 @@ export async function findMatches(userId?: string): Promise<MatchedUser[]> {
     );
   }
 
+  const swapCountsByUser = new Map<string, number>();
+  if (currentUserId) {
+    const completedSwaps = await SwapRequest.find({
+      status: "completed",
+      $or: [
+        { senderId: currentUserId },
+        { receiverId: currentUserId },
+      ],
+    }).lean();
+
+    for (const swap of completedSwaps) {
+      const otherId = swap.senderId.toString() === userId
+        ? swap.receiverId.toString()
+        : swap.senderId.toString();
+      swapCountsByUser.set(otherId, (swapCountsByUser.get(otherId) || 0) + 1);
+    }
+  }
+
   const profiles = allUsers.map<MatchedUser>((otherUser) => {
     const otherId = otherUser._id.toString();
     const otherSkills = skillsByUser.get(otherId) || { teach: [], learn: [] };
@@ -99,13 +118,15 @@ export async function findMatches(userId?: string): Promise<MatchedUser[]> {
           type: "learn",
         })),
       ],
+      swapCount: swapCountsByUser.get(otherId) || 0,
     };
   });
 
   return profiles
-    .filter((p) => p.iCanTeachTheyWant > 0 && p.theyCanTeachIWant > 0)
+    .filter((p) => (p.iCanTeachTheyWant > 0 && p.theyCanTeachIWant > 0) || (p.swapCount && p.swapCount > 0))
     .sort(
     (a, b) =>
+      (b.swapCount || 0) - (a.swapCount || 0) ||
       b.totalSkillMatches - a.totalSkillMatches ||
       b.matchScore - a.matchScore ||
       b.rating - a.rating ||
