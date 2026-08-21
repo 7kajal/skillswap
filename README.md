@@ -2,7 +2,7 @@
 
 ## What is Skill Swap?
 
-**Skill Swap** is a platform where people can **teach what they know and learn what they want** by connecting with others who have complementary skills.
+**SkillSwap** is a platform where people can **teach what they know and learn what they want** by connecting with others who have complementary skills.
 
 For example:
 
